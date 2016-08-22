@@ -1,0 +1,2 @@
+# fan.props forces the current directory to a PathEnv work dir
+# See http://fantom.org/doc/docLang/Env#PathEnv

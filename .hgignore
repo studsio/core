@@ -1,4 +1,9 @@
+syntax: glob
+
 .DS_Store
-fan.props
-design.txt
-lib/
+
+syntax: regexp
+
+^fan.props
+^design.txt
+^lib/

@@ -16,18 +16,22 @@ const class InitCmd : Cmd
   override const Str helpShort := "Create a new project"
 
   override const Str? helpFull :=
-   "TODO"
+   "<name>  Name for new project (must be a valid pod name)
+    -s      Skip creating fan.props"
 
   override Int run()
   {
+    // opts
+    skip := opts.contains("s")
+
     // validate input
     name := args.getSafe(0)
     if (name == null)  abort("missing arg: name")
     if (!isName(name)) abort("invalid arg: name")
 
     // check if dir exists
-    dir := Env.cur.workDir
-    if ((dir + `src/`).exists) abort("proj already exists: $dir.osPath")
+    dir := Env.cur.workDir + `$name/`
+    if (dir.exists) abort("dir already exists: $dir.osPath")
 
     // prompt to continue
     res := prompt("Init project: $dir.osPath [Yn] ")
@@ -37,6 +41,7 @@ const class InitCmd : Cmd
     macros := ["proj.name":name]
     dir.create
     dir.createDir("src").createDir("fan")
+    if (!skip) apply(typeof.pod.file(`/res/fan.propsx`), macros, dir + `fan.props`)
     apply(typeof.pod.file(`/res/studs.propsx`), macros, dir + `studs.props`)
     apply(typeof.pod.file(`/res/build.fanx`),   macros, dir + `src/build.fan`, true)
     apply(typeof.pod.file(`/res/Main.fanx`),    macros, dir + `src/fan/Main.fan`)
