@@ -8,9 +8,19 @@
 
 class Main
 {
+  ** Entry point for studs build tools.
   static Int main()
   {
-    echo("studs: TODO")
-    return 0
+    name := Env.cur.args.first
+    cmd  := Cmd.list.find |c| { c.name == name }
+
+    if (cmd == null)
+    {
+      Env.cur.err.printLine("unknown command: $name")
+      HelpCmd().run
+      return 1
+    }
+
+    return cmd.run
   }
 }
