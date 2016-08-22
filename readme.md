@@ -10,24 +10,24 @@ Inspired by and in cooperation with [Nerves](http://nerves-project.org).
 
 **NOTE: still under heavy development -- not ready for use yet!**
 
-TODO: Linux (Windows?)
+TODO:
 
-TODO: need to update homebrew fantom forumla to 1.0.69
+  - Linux (Windows?)
+  - need to update homebrew fantom forumla to 1.0.69
+  - java?
+
+Studs requires a few dependencies we need to install first. The simplest way to
+is to use [Homebrew](http://brew.sh) and [fanr](http://fantom.org/doc/docFanr/Tool).
 
     $ brew update
     $ brew install fantom
     $ brew install fwup squashfs coreutils
+    $ fanr install -r http://eggbox.fantomfactory.org/fanr/ "studs, studsTools"
 
 ## Create a Project
 
-To get started, first we need to create and configure our project source
-directory:
+To get started, first we need to create a new project:
 
-    $ mkdir myproj
-    $ cd myproj
-    $ touch fan.props
-    $ fanr install -r http://eggbox.fantomfactory.org/fanr/ studs
-    $ fanr install -r http://eggbox.fantomfactory.org/fanr/ studsTools
     $ fan studs init myproj
 
 This will create a stand-alone [PathEnv](http://fantom.org/doc/docLang/Env#PathEnv)
