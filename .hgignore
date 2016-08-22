@@ -7,3 +7,4 @@ syntax: regexp
 ^fan.props
 ^design.txt
 ^lib/
+^test/

@@ -15,13 +15,12 @@ const class InitCmd : Cmd
   override const Str sig  := "<name> [-s]"
   override const Str helpShort := "Create a new project"
   override const Str? helpFull :=
-   "<name>  Name for new project (must be a valid pod name)
-    -s      Skip creating fan.props"
+   "<name>  Name for new project (must be a valid pod name)"
 
   override Int run()
   {
     // opts
-    skip := opts.contains("s")
+    test := opts.contains("test")
 
     // validate input
     name := args.getSafe(0)
@@ -40,7 +39,8 @@ const class InitCmd : Cmd
     macros := ["proj.name":name]
     dir.create
     dir.createDir("src").createDir("fan")
-    if (!skip) apply(typeof.pod.file(`/res/fan.propsx`), macros, dir + `fan.props`)
+    fanProps := test ? `fan-test.propsx` : `fan.propsx`
+    apply(typeof.pod.file(`/res/$fanProps`),    macros, dir + `fan.props`)
     apply(typeof.pod.file(`/res/studs.propsx`), macros, dir + `studs.props`)
     apply(typeof.pod.file(`/res/build.fanx`),   macros, dir + `src/build.fan`, true)
     apply(typeof.pod.file(`/res/Main.fanx`),    macros, dir + `src/fan/Main.fan`)

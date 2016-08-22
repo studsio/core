@@ -36,7 +36,8 @@ class Main
     {
       if (i == 0) return
       if (s == "-") abort("Invalid option")
-      if (s.startsWith("-")) opts.add(s[1..-1])
+      if (s.startsWith("--")) opts.add(s[2..-1])
+      else if (s.startsWith("-")) { s[1..-1].each |ch| { opts.add(ch.toChar) }}
       else args.add(s)
     }
 
