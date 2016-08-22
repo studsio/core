@@ -17,7 +17,7 @@ TODO:
   - java?
 
 Studs requires a few dependencies we need to install first. The simplest way to
-is to use [Homebrew](http://brew.sh) and [fanr](http://fantom.org/doc/docFanr/Tool).
+is to use [Homebrew](http://brew.sh) and [fanr](http://fantom.org/doc/docFanr/Tool):
 
     $ brew update
     $ brew install fantom

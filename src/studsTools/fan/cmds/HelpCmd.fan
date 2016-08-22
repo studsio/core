@@ -12,10 +12,10 @@
 const class HelpCmd : Cmd
 {
   override const Str name := "help"
-
+  override const Str sig  := "[cmd]"
   override const Str helpShort := "Show command help or comand list overview"
-
-  override const Str? helpFull := "TODO"
+  override const Str? helpFull :=
+    "cmd  Show detailed help for 'cmd'"
 
   override Int run()
   {
@@ -35,7 +35,7 @@ const class HelpCmd : Cmd
     }
 
     out.printLine(
-      "studs $c.name
+      "studs $c.name $c.sig
 
        $c.helpShort")
 

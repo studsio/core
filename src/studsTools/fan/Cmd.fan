@@ -16,6 +16,9 @@ abstract const class Cmd
   ** Unique name of this command.
   abstract Str name()
 
+  ** Help signature.
+  virtual Str sig() { "" }
+
   ** One-line short help text for this command.
   abstract Str helpShort()
 
