@@ -1,2 +1,5 @@
 # studs.props
-# TODO
+
+# Uncomment to add target platform to build
+#target.bbb=true
+target.rpi3=true
