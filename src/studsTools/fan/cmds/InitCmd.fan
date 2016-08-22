@@ -20,31 +20,27 @@ const class InitCmd : Cmd
 
   override Int run()
   {
+    // validate input
     name := args.getSafe(0)
+    if (name == null)  abort("missing arg: name")
+    if (!isName(name)) abort("invalid arg: name")
 
-    // missing name
-    if (name == null)
-    {
-      err.printLine("missing arg: name")
-      showHelp
-      return 1
-    }
-
-    // invalid name
-    if (!isName(name))
-    {
-      err.printLine("invalid arg: name")
-      showHelp
-      return 1
-    }
+    // check if dir exists
+    dir := Env.cur.workDir + `$name/`
+    if (dir.exists) abort("dir already exists: $dir.osPath")
 
     // prompt to continue
-    dir := Env.cur.workDir + name.toUri
     res := prompt("Init project: $dir.osPath [Yn] ")
     if (res != "" && res.lower != "y") return 1
 
-    // go
-    out.printLine("TODO")
+    // do it!
+    macros := ["proj.name":name]
+    dir.create
+    dir.createDir("src").createDir("fan")
+    apply(typeof.pod.file(`/res/fan.propsx`),   macros, dir + `fan.props`)
+    apply(typeof.pod.file(`/res/studs.propsx`), macros, dir + `studs.props`)
+    apply(typeof.pod.file(`/res/build.fanx`),   macros, dir + `src/build.fan`, true)
+    apply(typeof.pod.file(`/res/Main.fanx`),    macros, dir + `src/fan/Main.fan`)
     return 0
   }
 
@@ -52,6 +48,31 @@ const class InitCmd : Cmd
   Bool isName(Str s)
   {
     if (!s[0].isAlpha) return false
+    if (!s[0].isLower) return false
     return s.all |ch| { ch.isAlphaNum || ch == '_' }
+  }
+
+  ** Read given resource file, apply macros, and write results to given target
+  Void apply(File src, Str:Str macros, File target, Bool exec := false)
+  {
+    in  := src.in
+    out := target.out
+    try
+    {
+      // apply macros
+      in.readAllStr.splitLines.each |s|
+      {
+        macros.each |v,n| { s = s.replace("{{$n}}", v) }
+        out.printLine(s)
+      }
+
+      // mark +x
+      if (exec)
+      {
+        if (Process(["chmod", "+x", target.osPath]).run.join != 0)
+          abort("chmod +x failed: target.osPath")
+      }
+    }
+    finally { in.close; out.close }
   }
 }

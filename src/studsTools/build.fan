@@ -26,6 +26,7 @@ class Build : BuildPod
       "vcs.uri":      "https://bitbucket.org/afrankvt/studs/"]
     depends = ["sys 1.0", "util 1.0", "concurrent 1.0"]
     srcDirs = [`fan/`, `fan/cmds/`]
+    resDirs = [`res/`]
     docSrc = true
   }
 }

@@ -1,0 +1,13 @@
+using studs
+
+**
+** Entry point for studs application.
+**
+const class Main
+{
+  static Int main()
+  {
+    echo("Hello, world :)")
+    return 0
+  }
+}

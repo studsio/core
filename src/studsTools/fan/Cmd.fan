@@ -48,6 +48,14 @@ abstract const class Cmd
   ** trail the command name and are prexifed with '-'.
   Str[] opts() { Actor.locals["cmd.opts"] }
 
+  ** Print the given error message, show command help, then exit with error code.
+  Void abort(Str msg)
+  {
+    err.printLine(msg)
+    showHelp
+    Env.cur.exit(1)
+  }
+
   ** Convenience to display help for this command to `out`.
   Void showHelp()
   {
