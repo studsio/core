@@ -12,19 +12,18 @@ class Build : BuildPod
     podName = "{{proj.name}}"
     summary = "Give me a summary :)"
     version = Version("1.0.0")
-    meta    = [
-      // These values are optional, but recommended
-      // See http://fantom.org/doc/docLang/Pods#meta for details
-      //
-      // "org.name":     "My Org",
-      // "org.uri":      "http://myorg.org/",
-      // "proj.name":    "My Project",
-      // "proj.uri":     "http://myproj.org/",
-      // "license.name": "Academic Free License 3.0",
-      // "vcs.name":     "Mercurial",
-      // "vcs.uri":      "https://bitbucket.org/myorg/myproj"
-      // "vcs.uri":      "https://bitbucket.org/myproj"
-    ]
+    // These values are optional, but recommended
+    // See: http://fantom.org/doc/docLang/Pods#meta
+    // meta = [
+    //   "org.name":     "My Org",
+    //   "org.uri":      "http://myorg.org/",
+    //   "proj.name":    "My Project",
+    //   "proj.uri":     "http://myproj.org/",
+    //   "license.name": "Academic Free License 3.0",
+    //   "vcs.name":     "Mercurial",
+    //   "vcs.uri":      "https://bitbucket.org/myorg/myproj"
+    //   "vcs.uri":      "https://bitbucket.org/myproj"
+    // ]
     depends = ["sys 1.0", "util 1.0", "concurrent 1.0", "studs 1.0"]
     srcDirs = [`fan/`]
   }
