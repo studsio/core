@@ -6,21 +6,49 @@
 //   21 Aug 2016  Andy Frank  Creation
 //
 
+using concurrent
+
 class Main
 {
   ** Entry point for studs build tools.
   static Int main()
   {
+    setup
     name := Env.cur.args.first
     cmd  := Cmd.list.find |c| { c.name == name }
+    if (cmd == null) abort("unknown command: $name")
+    return cmd.run
+  }
 
-    if (cmd == null)
+  ** Setup const data structures.
+  private static Void setup()
+  {
+    // setup Cmd.list
+    types := Cmd#.pod.types.findAll |t| { t != Cmd# && t.fits(Cmd#) }
+    Cmd[] cmds := types.map |c| { c.make }
+    map := Str:Cmd[:].addList(cmds) |c| { c.name }
+    Actor.locals["cmd.list"] = cmds.sort |a,b| { a.name <=> b.name }.toImmutable
+
+    // setup Cmd.args/opts
+    args := Str[,]
+    opts := Str[,]
+    Env.cur.args.each |s,i|
     {
-      Env.cur.err.printLine("unknown command: $name")
-      HelpCmd().run
-      return 1
+      if (i == 0) return
+      if (s == "-") abort("Invalid option")
+      if (s.startsWith("-")) opts.add(s[1..-1])
+      else args.add(s)
     }
 
-    return cmd.run
+    Actor.locals["cmd.args"] = args.toImmutable
+    Actor.locals["cmd.opts"] = opts.toImmutable
+  }
+
+  ** Print message and exit with err code.
+  static Void abort(Str msg)
+  {
+    Env.cur.err.printLine(msg)
+    Cmd.get("help")->showOverview
+    Env.cur.exit(1)
   }
 }

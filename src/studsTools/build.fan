@@ -24,7 +24,7 @@ class Build : BuildPod
       "proj.uri":     "http://studs.io/",
       "license.name": "Academic Free License 3.0",
       "vcs.uri":      "https://bitbucket.org/afrankvt/studs/"]
-    depends = ["sys 1.0", "util 1.0"]
+    depends = ["sys 1.0", "util 1.0", "concurrent 1.0"]
     srcDirs = [`fan/`, `fan/cmds/`]
     docSrc = true
   }

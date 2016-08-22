@@ -19,7 +19,40 @@ const class HelpCmd : Cmd
 
   override Int run()
   {
-    out.printLine("Usage: studs <cmd> [cmd args]")
+    args.size > 0 ? showDetails(args.first) : showOverview
+  }
+
+  ** Display command details.
+  internal Int showDetails(Str name)
+  {
+    c := Cmd.get(name)
+
+    if (c == null)
+    {
+      err.printLine("unknown command: $name")
+      showOverview
+      return 1
+    }
+
+    out.printLine(
+      "studs $c.name
+
+       $c.helpShort")
+
+    full := c.helpFull
+    if (full != null)
+    {
+      out.printLine("")
+      full.splitLines.each |s| { out.printLine("  $s") }
+    }
+
+    return 0
+  }
+
+  ** Display help overview.
+  internal Int showOverview()
+  {
+    out.printLine("Usage: studs <cmd> [options]")
     out.printLine("")
 
     // find max command name length
@@ -34,6 +67,7 @@ const class HelpCmd : Cmd
 
     out.printLine("")
     out.printLine("Use \"studs help <cmd>\" for additional information on each command")
+    out.printLine("")
     return 0
   }
 }

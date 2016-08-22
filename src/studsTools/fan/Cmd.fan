@@ -6,6 +6,8 @@
 //   22 Aug 2016  Andy Frank  Creation
 //
 
+using concurrent
+
 **
 ** Cmd models a build tool command.
 **
@@ -30,12 +32,16 @@ abstract const class Cmd
   OutStream err() { Env.cur.out }
 
   ** List all commands.
-  static Cmd[] list()
-  {
-    // find all commands and verify names
-    types := Cmd#.pod.types.findAll |t| { t != Cmd# && t.fits(Cmd#) }
-    Cmd[] cmds := types.map |c| { c.make }
-    map := Str:Cmd[:].addList(cmds) |c| { c.name }
-    return cmds.sort |a,b| { a.name <=> b.name }
-  }
+  static Cmd[] list() { Actor.locals["cmd.list"] }
+
+  ** Get the given command, or 'null' if not found.
+  static Cmd? get(Str name) { list.find |c| { c.name == name } }
+
+  ** List command arguments. Arguments are any terms that
+  ** trail the command name not prefixied with '-'.
+  Str[] args() { Actor.locals["cmd.args"] }
+
+  ** List of command options.  Options are any terms that
+  ** trail the command name and are prexifed with '-'.
+  Str[] opts() { Actor.locals["cmd.opts"] }
 }
