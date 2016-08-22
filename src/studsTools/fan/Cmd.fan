@@ -31,6 +31,9 @@ abstract const class Cmd
   ** Convenience for 'Env.cur.err'.
   OutStream err() { Env.cur.out }
 
+  ** Conveniece for 'Env.cur.prompt'.
+  Str? prompt(Str msg) { Env.cur.prompt(msg) }
+
   ** List all commands.
   static Cmd[] list() { Actor.locals["cmd.list"] }
 
@@ -44,4 +47,10 @@ abstract const class Cmd
   ** List of command options.  Options are any terms that
   ** trail the command name and are prexifed with '-'.
   Str[] opts() { Actor.locals["cmd.opts"] }
+
+  ** Convenience to display help for this command to `out`.
+  Void showHelp()
+  {
+    Cmd.get("help")->showDetails(name)
+  }
 }
