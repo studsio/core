@@ -1,4 +1,4 @@
-# Studs
+# **Studs**
 
 TODO: catchy tag line here :)
 
@@ -6,7 +6,7 @@ Easily build and deploy embedded software in [Fantom](http://fantom.org).
 
 Inspired by and in cooperation with [Nerves](http://nerves-project.org).
 
-## Installation
+## **Installation**
 
 **NOTE: still under heavy development -- not ready for use yet!**
 
@@ -24,7 +24,7 @@ is to use [Homebrew](http://brew.sh) and [fanr](http://fantom.org/doc/docFanr/To
     $ brew install fwup squashfs coreutils
     $ fanr install -r http://eggbox.fantomfactory.org/fanr/ "studs, studsTools"
 
-## Create a Project
+## **Create a Project**
 
 To get started, first we need to create a new project:
 
