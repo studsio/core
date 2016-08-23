@@ -22,7 +22,7 @@ is to use [Homebrew](http://brew.sh) and [fanr](http://fantom.org/doc/docFanr/To
     $ brew update
     $ brew install fantom
     $ brew install fwup squashfs coreutils
-    $ fanr install -r http://eggbox.fantomfactory.org/fanr/ "studs, studsTools"
+    $ fanr install -r http://eggbox.fantomfactory.org/fanr/ studs
 
 ## **Create a Project**
 
