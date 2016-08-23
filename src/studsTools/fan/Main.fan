@@ -43,6 +43,12 @@ class Main
 
     Actor.locals["cmd.args"] = args.toImmutable
     Actor.locals["cmd.opts"] = opts.toImmutable
+
+    // setup System.list
+    Actor.locals["sys.list"] = System[
+      System { it.name="rpi3"; it.version=Version("0.6.1") },
+      System { it.name="bbb";  it.version=Version("0.7.1") },
+    ]
   }
 
   ** Print message and exit with err code.

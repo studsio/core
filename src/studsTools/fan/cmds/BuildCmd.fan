@@ -42,25 +42,19 @@ const class BuildCmd : Cmd
   ** Download and install the system configuration for target.
   Void installSystem(Str target)
   {
-    // find system uri
-// TODO: pull out version info somewhere?
-    Uri? uri
-    switch (target)
-    {
-      case "rpi3": uri = `https://github.com/nerves-project/nerves_system_rpi3/releases/download/v0.6.1/nerves_system_rpi3-v0.6.1.tar.gz`
-      default: abort("unknown target: $target")
-    }
+    sys := System.find(target, false)
+    if (sys == null) abort("unknown target: $target")
 
     // short-circuit if already installed
     dir := Env.cur.workDir + `studs/`
     dir.create
 // TODO FIXIT: actually verify - maybe check nerves-system.tag?
-    if ((dir + `rpi3/`).exists) return
+    if ((dir + `$sys.name/`).exists) return
 
     // download
-    temp := dir + `$uri.name`
+    temp := dir + `$sys.uri.name`
     fout := temp.out
-    c := WebClient(uri)
+    c := WebClient(sys.uri)
     try
     {
       c.writeReq.readRes
@@ -79,7 +73,7 @@ const class BuildCmd : Cmd
         // update progress
         cur += last
         per := (cur.toFloat / len.toFloat * 100f).toInt.toStr.padl(2)
-        out.print("\rDownloading rpi3 system... ${per}%\r")
+        out.print("\rDownloading $sys.name system... ${per}%\r")
       }
 
       out.printLine("")
@@ -87,13 +81,13 @@ const class BuildCmd : Cmd
     finally { c.close; fout.close }
 
     // untar
-    out.printLine("Install rpi3 system...")
+    out.printLine("Install $sys.name system...")
     proc := Process(["tar", "xvf", temp.osPath, "-C", dir.osPath])
     proc.out = null
     proc.run.join
 
-    // rename nerves_system_rpi3 -> rpi3
-    (dir + `nerves_system_rpi3/`).rename("rpi3")
+    // rename nerves_system_xxx -> xxx
+    (dir + `nerves_system_${sys.name}/`).rename(sys.name)
 
     // cleanup
     temp.delete
