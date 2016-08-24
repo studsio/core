@@ -72,8 +72,8 @@ const class InitCmd : Cmd
       // mark +x
       if (exec)
       {
-        if (Process(["chmod", "+x", target.osPath]).run.join != 0)
-          abort("chmod +x failed: target.osPath")
+        if (!Proc.run("chmod +x $target.osPath"))
+          abort("chmod failed: target.osPath")
       }
     }
     finally { in.close; out.close }
