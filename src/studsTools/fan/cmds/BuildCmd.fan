@@ -53,32 +53,7 @@ const class BuildCmd : Cmd
 
     // download
     temp := dir + `$sys.uri.name`
-    fout := temp.out
-    c := WebClient(sys.uri)
-    try
-    {
-      c.writeReq.readRes
-      len := c.resHeaders["Content-Length"].toInt
-      in  := c.resIn
-      blk := 4096
-      cur := 0
-      buf := Buf { it.capacity=blk }
-      Int? last
-
-      while ((last = in.readBuf(buf.clear, blk)) != null)
-      {
-        // pipe to temp file
-        fout.writeBuf(buf.flip)
-
-        // update progress
-        cur += last
-        per := (cur.toFloat / len.toFloat * 100f).toInt.toStr.padl(2)
-        out.print("\rDownloading $sys.name system... ${per}%\r")
-      }
-
-      out.printLine("")
-    }
-    finally { c.close; fout.close }
+    Proc.download(out, "Downloading $sys.name system", sys.uri, temp)
 
     // untar
     out.printLine("Install $sys.name system...")
