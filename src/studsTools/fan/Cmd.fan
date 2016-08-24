@@ -37,6 +37,16 @@ abstract const class Cmd
   ** Conveniece for 'Env.cur.prompt'.
   Str? prompt(Str msg) { Env.cur.prompt(msg) }
 
+  ** Convenience for 'prompt' with yes/no choice, return true for
+  ** 'y' or false for 'n'.  If enter is pressed with no choice,
+  ** then use 'def' for default.
+  Bool promptYesNo(Str msg, Str def := "y")
+  {
+    r := prompt(msg)
+    if (r == "") r = def
+    return r == "y"
+  }
+
   ** List all commands.
   static Cmd[] list() { Actor.locals["cmd.list"] }
 

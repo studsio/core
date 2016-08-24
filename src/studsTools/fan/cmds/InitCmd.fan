@@ -32,8 +32,7 @@ const class InitCmd : Cmd
     if (dir.exists) abort("dir already exists: $dir.osPath")
 
     // prompt to continue
-    res := prompt("Init project: $dir.osPath [Yn] ")
-    if (res != "" && res.lower != "y") return 1
+    if (!promptYesNo("Init project: $dir.osPath [Yn] ")) return 1
 
     // do it!
     macros := ["proj.name":name]

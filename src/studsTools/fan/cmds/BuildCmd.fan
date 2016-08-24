@@ -46,23 +46,38 @@ const class BuildCmd : Cmd
     if (sys == null) abort("unknown target: $target")
 
     // short-circuit if already installed
-    dir := Env.cur.workDir + `studs/systems/`
-    dir.create
-// TODO FIXIT: actually verify - maybe check nerves-system.tag?
-    if ((dir + `$sys.name/`).exists) return
+    baseDir := Env.cur.workDir + `studs/systems/`
+    baseDir.create
+    sysDir := baseDir + `$sys.name/`
+
+    // check if up-to-date
+    tag := sysDir + `nerves-system.tag`
+    if (tag.exists)
+    {
+      line := tag.readAllLines.first
+      ver  := Version(line[1..-1], false)
+
+      // up-to-date bail
+      if (sys.version == ver) return
+
+      // prompt to upgrade
+      // TODO: do we abort if out-of-date???
+      if (!promptYesNo("Upgrade $sys.name $ver -> $sys.version? [Yn] ")) return
+      Proc.run("rm -rf $sysDir.osPath")
+    }
 
     // download
-    temp := dir + `$sys.uri.name`
-    Proc.download(out, "Downloading $sys.name system", sys.uri, temp)
+    tar := baseDir + `$sys.uri.name`
+    Proc.download("Downloading $sys.name system", sys.uri, tar)
 
     // untar
     out.printLine("Install $sys.name system...")
-    Proc.run("tar xvf $temp.osPath -C $dir.osPath")
+    Proc.run("tar xvf $tar.osPath -C $baseDir.osPath")
 
     // rename nerves_system_xxx -> xxx
-    (dir + `nerves_system_${sys.name}/`).rename(sys.name)
+    (baseDir + `nerves_system_${sys.name}/`).rename(sys.name)
 
     // cleanup
-    temp.delete
+    tar.delete
   }
 }

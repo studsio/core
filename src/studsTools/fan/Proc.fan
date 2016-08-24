@@ -35,7 +35,7 @@ const class Proc
 
   ** Download content from URI and pipe to given file. Progress
   ** will be written to 'out' prefixed with 'msg'.
-  static Void download(OutStream out, Str msg, Uri uri, File target)
+  static Void download(Str msg, Uri uri, File target)
   {
     tout   := target.out
     client := WebClient(uri)
@@ -47,7 +47,7 @@ const class Proc
       bsz := 4096                      // buf size to read at a time
       cur := 0                         // how many bytes have been read
       Int? read                        // bytes read on last attempt
-      buf := Buf { it.capacity=bsz }   // read bufffer
+      buf := Buf { it.capacity=bsz }   // read buffer
 
       while ((read = in.readBuf(buf.clear, bsz)) != null)
       {
@@ -57,10 +57,10 @@ const class Proc
         // update progress
         cur += read
         per := (cur.toFloat / len.toFloat * 100f).toInt.toStr.padl(2)
-        out.print("\r${msg}... ${per}%\r")
+        Env.cur.out.print("\r${msg}... ${per}%\r")
       }
 
-      out.printLine("")
+      Env.cur.out.printLine("")
     }
     finally { client.close; tout.close }
   }
