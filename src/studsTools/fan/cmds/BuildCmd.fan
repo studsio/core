@@ -17,10 +17,18 @@ const class BuildCmd : Cmd
   override const Str helpShort := "Build project"
   override const Str? helpFull := null
 
+  ** Temp working directory.
+  const File tempDir := Env.cur.workDir + `studs/temp/`
+  private Void tempClean() { tempDelete; tempDir.create }
+  private Void tempDelete() { Proc.run("rm -rf $tempDir.osPath") }
+
   override Int run()
   {
     f := Env.cur.workDir + `studs.props`
     if (!f.exists) abort("project not found: $Env.cur.workDir.osPath")
+
+    // make sure temp is clean
+    tempClean
 
     // find targets
     targets := Str[,]
@@ -33,9 +41,13 @@ const class BuildCmd : Cmd
     // install required systems
     targets.each |t| { installSystem(t) }
 
-    // TODO: verify target list
-    out.printLine("TODO")
-    out.printLine("targets: $targets")
+    // build jres
+    targets.each |t| { buildJre(t) }
+
+    // TODO
+
+    // clean up after ourselves
+    tempDelete
     return 0
   }
 
@@ -45,7 +57,6 @@ const class BuildCmd : Cmd
     sys := System.find(target, false)
     if (sys == null) abort("unknown target: $target")
 
-    // short-circuit if already installed
     baseDir := Env.cur.workDir + `studs/systems/`
     baseDir.create
     sysDir := baseDir + `$sys.name/`
@@ -79,5 +90,33 @@ const class BuildCmd : Cmd
 
     // cleanup
     tar.delete
+  }
+
+  ** Build compact JRE for target.
+  Void buildJre(Str target)
+  {
+    sys := System.find(target, false)
+    if (sys == null) abort("unknown target: $target")
+
+    // bail if already exists
+    baseDir := Env.cur.workDir + `studs/jres/`
+    baseDir.create
+    jreDir := baseDir + `$sys.jre/`
+    if (jreDir.exists) return
+
+    // find source tar image
+    tar := baseDir.listFiles.find |f| { f.name.endsWith("${sys.jre}.tar.gz") }
+    if (tar == null) Proc.abort("no jre found for $target")
+
+    // unpack
+    tempClean
+    out.printLine("Build ${jreDir.name} jre...")
+    Proc.run("tar xf $tar.osPath -C $tempDir.osPath")
+
+    // invoke jrecreate (requires Java 7+)
+    jdkDir := tempDir.listDirs.find |d| { d.name.startsWith("ejdk") }
+    Proc.bash(
+      "export JAVA_HOME=\$(/usr/libexec/java_home)
+       ${jdkDir.osPath}/bin/jrecreate.sh --dest $jreDir.osPath --profile compact3 -vm client")
   }
 }

@@ -17,13 +17,20 @@ const class Proc
   ** normally. If child process returns a non-zero exit code and
   ** 'checked' is true, then abort this process with an error message.
   ** If 'checked' is 'false' then return the child process error code.
-  static Int run(Str cmd, Bool checked := true)
+  static Int run(Obj cmd, Bool checked := true)
   {
-    p := Process(cmd.split)
+    c := cmd as Str[] ?: cmd.toStr.split
+    p := Process(c)
     p.out = null
     r := p.run.join
     if (r != 0 && checked) Proc.abort("$p.command.first failed: $cmd")
     return r
+  }
+
+  ** Convenience for `run` to evaluate a bash script.
+  static Int bash(Str bash, Bool checked := true)
+  {
+    run(["bash", "-c", bash])
   }
 
   ** Print the 'msg' and exit with error code.

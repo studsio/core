@@ -31,6 +31,9 @@ const class System
   ** URI to fetch system image.
   const Uri uri
 
+  ** JRE platform for this system.
+  const Str jre
+
   ** List available systems.
   static System[] list() { Actor.locals["sys.list"] }
 

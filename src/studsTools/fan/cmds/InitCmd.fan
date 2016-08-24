@@ -37,7 +37,9 @@ const class InitCmd : Cmd
     // do it!
     macros := ["proj.name":name]
     dir.create
-    dir.createDir("src").createDir("fan")
+    (dir + `src/fan/`).create
+    (dir + `studs/jres/`).create
+    (dir + `studs/systems/`).create
     fanProps := test ? `fan-test.propsx` : `fan.propsx`
     apply(typeof.pod.file(`/res/$fanProps`),    macros, dir + `fan.props`)
     apply(typeof.pod.file(`/res/studs.propsx`), macros, dir + `studs.props`)
