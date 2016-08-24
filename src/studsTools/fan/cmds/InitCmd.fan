@@ -70,11 +70,7 @@ const class InitCmd : Cmd
       }
 
       // mark +x
-      if (exec)
-      {
-        if (!Proc.run("chmod +x $target.osPath"))
-          abort("chmod failed: target.osPath")
-      }
+      if (exec) Proc.run("chmod +x $target.osPath")
     }
     finally { in.close; out.close }
   }

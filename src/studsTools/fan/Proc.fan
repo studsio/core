@@ -13,13 +13,24 @@ using web
 **
 const class Proc
 {
-  ** Invoke the command string and return 'true' if exited
-  ** normally or 'false' if returned with error code.
-  static Bool run(Str cmd)
+  ** Invoke the command string and return 0 if child process exited
+  ** normally. If child process returns a non-zero exit code and
+  ** 'checked' is true, then abort this process with an error message.
+  ** If 'checked' is 'false' then return the child process error code.
+  static Int run(Str cmd, Bool checked := true)
   {
     p := Process(cmd.split)
     p.out = null
-    return p.run.join == 0
+    r := p.run.join
+    if (r != 0 && checked) Proc.abort("$p.command.first failed: $cmd")
+    return r
+  }
+
+  ** Print the 'msg' and exit with error code.
+  static Void abort(Str msg)
+  {
+    Env.cur.err.printLine(msg)
+    Env.cur.exit(1)
   }
 
   ** Download content from URI and pipe to given file. Progress

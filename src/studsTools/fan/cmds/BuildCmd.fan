@@ -57,8 +57,7 @@ const class BuildCmd : Cmd
 
     // untar
     out.printLine("Install $sys.name system...")
-    if (!Proc.run("tar xvf $temp.osPath -C $dir.osPath"))
-      abort("tar failed: $temp.osPath")
+    Proc.run("tar xvf $temp.osPath -C $dir.osPath")
 
     // rename nerves_system_xxx -> xxx
     (dir + `nerves_system_${sys.name}/`).rename(sys.name)
