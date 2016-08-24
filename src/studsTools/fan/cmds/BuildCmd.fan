@@ -46,7 +46,7 @@ const class BuildCmd : Cmd
     if (sys == null) abort("unknown target: $target")
 
     // short-circuit if already installed
-    dir := Env.cur.workDir + `studs/`
+    dir := Env.cur.workDir + `studs/systems/`
     dir.create
 // TODO FIXIT: actually verify - maybe check nerves-system.tag?
     if ((dir + `$sys.name/`).exists) return
