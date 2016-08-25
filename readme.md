@@ -44,9 +44,8 @@ to keep our application pods separate from our master Fantom lib:
      ├─ studs.props          # firmware configuration file
      └─ studs/
          ├─ jres/            # target JREs installed here
-         └─ systems/         # target systems installed here
-
-Review `build.fan` and add/change any fields that make sense.
+         ├─ systems/         # target systems installed here
+         └─ releases/        # compiled firmware images put here
 
 `studs.props` contains the configuration for your firmware, including the
 targets you wish to build for. The default target is `rpi3`, but you may change
@@ -84,4 +83,18 @@ From here the build tools will manage creating the correct image for your device
 
 Now we're ready to build!
 
-TODO
+    $ src/build.fan
+    $ fan studs build
+
+This will compile your Fantom application and assemble the firmware images for
+your target device(s). The first time `studs build` is run the system
+dependencies will be downloaded which can take a few minutes. After that
+firmware builds will be fast.
+
+After building the firmware, images are placed under the `releases` dir, where
+the naming convention is `proj-version-target`:
+
+    myproj/
+     └─ studs/
+         └─ releases/
+             └─ myproj-1.0.0-rpi3.fw

@@ -28,6 +28,9 @@ abstract const class Cmd
   ** Run this command and return exit code.
   abstract Int run()
 
+  ** Convenience for 'out.printLine'.
+  Void info(Str msg) { out.printLine(msg) }
+
   ** Convenience for 'Env.cur.out'.
   OutStream out() { Env.cur.out }
 

@@ -40,6 +40,7 @@ const class InitCmd : Cmd
     (dir + `src/fan/`).create
     (dir + `studs/jres/`).create
     (dir + `studs/systems/`).create
+    (dir + `studs/releases/`).create
     fanProps := test ? `fan-test.propsx` : `fan.propsx`
     apply(typeof.pod.file(`/res/$fanProps`),    macros, dir + `fan.props`)
     apply(typeof.pod.file(`/res/studs.propsx`), macros, dir + `studs.props`)

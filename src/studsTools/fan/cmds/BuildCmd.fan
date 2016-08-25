@@ -35,16 +35,21 @@ const class BuildCmd : Cmd
     f.readProps.each |val,key|
     {
       if (key.startsWith("target.") && val == "true")
-        targets.add(key["target.".size..-1])
+      {
+        name := key["target.".size..-1]
+        if (System.find(name, false) == null) abort("unknown target: $name")
+        targets.add(name)
+      }
     }
 
-    // install required systems
-    targets.each |t| { installSystem(t) }
-
-    // build jres
-    targets.each |t| { buildJre(t) }
-
-    // TODO
+    // build each target
+    targets.each |t|
+    {
+      sys := System.find(t)
+      installSystem(sys)
+      buildJre(sys)
+      buildFw(sys)
+    }
 
     // clean up after ourselves
     tempDelete
@@ -52,11 +57,8 @@ const class BuildCmd : Cmd
   }
 
   ** Download and install the system configuration for target.
-  Void installSystem(Str target)
+  Void installSystem(System sys)
   {
-    sys := System.find(target, false)
-    if (sys == null) abort("unknown target: $target")
-
     baseDir := Env.cur.workDir + `studs/systems/`
     baseDir.create
     sysDir := baseDir + `$sys.name/`
@@ -82,7 +84,7 @@ const class BuildCmd : Cmd
     Proc.download("Downloading $sys.name system", sys.uri, tar)
 
     // untar
-    out.printLine("Install $sys.name system...")
+    info("Install $sys.name system...")
     Proc.run("tar xvf $tar.osPath -C $baseDir.osPath")
 
     // rename nerves_system_xxx -> xxx
@@ -93,24 +95,22 @@ const class BuildCmd : Cmd
   }
 
   ** Build compact JRE for target.
-  Void buildJre(Str target)
+  Void buildJre(System sys)
   {
-    sys := System.find(target, false)
-    if (sys == null) abort("unknown target: $target")
-
-    // bail if already exists
     baseDir := Env.cur.workDir + `studs/jres/`
     baseDir.create
     jreDir := baseDir + `$sys.jre/`
+
+    // bail if already exists
     if (jreDir.exists) return
 
     // find source tar image
     tar := baseDir.listFiles.find |f| { f.name.endsWith("${sys.jre}.tar.gz") }
-    if (tar == null) Proc.abort("no jre found for $target")
+    if (tar == null) Proc.abort("no jre found for $sys.name")
 
     // unpack
     tempClean
-    out.printLine("Build ${jreDir.name} jre...")
+    info("Build ${jreDir.name} jre...")
     Proc.run("tar xf $tar.osPath -C $tempDir.osPath")
 
     // invoke jrecreate (requires Java 7+)
@@ -118,5 +118,53 @@ const class BuildCmd : Cmd
     Proc.bash(
       "export JAVA_HOME=\$(/usr/libexec/java_home)
        ${jdkDir.osPath}/bin/jrecreate.sh --dest $jreDir.osPath --profile compact3 -vm client")
+  }
+
+  ** Assemble firmware image for target.
+  Void buildFw(System sys)
+  {
+    // dir setup
+    jreDir := Env.cur.workDir + `studs/jres/$sys.jre/`
+    sysDir := Env.cur.workDir + `studs/systems/$sys.name/`
+    relDir := Env.cur.workDir + `studs/releases/`
+    relDir.create
+    tempClean
+    rootfs := tempDir + `rootfs-additions/`
+    rootfs.create
+
+    // release image name
+    proj := Env.cur.workDir.basename
+    ver  := Pod.find(proj).version
+    rel  := relDir + `${proj}-${ver}-${sys.name}.fw`
+
+    // defaults
+    fwupConf := sysDir + `images/fwup.conf`
+
+    // copy jre
+    (rootfs + `srv/`).create
+    Proc.run("cp -R $jreDir.osPath $rootfs.osPath/srv")
+    Proc.run("mv $rootfs.osPath/srv/${sys.jre} $rootfs.osPath/srv/jre")
+
+    // copy app
+    (rootfs + `app/`).create
+    // TODO FIXIT
+
+    // copy user rootfs-additions
+    // TODO FIXIT
+
+    // merge rootfs
+    info("Merge rootfs...")
+    Proc.run(
+      "$sysDir.osPath/scripts/merge-squashfs " +
+      "$sysDir.osPath/images/rootfs.squashfs " +
+      "$tempDir.osPath/combined.squashfs " +
+      "$tempDir.osPath/rootfs-additions")
+
+    // build image
+    info("Build firmware image...")
+    Proc.bash(
+      "export NERVES_SYSTEM=$sysDir.osPath
+       export ROOTFS=$tempDir.osPath/combined.squashfs
+       fwup -c -f $fwupConf.osPath -o $rel.osPath")
   }
 }
