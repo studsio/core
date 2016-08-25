@@ -48,7 +48,7 @@ class Main
     Actor.locals["sys.list"] = System[
       System { it.name="rpi3"; it.version=Version("0.6.1"); it.jre="linux-armv6-vfp-hflt" },
       System { it.name="bbb";  it.version=Version("0.7.1"); it.jre="linux-armv6-vfp-hflt" },
-    ]
+    ].toImmutable
   }
 
   ** Print message and exit with err code.
