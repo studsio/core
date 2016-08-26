@@ -141,6 +141,7 @@ const class BuildCmd : Cmd
     fwupConf := sysDir + `images/fwup.conf`
 
     // copy jre
+    info("Stage rootfs...")
     (rootfs + `srv/`).create
     Proc.run("cp -R $jreDir.osPath $rootfs.osPath/srv")
     Proc.run("mv $rootfs.osPath/srv/${sys.jre} $rootfs.osPath/srv/jre")
@@ -150,7 +151,8 @@ const class BuildCmd : Cmd
     // TODO FIXIT
 
     // copy user rootfs-additions
-    // TODO FIXIT
+    userRootfs := Env.cur.workDir + `src/rootfs-additions/`
+    if (userRootfs.exists) Proc.run("cp -Rf $userRootfs.osPath $rootfs.parent.osPath")
 
     // merge rootfs
     info("Merge rootfs...")
@@ -160,8 +162,8 @@ const class BuildCmd : Cmd
       "$tempDir.osPath/combined.squashfs " +
       "$tempDir.osPath/rootfs-additions")
 
-    // build image
-    info("Build firmware image...")
+    // assemble image
+    info("Assemble firmware image...")
     Proc.bash(
       "export NERVES_SYSTEM=$sysDir.osPath
        export ROOTFS=$tempDir.osPath/combined.squashfs
