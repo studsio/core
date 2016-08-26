@@ -70,7 +70,7 @@ class Build : BuildScript
       if (proc.run.join != 0) throw fatal("gcc failed")
 
       // indicate dest dir
-      log.info("  Write [$dest.osPath]")
+      log.info("    Write [$dest.osPath]")
     }
   }
 

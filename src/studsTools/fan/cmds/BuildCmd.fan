@@ -147,10 +147,9 @@ const class BuildCmd : Cmd
     Proc.run("mv $rootfs.osPath/srv/${sys.jre} $rootfs.osPath/srv/jre")
 
     // copy bins
-    // TODO FIXIT
     init := Pod.find("studsTools").file(`/bins/$sys.name/faninit`)
-    init.copyTo(rootfs + `finit`)
-    Proc.run("chmod +x $rootfs.osPath/finit")
+    init.copyTo(rootfs + `sbin/init`)
+    Proc.run("chmod +x $rootfs.osPath/sbin/init")
 
     // copy app
     (rootfs + `app/`).create
