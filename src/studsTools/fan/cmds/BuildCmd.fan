@@ -140,20 +140,28 @@ const class BuildCmd : Cmd
     // defaults
     fwupConf := sysDir + `images/fwup.conf`
 
-    // copy jre
+    // stage jre
     info("Stage rootfs...")
-    (rootfs + `srv/`).create
-    Proc.run("cp -R $jreDir.osPath $rootfs.osPath/srv")
-    Proc.run("mv $rootfs.osPath/srv/${sys.jre} $rootfs.osPath/srv/jre")
+    (rootfs + `app/`).create
+    Proc.run("cp -R $jreDir.osPath $rootfs.osPath/app")
+    Proc.run("mv $rootfs.osPath/app/${sys.jre} $rootfs.osPath/app/jre")
 
-    // copy bins
+    // stage faninit
     init := Pod.find("studsTools").file(`/bins/$sys.name/faninit`)
     init.copyTo(rootfs + `sbin/init`)
     Proc.run("chmod +x $rootfs.osPath/sbin/init")
 
-    // copy app
-    (rootfs + `app/`).create
-    // TODO FIXIT
+    // stage app
+    (rootfs + `app/fan/lib/fan/`).create
+    (rootfs + `app/fan/lib/java/`).create
+    (Env.cur.homeDir + `lib/java/sys.jar`).copyTo(rootfs + `app/fan/lib/java/sys.jar`)
+    Env? env := Env.cur
+    while (env != null)
+    {
+      pods := (env.workDir + `lib/fan/`).listFiles.findAll |f| { f.ext == "pod" }
+      pods.each |p| { p.copyTo(rootfs + `app/fan/lib/fan/$p.name`) }
+      env = env.parent
+    }
 
     // copy user rootfs-additions
     userRootfs := Env.cur.workDir + `src/rootfs-additions/`

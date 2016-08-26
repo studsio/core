@@ -254,16 +254,6 @@ static void find_release()
     strcpy(release_root_dir, ERLANG_ROOT_DIR);
 }
 
-static int has_erts_library_directory()
-{
-    // Nerves packages the ERTS libraries in with the release, but on
-    // systems that don't do this, we need to pass the directory in the Erlang
-    // commandline arguments. Currently, the directory is hardcoded in a
-    // similar way to ERLANG_ROOT_DIR, so we just check whether it exists.
-    // See https://github.com/nerves-project/erlinit/pull/4 for more details.
-    return is_directory(ERLANG_ERTS_LIB_DIR);
-}
-
 static void setup_environment()
 {
     debug("setup_environment");
@@ -297,7 +287,10 @@ static void setup_environment()
             envstr = strtok(NULL, ";");
         }
     }
-}
+
+    putenv("FAN_HOME=/app/fan");
+    putenv("JAVA_HOME=/app/jre");
+  }
 
 static int run_cmd(const char *cmd)
 {
@@ -380,11 +373,12 @@ static void child()
 
     // Start Erlang up
     char erlexec_path[ERLINIT_PATH_MAX];
-    sprintf(erlexec_path, "%s/bin/erlexec", erts_dir);
+    sprintf(erlexec_path, "/app/jre/bin/java");
     char *exec_path = erlexec_path;
 
     char *exec_argv[32];
     int arg = 0;
+    // TODO
     // If there's an alternate exec and it's set properly, then use it.
     char *alternate_exec_path = strtok(options.alternate_exec, " ");
     if (options.alternate_exec && alternate_exec_path && alternate_exec_path[0] != '\0') {
@@ -396,26 +390,13 @@ static void child()
 
         exec_argv[arg++] = erlexec_path;
     } else
-        exec_argv[arg++] = "erlexec";
+        exec_argv[arg++] = "java";
 
-    if (*sys_config) {
-        exec_argv[arg++] = "-config";
-        exec_argv[arg++] = sys_config;
-    }
-    if (*boot_path) {
-        exec_argv[arg++] = "-boot";
-        exec_argv[arg++] = boot_path;
-    }
-    if (*vmargs_path) {
-        exec_argv[arg++] = "-args_file";
-        exec_argv[arg++] = vmargs_path;
-    }
-    if (has_erts_library_directory()) {
-        exec_argv[arg++] = "-boot_var";
-        exec_argv[arg++] = "ERTS_LIB_DIR";
-        exec_argv[arg++] = ERLANG_ERTS_LIB_DIR;
-    }
-
+    // TODO
+    exec_argv[arg++] = "-cp";
+    exec_argv[arg++] = "/app/fan/lib/java/sys.jar";
+    exec_argv[arg++] = "fanx.tools.Fan";
+    exec_argv[arg++] = "fansh";
     exec_argv[arg] = NULL;
 
     if (options.verbose) {
@@ -430,7 +411,7 @@ static void child()
             debug("Arg: '%s'", exec_argv[i]);
     }
 
-    debug("Launching erl...");
+    debug("Launching fantom...");
     if (options.print_timing)
         warn("stop");
 
