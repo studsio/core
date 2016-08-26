@@ -98,3 +98,17 @@ the naming convention is `proj-version-target`:
      └─ studs/
          └─ releases/
              └─ myproj-1.0.0-rpi3.fw
+
+## **Running your Project**
+
+To run your freshly minted project we need to burn our firmware image onto a
+SD card:
+
+    $ fan studs burn
+
+This command will automatically detect the SD card in your host machine.  If you
+have more then one card, or if you have more than one firmware target, you will
+be prompted to select the desired choices.
+
+Once complete, insert card into the target device and power up.
+
