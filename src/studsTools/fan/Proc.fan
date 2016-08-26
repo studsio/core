@@ -13,24 +13,34 @@ using web
 **
 const class Proc
 {
+  **
   ** Invoke the command string and return 0 if child process exited
   ** normally. If child process returns a non-zero exit code and
   ** 'checked' is true, then abort this process with an error message.
   ** If 'checked' is 'false' then return the child process error code.
-  static Int run(Obj cmd, Bool checked := true)
+  **
+  ** By default, stdout will be redirected to /dev/null.  If 'stdout'
+  ** is specified and is an 'OutStream' redirect to stream.  If a
+  ** 'Buf' is passed, capture output in Buf.  Bufs will be flipped
+  ** and ready to read when this method returns.
+  **
+  ** Stderr is always sent to 'Env.cur.err'.
+  **
+  static Int run(Obj cmd, Obj? stdout := null, Bool checked := true)
   {
     c := cmd as Str[] ?: cmd.toStr.split
     p := Process(c)
-    p.out = null
+    p.out = (stdout as Buf)?.out ?: stdout
     r := p.run.join
     if (r != 0 && checked) Proc.abort("$p.command.first failed: $cmd")
+    if (stdout is Buf) ((Buf)stdout).seek(0)
     return r
   }
 
   ** Convenience for `run` to evaluate a bash script.
-  static Int bash(Str bash, Bool checked := true)
+  static Int bash(Str bash, Buf? out := null, Bool checked := true)
   {
-    run(["bash", "-c", bash])
+    run(["bash", "-c", bash], out, checked)
   }
 
   ** Print the 'msg' and exit with error code.
@@ -44,7 +54,7 @@ const class Proc
   ** will be written to 'out' prefixed with 'msg'.
   static Void download(Str msg, Uri uri, File target)
   {
-    tout   := target.out
+    out := target.out
     client := WebClient(uri)
     try
     {
@@ -58,8 +68,8 @@ const class Proc
 
       while ((read = in.readBuf(buf.clear, bsz)) != null)
       {
-        // pipe to temp file
-        tout.writeBuf(buf.flip)
+        // pipe to target file
+        out.writeBuf(buf.flip)
 
         // update progress
         cur += read
@@ -69,6 +79,6 @@ const class Proc
 
       Env.cur.out.printLine("")
     }
-    finally { client.close; tout.close }
+    finally { client.close; out.close }
   }
 }

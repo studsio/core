@@ -19,7 +19,7 @@ const class VersionCmd : Cmd
 
   override Int run()
   {
-    out.printLine(
+    info(
      "Studs $typeof.pod.version
       Copyright (c) 2016 Andy Frank")
     return 0

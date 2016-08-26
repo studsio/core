@@ -28,14 +28,11 @@ abstract const class Cmd
   ** Run this command and return exit code.
   abstract Int run()
 
-  ** Convenience for 'out.printLine'.
-  Void info(Str msg) { out.printLine(msg) }
+  ** Convenience for 'Env.cur.out.printLine'.
+  Void info(Str msg) { Env.cur.out.printLine(msg) }
 
-  ** Convenience for 'Env.cur.out'.
-  OutStream out() { Env.cur.out }
-
-  ** Convenience for 'Env.cur.err'.
-  OutStream err() { Env.cur.out }
+  ** Convenience for 'Env.cur.err.printLine'.
+  Void err(Str msg) { Env.cur.err.printLine(msg) }
 
   ** Conveniece for 'Env.cur.prompt'.
   Str? prompt(Str msg) { Env.cur.prompt(msg) }
@@ -67,7 +64,7 @@ abstract const class Cmd
   ** Print the given error message, show command help, then exit with error code.
   Void abort(Str msg)
   {
-    err.printLine(msg)
+    err(msg)
     showHelp
     Env.cur.exit(1)
   }

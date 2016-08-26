@@ -29,12 +29,12 @@ const class HelpCmd : Cmd
 
     if (c == null)
     {
-      err.printLine("unknown command: $name")
+      err("unknown command: $name")
       showOverview
       return 1
     }
 
-    out.printLine(
+    info(
       "studs $c.name $c.sig
 
        $c.helpShort")
@@ -42,8 +42,8 @@ const class HelpCmd : Cmd
     full := c.helpFull
     if (full != null)
     {
-      out.printLine("")
-      full.splitLines.each |s| { out.printLine("  $s") }
+      info("")
+      full.splitLines.each |s| { info("  $s") }
     }
 
     return 0
@@ -52,8 +52,8 @@ const class HelpCmd : Cmd
   ** Display help overview.
   internal Int showOverview()
   {
-    out.printLine("Usage: studs <cmd> [options]")
-    out.printLine("")
+    info("Usage: studs <cmd> [options]")
+    info("")
 
     // find max command name length
     clen := 0
@@ -62,12 +62,12 @@ const class HelpCmd : Cmd
 
     Cmd.list.each |c|
     {
-      out.printLine("  ${c.name.padr(clen)}  $c.helpShort")
+      info("  ${c.name.padr(clen)}  $c.helpShort")
     }
 
-    out.printLine("")
-    out.printLine("Use \"studs help <cmd>\" for additional information on each command")
-    out.printLine("")
+    info("")
+    info("Use \"studs help <cmd>\" for additional information on each command")
+    info("")
     return 0
   }
 }
