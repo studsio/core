@@ -11,25 +11,6 @@ using build
 using web
 
 **
-** Toolchain spec
-**
-const class Toolchain
-{
-  new make(Str n, Str v)
-  {
-    this.name = n
-    this.version = Version(v)
-    // TODO: bbb/rpi3 version is not consisent with URI...
-    this.dir = Env.cur.workDir + `toolchains/nerves-${name}-v0.6.0/` //${version}/`
-    this.gcc = dir + `bin/` + (name.split('-')[0..3].join("-") + "-gcc").toUri
-  }
-  const Str name
-  const Version version
-  const File dir
-  const File gcc
-}
-
-**
 ** Build: faninit
 **
 class Build : BuildScript
@@ -75,14 +56,16 @@ class Build : BuildScript
       binDir.create
       dest := binDir + `faninit`
 
+      // TODO FIXIT: auto-check if repo out-of-date?
+      //   https://developer.github.com/v3/repos/commits/
+      //   https://github.com/nerves-project/erlinit
+      //   synced @ [Jun-23-2016] Fix Coverity errors -- 3c7a1134d20fc9823e52ac2ec94d7c5b9816576f
+
       // compile
       log.info("  Compile [faninit-$target]")
-      proc := Process([
-        tc.gcc.osPath,
-        "-Wall", "-Wextra", "-O2",
-        "src/faninit.c",
-        "-o", "$dest.osPath"
-      ])
+      opts := ["-Wall", "-Wextra", "-O2","-o", "$dest.osPath" ]
+      src  := (scriptDir + `src/`).listFiles.map |f| { "src/$f.name" }
+      proc := Process([tc.gcc.osPath].addAll(opts).addAll(src))
       proc.dir = scriptDir
       if (proc.run.join != 0) throw fatal("gcc failed")
 
@@ -122,4 +105,23 @@ class Build : BuildScript
     }
     finally { client.close; out.close }
   }
+}
+
+**
+** Toolchain spec
+**
+const class Toolchain
+{
+  new make(Str n, Str v)
+  {
+    this.name = n
+    this.version = Version(v)
+    // TODO: bbb/rpi3 version is not consisent with URI...
+    this.dir = Env.cur.workDir + `toolchains/nerves-${name}-v0.6.0/` //${version}/`
+    this.gcc = dir + `bin/` + (name.split('-')[0..3].join("-") + "-gcc").toUri
+  }
+  const Str name
+  const Version version
+  const File dir
+  const File gcc
 }

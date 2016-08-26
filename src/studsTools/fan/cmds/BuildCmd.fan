@@ -48,11 +48,11 @@ const class BuildCmd : Cmd
       sys := System.find(t)
       installSystem(sys)
       buildJre(sys)
-      buildFw(sys)
+      assemble(sys)
     }
 
     // clean up after ourselves
-    tempDelete
+    //tempDelete
     return 0
   }
 
@@ -121,7 +121,7 @@ const class BuildCmd : Cmd
   }
 
   ** Assemble firmware image for target.
-  Void buildFw(System sys)
+  Void assemble(System sys)
   {
     // dir setup
     jreDir := Env.cur.workDir + `studs/jres/$sys.jre/`
@@ -145,6 +145,12 @@ const class BuildCmd : Cmd
     (rootfs + `srv/`).create
     Proc.run("cp -R $jreDir.osPath $rootfs.osPath/srv")
     Proc.run("mv $rootfs.osPath/srv/${sys.jre} $rootfs.osPath/srv/jre")
+
+    // copy bins
+    // TODO FIXIT
+    init := Pod.find("studsTools").file(`/bins/$sys.name/faninit`)
+    init.copyTo(rootfs + `finit`)
+    Proc.run("chmod +x $rootfs.osPath/finit")
 
     // copy app
     (rootfs + `app/`).create

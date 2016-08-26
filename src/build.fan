@@ -20,6 +20,7 @@ class Build : BuildGroup
   {
     childrenScripts =
     [
+      `faninit/build.fan`,
       `studs/build.fan`,
       `studsTools/build.fan`,
     ]
