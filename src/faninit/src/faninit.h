@@ -44,22 +44,22 @@
 #define ERLINIT_PATH_MAX 1024
 
 struct erlinit_options {
-    int verbose;
-    int print_timing;
-    int unintentional_exit_cmd; // Invoked when erlang exits. See linux/reboot.h for options
-    int fatal_reboot_cmd;       // Invoked on fatal() log message. See linux/reboot.h for options
-    int warn_unused_tty;
-    char *controlling_terminal;
-    char *alternate_exec;
-    char *uniqueid_exec;
-    char *hostname_pattern;
-    char *additional_env;
-    char *release_search_path;
-    char *extra_mounts;
-    char *run_on_exit;
-    char *pre_run_exec;
-    int uid;
-    int gid;
+  int verbose;
+  int print_timing;
+  int unintentional_exit_cmd; // Invoked when erlang exits. See linux/reboot.h for options
+  int fatal_reboot_cmd;       // Invoked on fatal() log message. See linux/reboot.h for options
+  int warn_unused_tty;
+  char *controlling_terminal;
+  char *alternate_exec;
+  char *uniqueid_exec;
+  char *hostname_pattern;
+  char *additional_env;
+  char *release_search_path;
+  char *extra_mounts;
+  char *run_on_exit;
+  char *pre_run_exec;
+  int uid;
+  int gid;
 };
 
 extern struct erlinit_options options;
