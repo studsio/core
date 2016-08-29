@@ -26,44 +26,22 @@ class Build : BuildScript
   Void compile()
   {
     log.info("compile [faninit]")
-
     toolchains.each |tc, target|
     {
       // check if we need to install toolchain
-      if (!tc.dir.exists)
-      {
-        // download
-        log.info("  InstallToolchain [$tc.name]")
-        uri := ("https://github.com/nerves-project/nerves-toolchain/releases/download/" +
-                "v${tc.version}/nerves-${tc.name}-v${tc.version}.tar.xz").toUri
-        tar := Env.cur.workDir + `$uri.name`
-        download("    Downloading", uri, tar)
-
-        // untar
-        log.info("    Untar")
-        dir := Env.cur.workDir + `toolchains/`
-        dir.create
-        proc := Process(["tar", "xf", tar.osPath, "-C", dir.osPath])
-        proc.out = null
-        if (proc.run.join != 0) throw fatal("tar failed")
-
-        // cleanup
-        tar.delete
-      }
+      if (!tc.dir.exists) installToolchain(tc)
 
       // make sure studTools target dir exists
       binDir := Env.cur.workDir + `src/studsTools/bins/$target/`
       binDir.create
       dest := binDir + `faninit`
 
-      // TODO FIXIT: auto-check if repo out-of-date?
-      //   https://developer.github.com/v3/repos/commits/
-      //   https://github.com/nerves-project/erlinit
-      //   synced @ [Jun-23-2016] Fix Coverity errors -- 3c7a1134d20fc9823e52ac2ec94d7c5b9816576f
+      // TODO: pull in version
+      //   -DPROGRAM_VERSION=$(VERSION)
 
       // compile
       log.info("  Compile [faninit-$target]")
-      opts := ["-Wall", "-Wextra", "-O2","-o", "$dest.osPath" ]
+      opts := ["-Wall", "-Wextra", "-O2", "-o", "$dest.osPath" ]
       src  := (scriptDir + `src/`).listFiles.map |f| { "src/$f.name" }
       proc := Process([tc.gcc.osPath].addAll(opts).addAll(src))
       proc.dir = scriptDir
@@ -72,6 +50,28 @@ class Build : BuildScript
       // indicate dest dir
       log.info("    Write [$dest.osPath]")
     }
+  }
+
+  ** Install toolchain
+  private Void installToolchain(Toolchain tc)
+  {
+    // download
+    log.info("  InstallToolchain [$tc.name]")
+    uri := ("https://github.com/nerves-project/nerves-toolchain/releases/download/" +
+            "v${tc.version}/nerves-${tc.name}-v${tc.version}.tar.xz").toUri
+    tar := Env.cur.workDir + `$uri.name`
+    download("    Downloading", uri, tar)
+
+    // untar
+    log.info("    Untar")
+    dir := Env.cur.workDir + `toolchains/`
+    dir.create
+    proc := Process(["tar", "xf", tar.osPath, "-C", dir.osPath])
+    proc.out = null
+    if (proc.run.join != 0) throw fatal("tar failed")
+
+    // cleanup
+    tar.delete
   }
 
   ** Download content from URI and pipe to given file. Progress
