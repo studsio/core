@@ -40,10 +40,14 @@ static void setup_environment()
   putenv("PATH=/usr/sbin:/usr/bin:/sbin:/bin");
   putenv("TERM=vt100");
 
-  // Java/Fantom environment
-  // TODO FIXIT
-  putenv("FAN_HOME=/app/fan");
-  putenv("JAVA_HOME=/app/jre");
+  // FAN_HOME
+  char *envvar;
+  OK_OR_FATAL(asprintf(&envvar, "FAN_HOME=%s", FAN_HOME), "asprintf failed");
+  putenv(envvar);
+
+  // JAVA_HOME
+  OK_OR_FATAL(asprintf(&envvar, "JAVA_HOME=%s", JAVA_HOME), "asprintf failed");
+  putenv(envvar);
 
   // Set any additional environment variables from the user
   if (options.additional_env) {
@@ -130,12 +134,16 @@ static void child()
   int arg = 0;
   exec_argv[arg++] = "java";
 
+  // sys.jar path
+  char sys_jar_path[FANINIT_PATH_MAX];
+  sprintf(sys_jar_path, "%s/lib/java/sys.jar", FAN_HOME);
+
   // get main to boot
   const char *fan_main = get_prop(props, "main", NULL);
   if (fan_main == NULL) fatal("main prop not defined");
 
   exec_argv[arg++] = "-cp";
-  exec_argv[arg++] = "/app/fan/lib/java/sys.jar";
+  exec_argv[arg++] = sys_jar_path;
   exec_argv[arg++] = "fanx.tools.Fan";
   exec_argv[arg++] = strdup(fan_main);
   exec_argv[arg] = NULL;
