@@ -151,6 +151,21 @@ const class BuildCmd : Cmd
     init.copyTo(rootfs + `sbin/init`)
     Proc.run("chmod +x $rootfs.osPath/sbin/init")
 
+    // TODO FIXIT
+    initProps := rootfs + `etc/faninit.props`
+    initProps.out.printLine(
+      """# Fantom entry point which is invoked when faninit boots
+         # The acceptable options are the same as 'fan':
+         #   http://fantom.org/doc/docTools/Fan#pods
+         main=fansh
+
+         # Force the controlling terminal (ttyAMA0, tty1, etc.)
+         tty.console=tty0
+
+         # If 'true' and more than one tty are available, warn if the user
+         # is looking at the wrong one
+         tty.warnUnused=true""").flush.sync.close
+
     // stage app
     (rootfs + `app/fan/lib/fan/`).create
     (rootfs + `app/fan/lib/java/`).create

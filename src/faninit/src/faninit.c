@@ -108,61 +108,60 @@ static void drop_privileges()
 
 static void child()
 {
+  // setup system
   setup_filesystems();
-
-  // Locate everything needed to configure the environment
-  // and pass to erlexec.
-  // TODO
-
-  // Set up the environment for running erlang.
   setup_environment();
-
-  // Set up the minimum networking we need for Erlang.
   setup_networking();
 
   // Warn the user if they're on an inactive TTY
-  if (options.warn_unused_tty)
-    warn_unused_tty();
+  if (options.warn_unused_tty) warn_unused_tty();
 
   // Optionally run a "pre-run" program
-  if (options.pre_run_exec)
-    run_cmd(options.pre_run_exec);
+  if (options.pre_run_exec) run_cmd(options.pre_run_exec);
 
   // Optionally drop privileges
   drop_privileges();
 
-  // Start Erlang up
-  char erlexec_path[FANINIT_PATH_MAX];
-  sprintf(erlexec_path, "/app/jre/bin/java");
-  char *exec_path = erlexec_path;
-
+  // build up jvm command line
+  char fanexec_path[FANINIT_PATH_MAX];
+  sprintf(fanexec_path, "%s/bin/java", JAVA_HOME);
+  char *exec_path = fanexec_path;
   char *exec_argv[32];
   int arg = 0;
   exec_argv[arg++] = "java";
 
-  // TODO
+  // get main to boot
+  const char *fan_main = get_prop(props, "main", NULL);
+  if (fan_main == NULL) fatal("main prop not defined");
+
   exec_argv[arg++] = "-cp";
   exec_argv[arg++] = "/app/fan/lib/java/sys.jar";
   exec_argv[arg++] = "fanx.tools.Fan";
-  exec_argv[arg++] = "fansh";
+  exec_argv[arg++] = strdup(fan_main);
   exec_argv[arg] = NULL;
 
-  if (options.verbose) {
-    // Dump the environment and commandline
+  if (options.verbose)
+  {
+    // dump env
     extern char **environ;
     char** env = environ;
-    while (*env != 0)
-        debug("Env: '%s'", *env++);
+    while (*env != 0) debug("Env: '%s'", *env++);
 
+    // dump args
     int i;
-    for (i = 0; i < arg; i++)
+    for (i=0; i<arg; i++)
       debug("Arg: '%s'", exec_argv[i]);
+
+    // dump faninit props
+    struct prop *p = props;
+    for (; p !=NULL; p=p->next)
+      debug("Prop: '%s=%s'", p->name, p->val);
   }
 
-  debug("Launching fantom...");
-  if (options.print_timing)
-    warn("stop");
+  debug("Launching Fantom...");
+  if (options.print_timing) warn("stop");
 
+  // start jvm
   execvp(exec_path, exec_argv);
 
   // execvpe is not supposed to return
@@ -243,13 +242,9 @@ static void kill_all()
 
 int main(int argc, char *argv[])
 {
-#ifndef UNITTEST
+  // sanity check
   if (getpid() != 1)
     fatal("Refusing to run since not pid 1");
-#else
-  if (getpid() == 1)
-    fatal("Trying to run unit test version of erlinit for real. This won't work.");
-#endif
 
   // Merge the config file and the command line arguments
   static int merged_argc;
@@ -267,6 +262,10 @@ int main(int argc, char *argv[])
   int i;
   for (i = 0; i < merged_argc; i++)
       debug("merged argv[%d]=%s", i, merged_argv[i]);
+
+  // read faninit.props
+  debug("read_props");
+  props = read_props(FANINIT_PROPS);
 
   // Mount /dev, /proc and /sys
   setup_pseudo_filesystems();

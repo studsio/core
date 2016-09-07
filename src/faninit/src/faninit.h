@@ -21,6 +21,7 @@
 #define str(s) #s
 #define PROGRAM_VERSION_STR xstr(PROGRAM_VERSION)
 
+#define FANINIT_PROPS "/etc/faninit.props"
 #define FAN_HOME "/app/fan"
 #define JAVA_HOME "/app/jre"
 
@@ -37,10 +38,18 @@
 // for erlinit use.
 #define FANINIT_PATH_MAX 1024
 
+struct prop {
+  const char* name;
+  const char* val;
+  struct prop* next;
+};
+
+struct prop* props;
+
 struct erlinit_options {
   int verbose;
   int print_timing;
-  int unintentional_exit_cmd; // Invoked when erlang exits. See linux/reboot.h for options
+  int unintentional_exit_cmd; // Invoked when jvm exits. See linux/reboot.h for options
   int fatal_reboot_cmd;       // Invoked on fatal() log message. See linux/reboot.h for options
   int warn_unused_tty;
   char *controlling_terminal;
@@ -65,6 +74,10 @@ void fatal(const char *fmt, ...);
 
 #define OK_OR_FATAL(WORK, MSG, ...) do { if ((WORK) < 0) fatal(MSG, ## __VA_ARGS__); } while (0)
 #define OK_OR_WARN(WORK, MSG, ...) do { if ((WORK) < 0) warn(MSG, ## __VA_ARGS__); } while (0)
+
+// Props
+struct prop* read_props(const char* filename);
+const char* get_prop(struct prop* props, const char* name, const char* def);
 
 // Configuration loading
 void merge_config(int argc, char *argv[], int *merged_argc, char **merged_argv);
