@@ -50,9 +50,11 @@ static void setup_environment()
   putenv(envvar);
 
   // Set any additional environment variables from the user
-  if (options.additional_env) {
+  if (options.additional_env)
+  {
     char *envstr = strtok(options.additional_env, ";");
-    while (envstr) {
+    while (envstr)
+    {
       putenv(strdup(envstr));
       envstr = strtok(NULL, ";");
     }
@@ -64,7 +66,8 @@ static int run_cmd(const char *cmd)
   debug("run_cmd '%s'", cmd);
 
   pid_t pid = fork();
-  if (pid == 0) {
+  if (pid == 0)
+  {
     // child
     char *cmd_copy = strdup(cmd);
     char *exec_path = strtok(cmd_copy, " ");
@@ -72,19 +75,21 @@ static int run_cmd(const char *cmd)
     int arg = 0;
 
     exec_argv[arg++] = exec_path;
-    while ((exec_argv[arg] = strtok(NULL, " ")) != NULL)
-        arg++;
+    while ((exec_argv[arg] = strtok(NULL, " ")) != NULL) arg++;
+
     exec_argv[arg] = 0;
-    if (exec_path)
-        execvp(exec_path, exec_argv);
+    if (exec_path) execvp(exec_path, exec_argv);
 
     // Not supposed to reach here.
     warn("execvp '%s' failed", cmd);
     exit(EXIT_FAILURE);
-  } else {
+  }
+  else
+  {
     // parent
     int status;
-    if (waitpid(pid, &status, 0) != pid) {
+    if (waitpid(pid, &status, 0) != pid)
+    {
       warn("waitpid");
       return -1;
     }
@@ -94,19 +99,16 @@ static int run_cmd(const char *cmd)
 
 static void drop_privileges()
 {
-  if (options.gid > 0) {
+  if (options.gid > 0)
+  {
     debug("setting gid to %d", options.gid);
-
-#ifndef UNITTEST
     OK_OR_FATAL(setgid(options.gid), "setgid failed");
-#endif
   }
-  if (options.uid > 0) {
-    debug("setting uid to %d", options.uid);
 
-#ifndef UNITTEST
+  if (options.uid > 0)
+  {
+    debug("setting uid to %d", options.uid);
     OK_OR_FATAL(setuid(options.uid), "setuid failed");
-#endif
   }
 }
 
@@ -208,21 +210,22 @@ static void unregister_signal_handlers()
 
 void signal_handler(int signum)
 {
-  switch (signum) {
-  case SIGPWR:
-  case SIGUSR1:
-    desired_reboot_cmd = LINUX_REBOOT_CMD_HALT;
-    break;
-  case SIGTERM:
-    desired_reboot_cmd = LINUX_REBOOT_CMD_RESTART;
-    break;
-  case SIGUSR2:
-    desired_reboot_cmd = LINUX_REBOOT_CMD_POWER_OFF;
-    break;
-  default:
-    warn("received unexpected signal %d", signum);
-    desired_reboot_cmd = LINUX_REBOOT_CMD_RESTART;
-    break;
+  switch (signum)
+  {
+    case SIGPWR:
+    case SIGUSR1:
+      desired_reboot_cmd = LINUX_REBOOT_CMD_HALT;
+      break;
+    case SIGTERM:
+      desired_reboot_cmd = LINUX_REBOOT_CMD_RESTART;
+      break;
+    case SIGUSR2:
+      desired_reboot_cmd = LINUX_REBOOT_CMD_POWER_OFF;
+      break;
+    default:
+      warn("received unexpected signal %d", signum);
+      desired_reboot_cmd = LINUX_REBOOT_CMD_RESTART;
+      break;
   }
 
   // Handling the signal is a one-time action. Now we're done.
@@ -233,7 +236,6 @@ static void kill_all()
 {
   debug("kill_all");
 
-#ifndef UNITTEST
   // Kill processes the nice way
   kill(-1, SIGTERM);
   warn("Sending SIGTERM to all processes");
@@ -245,7 +247,6 @@ static void kill_all()
   kill(-1, SIGKILL);
   warn("Sending SIGKILL to all processes");
   sync();
-#endif
 }
 
 int main(int argc, char *argv[])
@@ -269,7 +270,7 @@ int main(int argc, char *argv[])
   debug("cmdline argc=%d, merged argc=%d", argc, merged_argc);
   int i;
   for (i = 0; i < merged_argc; i++)
-      debug("merged argv[%d]=%s", i, merged_argv[i]);
+    debug("merged argv[%d]=%s", i, merged_argv[i]);
 
   // read faninit.props
   debug("read_props");
@@ -285,7 +286,8 @@ int main(int argc, char *argv[])
   // Do most of the work in a child process so that if it
   // crashes, we can handle the crash.
   pid_t pid = fork();
-  if (pid == 0) {
+  if (pid == 0)
+  {
     child();
     exit(1);
   }
@@ -295,21 +297,25 @@ int main(int argc, char *argv[])
 
   // Wait on Erlang until it exits or we receive a signal.
   int is_intentional_exit = 0;
-  if (waitpid(pid, 0, 0) < 0) {
+  if (waitpid(pid, 0, 0) < 0)
+  {
     debug("signal or error terminated waitpid. clean up");
-
-    if (desired_reboot_cmd != 0) {
+    if (desired_reboot_cmd != 0)
+    {
       // A signal is sent from commands like poweroff, reboot, and halt
       // This is usually intentional.
       is_intentional_exit = 1;
-    } else {
+    }
+    else
+    {
       // If waitpid returns error and it wasn't from a handled signal, print a warning.
       warn("unexpected error from waitpid(): %s", strerror(errno));
       desired_reboot_cmd = options.unintentional_exit_cmd;
     }
-  } else {
+  }
+  else
+  {
     debug("Java VM exited");
-
     desired_reboot_cmd = options.unintentional_exit_cmd;
   }
 
@@ -327,8 +333,8 @@ int main(int argc, char *argv[])
   sync();
 
   // See if the user wants us to halt or poweroff on an "unintentional" exit
-  if (!is_intentional_exit &&
-        options.unintentional_exit_cmd != LINUX_REBOOT_CMD_RESTART) {
+  if (!is_intentional_exit && options.unintentional_exit_cmd != LINUX_REBOOT_CMD_RESTART)
+  {
     // Sometimes Erlang exits on initialization. Hanging on exit
     // makes it easier to debug these cases since messages don't
     // keep scrolling on the screen.
@@ -338,10 +344,8 @@ int main(int argc, char *argv[])
     sleep(5);
   }
 
-#ifndef UNITTEST
   // Reboot/poweroff/halt
   reboot(desired_reboot_cmd);
-#endif
 
   // If we get here, oops the kernel.
   return 0;

@@ -98,4 +98,3 @@ void set_ctty();
 void warn_unused_tty();
 
 #endif // FANINIT_H
-
