@@ -6,7 +6,7 @@
 //   22 Aug 2016  Andy Frank  Creation
 //
 
-using web
+using util
 
 **
 ** Build project.
@@ -24,6 +24,9 @@ const class BuildCmd : Cmd
 
   override Int run()
   {
+    // sanity check
+    if (Env.cur isnot PathEnv) abort("Not a PathEnv")
+
     f := Env.cur.workDir + `studs.props`
     if (!f.exists) abort("project not found: $Env.cur.workDir.osPath")
 
@@ -151,32 +154,25 @@ const class BuildCmd : Cmd
     init.copyTo(rootfs + `sbin/init`)
     Proc.run("chmod +x $rootfs.osPath/sbin/init")
 
-    // TODO FIXIT
-    initProps := rootfs + `etc/faninit.props`
-    initProps.out.printLine(
-      """# Fantom entry point which is invoked when faninit boots
-         # The acceptable options are the same as 'fan':
-         #   http://fantom.org/doc/docTools/Fan#pods
-         main=fansh
-
-         # Force the controlling terminal (ttyAMA0, tty1, etc.)
-         tty.console=tty0
-
-         # If 'true' and more than one tty are available, warn if the user
-         # is looking at the wrong one
-         tty.warnUnused=true""").flush.sync.close
+    // faninit.props
+    initProps := Env.cur.workDir + `faninit.props`
+    initProps.copyTo(rootfs + `etc/faninit.props`)
 
     // stage app
     (rootfs + `app/fan/lib/fan/`).create
     (rootfs + `app/fan/lib/java/`).create
     (Env.cur.homeDir + `lib/java/sys.jar`).copyTo(rootfs + `app/fan/lib/java/sys.jar`)
-    Env? env := Env.cur
-    while (env != null)
+    (Env.cur as PathEnv).path.each |path|
     {
-      pods := (env.workDir + `lib/fan/`).listFiles.findAll |f| { f.ext == "pod" }
+      pods := (path + `lib/fan/`).listFiles.findAll |f| { f.name != "studsTools" && f.ext == "pod" }
       pods.each |p| { p.copyTo(rootfs + `app/fan/lib/fan/$p.name`) }
-      env = env.parent
     }
+
+    // tz database
+    tzData  := Env.cur.homeDir + `etc/sys/timezones.ftz`
+    tzAlias := Env.cur.homeDir + `etc/sys/timezone-aliases.props`
+    tzData.copyTo(rootfs + `app/fan/etc/sys/$tzData.name`)
+    tzAlias.copyTo(rootfs + `app/fan/etc/sys/$tzAlias.name`)
 
     // copy user rootfs-additions
     userRootfs := Env.cur.workDir + `src/rootfs-additions/`

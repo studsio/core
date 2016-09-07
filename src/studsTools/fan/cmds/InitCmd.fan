@@ -42,10 +42,11 @@ const class InitCmd : Cmd
     (dir + `studs/systems/`).create
     (dir + `studs/releases/`).create
     fanProps := test ? `fan-test.propsx` : `fan.propsx`
-    apply(typeof.pod.file(`/res/$fanProps`),    macros, dir + `fan.props`)
-    apply(typeof.pod.file(`/res/studs.propsx`), macros, dir + `studs.props`)
-    apply(typeof.pod.file(`/res/build.fanx`),   macros, dir + `src/build.fan`, true)
-    apply(typeof.pod.file(`/res/Main.fanx`),    macros, dir + `src/fan/Main.fan`)
+    apply(typeof.pod.file(`/res/$fanProps`),      macros, dir + `fan.props`)
+    apply(typeof.pod.file(`/res/faninit.propsx`), macros, dir + `faninit.props`)
+    apply(typeof.pod.file(`/res/studs.propsx`),   macros, dir + `studs.props`)
+    apply(typeof.pod.file(`/res/build.fanx`),     macros, dir + `src/build.fan`, true)
+    apply(typeof.pod.file(`/res/Main.fanx`),      macros, dir + `src/fan/Main.fan`)
     return 0
   }
 

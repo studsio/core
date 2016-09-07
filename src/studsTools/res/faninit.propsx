@@ -1,0 +1,21 @@
+# Fantom entry point which is invoked when faninit boots
+# The acceptable options are the same as 'fan':
+#   http://fantom.org/doc/docTools/Fan#pods
+main={{proj.name}}
+
+# Enable debug logging
+debug=true
+
+# Action to take when JVM exits:
+#   'hang'      hang the board rather than rebooting
+#   'reboot'    reboot board
+#   'poweroff'  power off board; This is similar to 'hang' except it's for
+#               platforms without a reset button or an easy way to restart
+exit.action=hang
+
+# Optionally run a program after JVM exits
+exit.run=/bin/sh
+
+# Action to take when a fatal error is detected in faninint
+# See 'exit.action' for options
+fatal.action=hang
