@@ -28,6 +28,47 @@
 
 static int desired_reboot_cmd = 0; // 0 = no request to reboot
 
+static void read_faninit_props()
+{
+  debug("read_props");
+  props = read_props(FANINIT_PROPS);
+
+  struct prop *p = props;
+  for (; p != NULL; p = p->next)
+  {
+    if (strcmp(p->name, "debug") == 0)
+    {
+      // enable debugging
+      if (strcmp(p->val, "true") == 0) options.verbose = 1;
+    }
+    else if (strcmp(p->name, "exit.action") == 0)
+    {
+      // set exit.action
+      if (strcmp(p->val, "hang") == 0)
+        options.unintentional_exit_cmd = LINUX_REBOOT_CMD_HALT;
+      else if (strcmp(p->val, "reboot") == 0)
+        options.unintentional_exit_cmd = LINUX_REBOOT_CMD_RESTART;
+      else if (strcmp(p->val, "poweroff") == 0)
+        options.unintentional_exit_cmd = LINUX_REBOOT_CMD_POWER_OFF;
+    }
+    else if (strcmp(p->name, "fatal.action") == 0)
+    {
+      // set exit.action
+      if (strcmp(p->val, "hang") == 0)
+        options.fatal_reboot_cmd = LINUX_REBOOT_CMD_HALT;
+      else if (strcmp(p->val, "reboot") == 0)
+        options.fatal_reboot_cmd = LINUX_REBOOT_CMD_RESTART;
+      else if (strcmp(p->val, "poweroff") == 0)
+        options.fatal_reboot_cmd = LINUX_REBOOT_CMD_POWER_OFF;
+    }
+    else if (strcmp(p->name, "exit.run") == 0)
+    {
+      // set exit.run
+      options.run_on_exit = strdup(p->val);
+    }
+  }
+}
+
 static void setup_environment()
 {
   debug("setup_environment");
@@ -262,6 +303,11 @@ int main(int argc, char *argv[])
 
   parse_args(merged_argc, merged_argv);
 
+  // TODO FIXIT: read_faninit_props too late to set debug flag
+  // need to move up earlier in startup process when erloptions
+  // support is fully replaced
+  options.verbose = 1;
+
   if (options.print_timing)
     warn("start");
 
@@ -273,8 +319,7 @@ int main(int argc, char *argv[])
     debug("merged argv[%d]=%s", i, merged_argv[i]);
 
   // read faninit.props
-  debug("read_props");
-  props = read_props(FANINIT_PROPS);
+  read_faninit_props();
 
   // Mount /dev, /proc and /sys
   setup_pseudo_filesystems();
