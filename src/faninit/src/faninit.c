@@ -26,238 +26,13 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 
-static char erts_dir[ERLINIT_PATH_MAX];
-static char release_info_dir[ERLINIT_PATH_MAX];
-static char release_root_dir[ERLINIT_PATH_MAX];
-static char boot_path[ERLINIT_PATH_MAX];
-static char sys_config[ERLINIT_PATH_MAX];
-static char vmargs_path[ERLINIT_PATH_MAX];
-
 static int desired_reboot_cmd = 0; // 0 = no request to reboot
-
-static int starts_with(const char *str, const char *what)
-{
-  return strstr(str, what) == str;
-}
-
-static int erts_filter(const struct dirent *d)
-{
-  return starts_with(d->d_name, "erts-");
-}
-
-static void find_erts_directory()
-{
-  debug("find_erts_directory");
-  struct dirent **namelist;
-  int n = scandir(ERLANG_ROOT_DIR,
-                  &namelist,
-                  erts_filter,
-                  NULL);
-  if (n < 0)
-      fatal("Erlang installation not found. Check that %s exists", ERLANG_ROOT_DIR);
-  else if (n == 0)
-      fatal("erts not found. Check that erlang was installed to %s", ERLANG_ROOT_DIR);
-  else if (n > 1)
-      fatal("Found multiple erts directories. Clean up the installation.");
-
-  sprintf(erts_dir, "%s/%s", ERLANG_ROOT_DIR, namelist[0]->d_name);
-
-  free(namelist[0]);
-  free(namelist);
-}
-
-static int file_exists(const char *path)
-{
-  struct stat sb;
-  return stat(path, &sb) == 0;
-}
-
-static int dotfile_filter(const struct dirent *d)
-{
-  return strcmp(d->d_name, ".") != 0 &&
-          strcmp(d->d_name, "..") != 0;
-}
-
-static int bootfile_filter(const struct dirent *d)
-{
-  // Look for files that end with .boot
-  return strstr(d->d_name, ".boot") != NULL;
-}
-
-static void find_sys_config()
-{
-  debug("find_sys_config");
-  sprintf(sys_config, "%s/sys.config", release_info_dir);
-  if (!file_exists(sys_config)) {
-    warn("%s not found?", sys_config);
-    *sys_config = '\0';
-  }
-}
-
-static void find_vm_args()
-{
-  debug("find_vm_args");
-  sprintf(vmargs_path, "%s/vm.args", release_info_dir);
-  if (!file_exists(vmargs_path)) {
-    warn("%s not found?", vmargs_path);
-    *vmargs_path = '\0';
-  }
-}
-
-static void find_boot_path()
-{
-  debug("find_boot_path");
-  struct dirent **namelist;
-  int n = scandir(release_info_dir,
-                  &namelist,
-                  bootfile_filter,
-                  NULL);
-  if (n <= 0)
-      fatal("No boot file found in %s.", release_info_dir);
-
-  if (n > 1)
-      warn("Found more than one boot file. Using %s.", namelist[0]->d_name);
-
-  // Use the first
-  sprintf(boot_path, "%s/%s", release_info_dir, namelist[0]->d_name);
-
-  // Strip off the .boot since that's what erl wants.
-  char *dot = strrchr(boot_path, '.');
-  *dot = '\0';
-
-  // Free everything
-  while (--n >= 0)
-    free(namelist[n]);
-  free(namelist);
-}
-
-static int is_directory(const char *path)
-{
-  struct stat sb;
-  return stat(path, &sb) == 0 &&
-          S_ISDIR(sb.st_mode);
-}
-
-static int find_release_info_dir(const char *releases_dir,
-                                 char *info_dir)
-{
-  struct dirent **namelist;
-  int n = scandir(releases_dir,
-                  &namelist,
-                  dotfile_filter,
-                  NULL);
-  int i;
-  int success = 0;
-  for (i = 0; i < n; i++) {
-    char dirpath[ERLINIT_PATH_MAX];
-    sprintf(dirpath, "%s/%s", releases_dir, namelist[i]->d_name);
-
-    // Pick the first directory. There should only be one directory
-    // anyway.
-    if (is_directory(dirpath)) {
-      strcpy(info_dir, dirpath);
-      success = 1;
-      break;
-    }
-  }
-
-  if (n >= 0) {
-    for (i = 0; i < n; i++)
-      free(namelist[i]);
-    free(namelist);
-  }
-
-  return success;
-}
-
-static int find_release_dirs(const char *base,
-                             int depth,
-                             char *root_dir,
-                             char *info_dir)
-{
-  // The "releases" directory could either be in the current folder
-  // or one directory immediately below. For example,
-  //
-  // <base/releases/<release_version>
-  //
-  // -or-
-  //
-  // <base>/<release_name>/releases/<release_version>
-  //
-  // Check for both. On return, root_dir is set to the path containing the
-  // releases directory, and info_dir is set to one of the paths above.
-  int success = 0;
-  struct dirent **namelist;
-  int n = scandir(base,
-                  &namelist,
-                  dotfile_filter,
-                  NULL);
-  int i;
-  for (i = 0; i < n; i++) {
-    char dirpath[ERLINIT_PATH_MAX];
-    sprintf(dirpath, "%s/%s", base, namelist[i]->d_name);
-
-    if (!is_directory(dirpath))
-        continue;
-
-    if (strcmp(namelist[i]->d_name, "releases") == 0 &&
-          find_release_info_dir(dirpath, info_dir)) {
-      strcpy(root_dir, base);
-      success = 1;
-      break;
-    }
-
-    // Recurse to the next directory down if allowed.
-    if (depth && find_release_dirs(dirpath, depth - 1, root_dir, info_dir)) {
-      success = 1;
-      break;
-    }
-  }
-
-  if (n >= 0) {
-    for (i = 0; i < n; i++)
-      free(namelist[i]);
-    free(namelist);
-  }
-
-  return success;
-}
-
-static void find_release()
-{
-  debug("find_release");
-
-  if (options.release_search_path == NULL)
-      options.release_search_path = strdup(DEFAULT_RELEASE_ROOT_DIR);
-
-  // The user may specify several directories to be searched for
-  // releases. Pick the first one.
-  const char *search_path = strtok(options.release_search_path, ":");
-  while (search_path != NULL) {
-    if (find_release_dirs(search_path, 1, release_root_dir, release_info_dir)) {
-      debug("Using release in %s.", release_info_dir);
-
-      find_sys_config();
-      find_vm_args();
-      find_boot_path();
-
-      return;
-    }
-
-    warn("No release found in %s.", search_path);
-    search_path = strtok(NULL, ":");
-  }
-  *release_info_dir = '\0';
-  *sys_config = '\0';
-  *boot_path = '\0';
-
-  strcpy(release_root_dir, ERLANG_ROOT_DIR);
-}
 
 static void setup_environment()
 {
   debug("setup_environment");
-  // Set up the environment for running erlang.
+
+  // Set up the environment for running Fantom.
   putenv("HOME=/root");
 
   // PATH appears to only be needed for user convenience when running os:cmd/1
@@ -265,19 +40,10 @@ static void setup_environment()
   putenv("PATH=/usr/sbin:/usr/bin:/sbin:/bin");
   putenv("TERM=vt100");
 
-  // Erlang environment
-
-  // ROOTDIR points to the release unless it wasn't found.
-  char *envvar;
-  OK_OR_FATAL(asprintf(&envvar, "ROOTDIR=%s", release_root_dir), "asprintf failed");
-  putenv(envvar);
-
-  // BINDIR points to the erts bin directory.
-  OK_OR_FATAL(asprintf(&envvar, "BINDIR=%s/bin", erts_dir), "asprintf failed");
-  putenv(envvar);
-
-  putenv("EMU=beam");
-  putenv("PROGNAME=erl");
+  // Java/Fantom environment
+  // TODO FIXIT
+  putenv("FAN_HOME=/app/fan");
+  putenv("JAVA_HOME=/app/jre");
 
   // Set any additional environment variables from the user
   if (options.additional_env) {
@@ -287,9 +53,6 @@ static void setup_environment()
       envstr = strtok(NULL, ";");
     }
   }
-
-  putenv("FAN_HOME=/app/fan");
-  putenv("JAVA_HOME=/app/jre");
 }
 
 static int run_cmd(const char *cmd)
@@ -349,8 +112,7 @@ static void child()
 
   // Locate everything needed to configure the environment
   // and pass to erlexec.
-  find_erts_directory();
-  find_release();
+  // TODO
 
   // Set up the environment for running erlang.
   setup_environment();
@@ -362,8 +124,6 @@ static void child()
   if (options.warn_unused_tty)
     warn_unused_tty();
 
-  OK_OR_FATAL(chdir(release_root_dir), "Cannot chdir to release directory (%s)", release_root_dir);
-
   // Optionally run a "pre-run" program
   if (options.pre_run_exec)
     run_cmd(options.pre_run_exec);
@@ -372,25 +132,13 @@ static void child()
   drop_privileges();
 
   // Start Erlang up
-  char erlexec_path[ERLINIT_PATH_MAX];
+  char erlexec_path[FANINIT_PATH_MAX];
   sprintf(erlexec_path, "/app/jre/bin/java");
   char *exec_path = erlexec_path;
 
   char *exec_argv[32];
   int arg = 0;
-  // TODO
-  // If there's an alternate exec and it's set properly, then use it.
-  char *alternate_exec_path = strtok(options.alternate_exec, " ");
-  if (options.alternate_exec && alternate_exec_path && alternate_exec_path[0] != '\0') {
-    exec_path = alternate_exec_path;
-    exec_argv[arg++] = exec_path;
-
-    while ((exec_argv[arg] = strtok(NULL, " ")) != NULL)
-      arg++;
-
-    exec_argv[arg++] = erlexec_path;
-  } else
-      exec_argv[arg++] = "java";
+  exec_argv[arg++] = "java";
 
   // TODO
   exec_argv[arg++] = "-cp";
@@ -553,7 +301,7 @@ int main(int argc, char *argv[])
       desired_reboot_cmd = options.unintentional_exit_cmd;
     }
   } else {
-    debug("Erlang VM exited");
+    debug("Java VM exited");
 
     desired_reboot_cmd = options.unintentional_exit_cmd;
   }

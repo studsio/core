@@ -21,14 +21,8 @@
 #define str(s) #s
 #define PROGRAM_VERSION_STR xstr(PROGRAM_VERSION)
 
-#define ERLANG_ROOT_DIR "/usr/lib/erlang"
-
-// If the system libraries exist on the target, they would
-// be found here. Note that Nerves strips this directory
-// since the system libraries are bundled with the release.
-#define ERLANG_ERTS_LIB_DIR ERLANG_ROOT_DIR "/lib"
-
-#define DEFAULT_RELEASE_ROOT_DIR "/srv/erlang"
+#define FAN_HOME "/app/fan"
+#define JAVA_HOME "/app/jre"
 
 // This is the maximum number of mounted filesystems that
 // is expected in a running system. It is used on shutdown
@@ -41,7 +35,7 @@
 // than pulling an arbitrary number in from linux/limits.h,
 // just define to something that should be trivially safe
 // for erlinit use.
-#define ERLINIT_PATH_MAX 1024
+#define FANINIT_PATH_MAX 1024
 
 struct erlinit_options {
   int verbose;
