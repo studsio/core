@@ -26,6 +26,7 @@ class Build : BuildScript
   Void compile()
   {
     log.info("compile [faninit]")
+    ver := config("buildVersion")
     toolchains.each |tc, target|
     {
       // check if we need to install toolchain
@@ -36,12 +37,9 @@ class Build : BuildScript
       binDir.create
       dest := binDir + `faninit`
 
-      // TODO: pull in version
-      //   -DPROGRAM_VERSION=$(VERSION)
-
       // compile
       log.info("  Compile [faninit-$target]")
-      opts := ["-Wall", "-Wextra", "-O2", "-o", "$dest.osPath" ]
+      opts := ["-Wall", "-Wextra", "-O2", "-o", "$dest.osPath", "-DPROGRAM_VERSION=$ver"]
       src  := (scriptDir + `src/`).listFiles.map |f| { "src/$f.name" }
       proc := Process([tc.gcc.osPath].addAll(opts).addAll(src))
       proc.dir = scriptDir
