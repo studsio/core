@@ -28,10 +28,14 @@ class Build : BuildPod
       "sys @{fan.depend}",
       "util @{fan.depend}",
       "concurrent @{fan.depend}",
+      "inet @{fan.depend}",
       "web @{fan.depend}",
       "webmod @{fan.depend}",
       "wisp @{fan.depend}"]
-    srcDirs = [`fan/`, `test/`]
+    srcDirs = [
+      `fan/`,
+      `fan/ntp/`,
+      `test/`]
     docSrc = true
   }
 }
