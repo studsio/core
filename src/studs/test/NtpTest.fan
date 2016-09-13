@@ -15,7 +15,7 @@ class NtpTest : Test
     offset := SntpClient.offset(IpAddr("time1.google.com"))
 
     // assume test host is relatively accurate :)
-    verify(offset > -100ms && offset < 100ms)
+    verify(offset > -5sec && offset < 5sec)
   }
 
   Void testNtpTimestamps()
