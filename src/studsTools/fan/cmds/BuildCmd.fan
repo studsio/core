@@ -33,6 +33,13 @@ const class BuildCmd : Cmd
     // make sure temp is clean
     tempClean
 
+    // find proj-meata
+    projMeta := Str:Str[:]
+    f.readProps.each |val,key|
+    {
+      if (key.startsWith("proj.")) projMeta[key] = val
+    }
+
     // find targets
     targets := Str[,]
     f.readProps.each |val,key|
@@ -51,7 +58,7 @@ const class BuildCmd : Cmd
       sys := System.find(t)
       installSystem(sys)
       buildJre(sys)
-      assemble(sys)
+      assemble(sys, projMeta)
     }
 
     // clean up after ourselves
@@ -124,7 +131,7 @@ const class BuildCmd : Cmd
   }
 
   ** Assemble firmware image for target.
-  Void assemble(System sys)
+  Void assemble(System sys, Str:Str projMeta)
   {
     // dir setup
     jreDir := Env.cur.workDir + `studs/jres/$sys.jre/`
@@ -136,8 +143,8 @@ const class BuildCmd : Cmd
     rootfs.create
 
     // release image name
-    proj := Env.cur.workDir.basename
-    ver  := Pod.find(proj).version
+    proj := projMeta["proj.name"]; if (proj==null) abort("missing 'proj.meta' in studs.props")
+    ver  := projMeta["proj.ver"];  if (ver==null)  abort("missing 'proj.ver' in studs.props")
     rel  := relDir + `${proj}-${ver}-${sys.name}.fw`
 
     // defaults
