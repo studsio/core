@@ -175,8 +175,9 @@ const class BuildCmd : Cmd
       pods.each |p| { p.copyTo(rootfs + `app/fan/lib/fan/$p.name`) }
     }
 
-    // stage data
-    (rootfs + `data/`).create
+    // unit database
+    units := Env.cur.homeDir + `etc/sys/units.txt`
+    units.copyTo(rootfs + `app/fan/etc/sys/$units.name`)
 
     // tz database
     tzData  := Env.cur.homeDir + `etc/sys/timezones.ftz`
@@ -187,6 +188,9 @@ const class BuildCmd : Cmd
     // copy user rootfs-additions
     userRootfs := Env.cur.workDir + `src/rootfs-additions/`
     if (userRootfs.exists) Proc.run("cp -Rf $userRootfs.osPath $rootfs.parent.osPath")
+
+    // stage data
+    (rootfs + `data/`).create
 
     // merge rootfs
     info("Merge rootfs...")
