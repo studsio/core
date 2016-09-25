@@ -66,6 +66,11 @@ static void read_faninit_props()
       // set exit.run
       options.run_on_exit = strdup(p->val);
     }
+    else if (strcmp(p->name, "fs.mount") == 0)
+    {
+      // add filesystem mounts
+      options.extra_mounts = strdup(p->val);
+    }
   }
 }
 

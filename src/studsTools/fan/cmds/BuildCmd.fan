@@ -175,6 +175,9 @@ const class BuildCmd : Cmd
       pods.each |p| { p.copyTo(rootfs + `app/fan/lib/fan/$p.name`) }
     }
 
+    // stage data
+    (rootfs + `data/`).create
+
     // tz database
     tzData  := Env.cur.homeDir + `etc/sys/timezones.ftz`
     tzAlias := Env.cur.homeDir + `etc/sys/timezone-aliases.props`
