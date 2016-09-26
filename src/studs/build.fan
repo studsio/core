@@ -36,6 +36,7 @@ class Build : BuildPod
       `fan/`,
       `fan/led/`,
       `fan/ntp/`,
+      `fan/service/`,
       `test/`]
     docSrc = true
   }
