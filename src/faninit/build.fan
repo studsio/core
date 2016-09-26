@@ -39,7 +39,7 @@ class Build : BuildScript
 
       // compile
       log.info("  Compile [faninit-$target]")
-      opts := ["-Wall", "-Wextra", "-O2", "-o", "$dest.osPath", "-DPROGRAM_VERSION=$ver"]
+      opts := ["-Wall", "-Wextra", "-O2", "-s", "-o", "$dest.osPath", "-DPROGRAM_VERSION=$ver"]
       src  := (scriptDir + `src/`).listFiles.map |f| { "src/$f.name" }
       proc := Process([tc.gcc.osPath].addAll(opts).addAll(src))
       proc.dir = scriptDir

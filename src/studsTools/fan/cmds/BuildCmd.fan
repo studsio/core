@@ -182,8 +182,10 @@ const class BuildCmd : Cmd
     // tz database
     tzData  := Env.cur.homeDir + `etc/sys/timezones.ftz`
     tzAlias := Env.cur.homeDir + `etc/sys/timezone-aliases.props`
+    tzJs    := Env.cur.homeDir + `etc/sys/tz.js`
     tzData.copyTo(rootfs + `app/fan/etc/sys/$tzData.name`)
     tzAlias.copyTo(rootfs + `app/fan/etc/sys/$tzAlias.name`)
+    tzJs.copyTo(rootfs + `app/fan/etc/sys/$tzJs.name`)
 
     // copy user rootfs-additions
     userRootfs := Env.cur.workDir + `src/rootfs-additions/`
