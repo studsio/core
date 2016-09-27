@@ -70,6 +70,15 @@ class Proc
     return Interop.toFan(p.getErrorStream)
   }
 
+  ** Return 'true' if child process is currently running
+  ** or 'false' if not started or terminated.
+  Bool isRunning()
+  {
+    if (p == null) return false
+    try { x := p.exitValue; return true }
+    catch { return false }
+  }
+
   ** Block the current thread until the child process has
   ** terminated. Use `exitCode` to retreive exit code.
   This waitFor()

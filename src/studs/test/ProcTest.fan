@@ -13,7 +13,11 @@ class ProcTest : Test
     p := Proc { it.cmd=["echo", "hello"] }
     r := p.run.waitFor.exitCode
     x := p.in.readLine
+
     verifyEq(r, 0)
     verifyEq(x, "hello")
+
+    x = p.in.readLine
+    verifyEq(x, null)
   }
 }
