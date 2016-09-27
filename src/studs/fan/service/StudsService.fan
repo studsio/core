@@ -30,8 +30,15 @@ abstract const class StudsService
   {
     this.pool  = ActorPool { it.name=name }
     this.actor = Actor(pool) |m| { receive(m) }
+    this.log   = Log(name, false)
     this.pollFreq = pollFreq
+
+    // TODO: for now pin all services to debug
+    this.log.level = LogLevel.debug
   }
+
+  ** Log for this service.
+  const Log log
 
   ** Send this service a message.
   Void send(ServiceMsg m) { actor.send(m) }
