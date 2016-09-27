@@ -107,7 +107,7 @@ class SntpClient
   **   Bits 00-31: seconds
   **   Bits 32-63: seconds fraction (in picoseconds)
   **
-  internal static Int toNtp(DateTime ts)
+  @NoDoc static Int toNtp(DateTime ts)
   {
     ns   := ts.ticks
     sec  := ns / nsInSec
@@ -119,7 +119,7 @@ class SntpClient
   ** Convert NTP timestamp back to a DateTime instance.
   ** See `toNtp` for conversion notes.
   **
-  internal static DateTime fromNtp(Int ntp, TimeZone tz := TimeZone.cur)
+  @NoDoc static DateTime fromNtp(Int ntp, TimeZone tz := TimeZone.cur)
   {
     sec  := ntp.shiftr(32).and(0xffff_ffff) - ntpEpoch
     frac := ntp.and(0xffff_ffff) * nsInSec / 0x100_000_000

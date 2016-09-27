@@ -22,6 +22,7 @@ class Build : BuildGroup
     [
       `faninit/build.fan`,
       `studs/build.fan`,
+      `studsTest/build.fan`,
       `studsTools/build.fan`,
     ]
   }

@@ -18,7 +18,6 @@ class Build : BuildPod
   {
     podName = "studs"
     summary = "Studs"
-    version = Version("1.0.0")
     meta    = [
       "proj.name":    "Studs",
       "proj.uri":     "http://studs.io/",
@@ -36,8 +35,7 @@ class Build : BuildPod
       `fan/`,
       `fan/led/`,
       `fan/ntp/`,
-      `fan/service/`,
-      `test/`]
+      `fan/service/`]
     docSrc = true
   }
 }

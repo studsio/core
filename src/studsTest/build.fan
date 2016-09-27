@@ -10,14 +10,14 @@
 using build
 
 **
-** Build: studsTools
+** Build: studsTest
 **
 class Build : BuildPod
 {
   new make()
   {
-    podName = "studsTools"
-    summary = "Studs Build Tool Support"
+    podName = "studsTest"
+    summary = "Studs Test Hardness"
     meta    = [
       "proj.name":    "Studs",
       "proj.uri":     "http://studs.io/",
@@ -27,13 +27,12 @@ class Build : BuildPod
       "sys @{fan.depend}",
       "util @{fan.depend}",
       "concurrent @{fan.depend}",
+      "inet @{fan.depend}",
       "web @{fan.depend}",
-      "studs @{buildVersion}",
-      "studsTest @{buildVersion}"]
-    srcDirs = [`fan/`, `fan/cmds/`]
-    resDirs = [`res/`,
-               `bins/bbb/`,
-               `bins/rpi3/`]
-    docSrc = true
+      "webmod @{fan.depend}",
+      "wisp @{fan.depend}",
+      "studs @{buildVersion}"]
+    srcDirs = [`test/`]
+    docSrc = false
   }
 }

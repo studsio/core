@@ -7,6 +7,7 @@
 //
 
 using inet
+using studs
 
 class NtpTest : Test
 {

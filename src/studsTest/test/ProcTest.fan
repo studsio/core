@@ -6,6 +6,8 @@
 //   27 Sep 2016  Andy Frank  Creation
 //
 
+using studs
+
 class ProcTest : Test
 {
   Void test()

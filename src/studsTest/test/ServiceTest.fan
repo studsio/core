@@ -6,6 +6,8 @@
 //   26 Sep 2016  Andy Frank  Creation
 //
 
+using studs
+
 class ServiceTest : Test
 {
   Void test()
