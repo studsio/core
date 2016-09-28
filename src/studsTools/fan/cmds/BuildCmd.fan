@@ -188,8 +188,8 @@ const class BuildCmd : Cmd
     tzJs.copyTo(rootfs + `app/fan/etc/sys/$tzJs.name`)
 
     // copy user rootfs-additions
-    userRootfs := Env.cur.workDir + `src/rootfs-additions/`
-    if (userRootfs.exists) Proc.run("cp -Rf $userRootfs.osPath $rootfs.parent.osPath")
+    userRootfs := Env.cur.workDir + `src/rootfs-additions/${sys.name}/`
+    if (userRootfs.exists) Proc.run("cp -Rf $userRootfs.osPath/ $rootfs.osPath")
 
     // stage data
     (rootfs + `data/`).create

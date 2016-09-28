@@ -9,6 +9,7 @@ Inspired by and in cooperation with [Nerves](http://nerves-project.org).
 Overview Documentation:
 
  - **[Getting Started](https://bitbucket.org/afrankvt/studs/src/tip/doc/GettingStarted.md)**
+ - **[Building Firmware](https://bitbucket.org/afrankvt/studs/src/tip/doc/BuildingFw.md)**
  - **[Changelog](https://bitbucket.org/afrankvt/studs/src/tip/changelog.md)**
 
 Sub-system Documentation:
