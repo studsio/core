@@ -53,21 +53,24 @@ class Proc
   OutStream out()
   {
     if (p == null) throw Err("Proc not running")
-    return Interop.toFan(p.getOutputStream)
+    if (_out == null) _out = Interop.toFan(p.getOutputStream)
+    return _out
   }
 
   ** Return InStream used to read process stdout.
   InStream in()
   {
     if (p == null) throw Err("Proc not running")
-    return Interop.toFan(p.getInputStream)
+    if (_in == null) _in = Interop.toFan(p.getInputStream)
+    return _in
   }
 
   ** Return InStream used to read process stderr.
   InStream err()
   {
     if (p == null) throw Err("Proc not running")
-    return Interop.toFan(p.getErrorStream)
+    if (_err == null) _err = Interop.toFan(p.getErrorStream)
+    return _err
   }
 
   ** Return 'true' if child process is currently running
@@ -107,4 +110,7 @@ class Proc
   }
 
   private JProcess? p
+  private OutStream? _out
+  private InStream? _in
+  private InStream? _err
 }
