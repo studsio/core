@@ -78,8 +78,8 @@ class Proc
   Bool isRunning()
   {
     if (p == null) return false
-    try { x := p.exitValue; return true }
-    catch { return false }
+    try { x := p.exitValue; return false }
+    catch { return true }
   }
 
   ** Block the current thread until the child process has
