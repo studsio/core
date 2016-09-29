@@ -12,7 +12,7 @@
 const class InitCmd : Cmd
 {
   override const Str name := "init"
-  override const Str sig  := "<name> [-s]"
+  override const Str sig  := "<name>"
   override const Str helpShort := "Create a new project"
   override const Str? helpFull :=
    "<name>  Name for new project (must be a valid pod name)"

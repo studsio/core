@@ -2,6 +2,13 @@
 
 TODO: `fan studs build` detailed docs
 
+## Targets
+
+By default build will assemble all targets defined in `studs.props`.  To build
+only a specific target(s) you can pass them on the command line:
+
+    fan studs build rpi3
+
 ## **Rootfs Additions**
 
 To add additional files into the root filesystem, create a folder named

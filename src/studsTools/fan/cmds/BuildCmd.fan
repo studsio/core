@@ -14,8 +14,14 @@ using util
 const class BuildCmd : Cmd
 {
   override const Str name := "build"
+  override const Str sig  := "[target]*"
   override const Str helpShort := "Build project"
-  override const Str? helpFull := null
+  override const Str? helpFull :=
+    "By default the build command will build a firmware image for each
+     target specifed in studs.props.  If target(s) are listed on the
+     command line, only these targets will be built.
+
+     [target]*  List of specific targets to build, or all if none specified"
 
   ** Temp working directory.
   const File tempDir := Env.cur.workDir + `studs/temp/`
@@ -40,21 +46,29 @@ const class BuildCmd : Cmd
       if (key.startsWith("proj.")) projMeta[key] = val
     }
 
-    // find targets
-    targets := Str[,]
-    f.readProps.each |val,key|
+    // find targets - pick up from cmdline or fallback to studs.props
+    targets := args.dup.rw
+    if (targets.isEmpty)
     {
-      if (key.startsWith("target.") && val == "true")
+      f.readProps.each |val,key|
       {
-        name := key["target.".size..-1]
-        if (System.find(name, false) == null) abort("unknown target: $name")
-        targets.add(name)
+        if (key.startsWith("target.") && val == "true")
+        {
+          name := key["target.".size..-1]
+          targets.add(name)
+        }
       }
+    }
+
+    // validate targets first
+    targets.each |t| {
+      if (System.find(t, false) == null) abort("unknown target: $t")
     }
 
     // build each target
     targets.each |t|
     {
+      info("Build [$t]")
       sys := System.find(t)
       installSystem(sys)
       buildJre(sys)
@@ -91,10 +105,10 @@ const class BuildCmd : Cmd
 
     // download
     tar := baseDir + `$sys.uri.name`
-    Proc.download("Downloading $sys.name system", sys.uri, tar)
+    Proc.download("  Downloading $sys.name system", sys.uri, tar)
 
     // untar
-    info("Install $sys.name system...")
+    info("  Install $sys.name system...")
     Proc.run("tar xvf $tar.osPath -C $baseDir.osPath")
 
     // rename nerves_system_xxx -> xxx
@@ -120,7 +134,7 @@ const class BuildCmd : Cmd
 
     // unpack
     tempClean
-    info("Build ${jreDir.name} jre...")
+    info("  Build ${jreDir.name} jre...")
     Proc.run("tar xf $tar.osPath -C $tempDir.osPath")
 
     // invoke jrecreate (requires Java 7+)
@@ -151,7 +165,7 @@ const class BuildCmd : Cmd
     fwupConf := sysDir + `images/fwup.conf`
 
     // stage jre
-    info("Stage rootfs...")
+    info("  Stage rootfs...")
     (rootfs + `app/`).create
     Proc.run("cp -R $jreDir.osPath $rootfs.osPath/app")
     Proc.run("mv $rootfs.osPath/app/${sys.jre} $rootfs.osPath/app/jre")
@@ -195,7 +209,7 @@ const class BuildCmd : Cmd
     (rootfs + `data/`).create
 
     // merge rootfs
-    info("Merge rootfs...")
+    info("  Merge rootfs...")
     Proc.run(
       "$sysDir.osPath/scripts/merge-squashfs " +
       "$sysDir.osPath/images/rootfs.squashfs " +
@@ -203,10 +217,13 @@ const class BuildCmd : Cmd
       "$tempDir.osPath/rootfs-additions")
 
     // assemble image
-    info("Assemble firmware image...")
+    info("  Assemble firmware image...")
     Proc.bash(
       "export NERVES_SYSTEM=$sysDir.osPath
        export ROOTFS=$tempDir.osPath/combined.squashfs
        fwup -c -f $fwupConf.osPath -o $rel.osPath")
+
+    // indicate image filepath
+    info("  Release: $rel.osPath")
   }
 }
