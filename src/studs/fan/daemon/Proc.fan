@@ -109,6 +109,17 @@ class Proc
     return p.exitValue
   }
 
+  ** Check the exit code the process returned.  If the code was
+  ** '0' return this. If the code was non-zero throws an IOErr.
+  ** If the process is still running, the same semantics apply
+  ** as `exitCode`.
+  This okOrThrow()
+  {
+    x := exitCode
+    if (x == 0) return this
+    throw IOErr("Proc terminated abnormally with exit code $x")
+  }
+
   private JProcess? p
   private OutStream? _out
   private InStream? _in

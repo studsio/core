@@ -66,6 +66,18 @@ class ProcTest : Test
     verifyEq(p.run.waitFor.exitCode, 2)
   }
 
+  Void testOkOrThrow()
+  {
+    p := Proc { it.cmd=["bash", bash("exit 0").osPath] }
+    p.run.waitFor.okOrThrow
+
+    p = Proc { it.cmd=["bash", bash("exit 1").osPath] }
+    verifyErr(IOErr#) { p.run.waitFor.okOrThrow }
+
+    p = Proc { it.cmd=["bash", bash("exit 2").osPath] }
+    verifyErr(IOErr#) { p.run.waitFor.okOrThrow }
+  }
+
   private File bash(Str bash)
   {
     f := File.createTemp.deleteOnExit
