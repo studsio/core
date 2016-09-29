@@ -2,9 +2,9 @@
 
 #### **Version 1.0.1 (working)**
 - faninit: add support for fs.mount option
-- Add Service API
+- Add Daemon and DaemonSupervisor API
 - Add Proc API
-- Add NtpService
+- Add Ntpd
 
 #### **Version 1.0.0 (14-Sep-2016)**
 Initial bare-bones working version with minimal support

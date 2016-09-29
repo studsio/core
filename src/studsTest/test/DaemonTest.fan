@@ -8,17 +8,17 @@
 
 using studs
 
-class ServiceTest : Test
+class DaemonTest : Test
 {
   Void test()
   {
     // TODO
 
-    ServiceMgr {
-      it.services = [
-        TestServiceA(),
-        TestServiceB(),
-        TestServiceC(),
+    DaemonSupervisor {
+      it.daemons = [
+        Alphad(),
+        Betad(),
+        Gammad(),
       ]
     }.start
 
@@ -26,7 +26,7 @@ class ServiceTest : Test
   }
 }
 
-internal const class TestServiceA : StudsService
+internal const class Alphad : Daemon
 {
   new make() : super("TestA", 1sec) {}
   override Void onStart() { echo("TestA: started") }
@@ -34,7 +34,7 @@ internal const class TestServiceA : StudsService
   override Void onPoll() { echo("TestA: poll"); throw Err("Oops") }
 }
 
-internal const class TestServiceB : StudsService
+internal const class Betad : Daemon
 {
   new make() : super("TestB", 2sec) {}
   override Void onStart() { echo("TestB: started") }
@@ -42,7 +42,7 @@ internal const class TestServiceB : StudsService
   override Void onPoll() { echo("TestB: poll") }
 }
 
-internal const class TestServiceC : StudsService
+internal const class Gammad : Daemon
 {
   new make() : super("TestC", 3sec) {}
   override Void onStart() { echo("TestC: started") }

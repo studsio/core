@@ -11,7 +11,7 @@ using concurrent
 **
 ** NtpService
 **
-const class NtpService : StudsService
+const class Ntpd : Daemon
 {
   new make() : super("ntp", 5sec) {}
 

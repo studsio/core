@@ -9,17 +9,17 @@
 using concurrent
 
 **************************************************************************
-** StudsService
+** Daemon
 **************************************************************************
 
 **
-** StudsService provides an API for long-running system services
-** running on their own thread with life-cycle callbacks for start,
-** stop, poll, and custom messages.
+** Daemon provides an API for long-running system services running
+** on their own thread with life-cycle callbacks for start, stop,
+** poll, and custom messages.
 **
-** Services are managed by a `ServiceMgr` instance.
+** Daemon are managed by a `DaemonSupervisor` instance.
 **
-abstract const class StudsService
+abstract const class Daemon
 {
   **
   ** Subclass constructor where 'name' is the name of this service,
@@ -37,28 +37,28 @@ abstract const class StudsService
     this.log.level = LogLevel.debug
   }
 
-  ** Log for this service.
+  ** Log for this daemon.
   const Log log
 
-  ** Send this service a message.
-  Void send(ServiceMsg m) { actor.send(m) }
+  ** Send this daemon a message.
+  Void send(DaemonMsg m) { actor.send(m) }
 
-  ** Callback when service is started.
+  ** Callback when daemon is started.
   protected virtual Void onStart() {}
 
-  ** Callback when service is stopped.
+  ** Callback when daemon is stopped.
   protected virtual Void onStop() {}
 
   ** Callback when periodic poll is dispatched.
   protected virtual Void onPoll() {}
 
-  ** Callback to process a service message.
-  protected virtual Obj? onMsg(ServiceMsg m) { null }
+  ** Callback to process a daemon message.
+  protected virtual Obj? onMsg(DaemonMsg m) { null }
 
   ** Route message to `onMsg` callback.
   private Obj? receive(Obj msg)
   {
-    ServiceMsg m := msg
+    DaemonMsg m := msg
     if (m.op === "start")
     {
       onStart
@@ -86,15 +86,15 @@ abstract const class StudsService
   private const ActorPool pool
   private const Actor actor
   private const Duration? pollFreq
-  private const ServiceMsg pollMsg  := ServiceMsg { it.op="poll" }
+  private const DaemonMsg pollMsg  := DaemonMsg { it.op="poll" }
 }
 
 **************************************************************************
-** ServiceMsg
+** DaemonMsg
 **************************************************************************
 
-** ServiceMsg is used to send messages to Service actors.
-const class ServiceMsg
+** DMsg is used to send messages to Daemon actors.
+const class DaemonMsg
 {
   new make(|This| f) { f(this) }
 

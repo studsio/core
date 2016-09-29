@@ -33,9 +33,9 @@ class Build : BuildPod
       "wisp @{fan.depend}"]
     srcDirs = [
       `fan/`,
+      `fan/daemon/`,
       `fan/led/`,
-      `fan/ntp/`,
-      `fan/service/`]
+      `fan/ntp/`]
     docSrc = true
   }
 }

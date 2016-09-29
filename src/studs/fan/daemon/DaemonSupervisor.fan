@@ -9,36 +9,38 @@
 using concurrent
 
 **
-** ServiceMgr manages starting, stopping, and monitoring `Service` instances.
+** DaemonSupervisor manages starting, stopping, and monitoring
+** `Daemon` instances.
 **
-const class ServiceMgr
+const class DaemonSupervisor
 {
   ** It-block constructor.
   new make(|This| f) { f(this) }
 
-  ** Services this manager is managing.
-  const StudsService[] services
+  ** Daemons this supervisor is managing.
+  const Daemon[] daemons
 
-  ** Start this manager and `services`.
+  ** Start this supervisor and `daemons`.
   Void start()
   {
     // add shutdown hook
     Env.cur.addShutdownHook |->|
     {
-      stopMsg := ServiceMsg { it.op="stop" }
-      services.each |s|
+      daemons.each |s|
       {
         try { s.send(stopMsg) }
         catch (Err e) { e.trace }
       }
     }
 
-    // start all services
-    startMsg := ServiceMsg { it.op="start" }
-    services.each |s|
+    // start all daemons
+    daemons.each |s|
     {
       try { s.send(startMsg) }
       catch (Err e) { e.trace }
     }
   }
+
+  private static const DaemonMsg startMsg := DaemonMsg { it.op="start" }
+  private static const DaemonMsg stopMsg  := DaemonMsg { it.op="stop"  }
 }
