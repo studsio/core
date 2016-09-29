@@ -26,16 +26,27 @@ abstract const class Daemon
   ** and 'pollFreq' is the frequency to invoke `onPoll` callback,
   ** or 'null' to not schedule a poll callback.
   **
-  protected new make(Str name, Duration? pollFreq)
+  protected new make(Duration? pollFreq)
   {
+    // sanity check one does not exist
+    name := this.name
+    if (Actor.locals["d.$name"] != null) throw Err("$name already exists")
+
     this.pool  = ActorPool { it.name=name }
     this.actor = Actor(pool) |m| { receive(m) }
     this.log   = Log(name, false)
     this.pollFreq = pollFreq
 
+    // cache in parent actor local
+    Actor.locals["d.$name"] = this
+
     // TODO: for now pin all services to debug
     this.log.level = LogLevel.debug
   }
+
+  ** Programmtic name of this daemon, which by convention
+  ** is simply the type name lowercased.
+  Str name() { typeof.name.lower }
 
   ** Log for this daemon.
   const Log log

@@ -16,6 +16,7 @@ Sub-system Documentation:
 
   - **[faninit](https://bitbucket.org/afrankvt/studs/src/tip/doc/faninit.md)**
   - **[Daemons](https://bitbucket.org/afrankvt/studs/src/tip/doc/Daemons.md)**
+  - **[Networking](https://bitbucket.org/afrankvt/studs/src/tip/doc/Networking.md)**
   - **[Leds](https://bitbucket.org/afrankvt/studs/src/tip/doc/Leds.md)**
   - **[NTP](https://bitbucket.org/afrankvt/studs/src/tip/doc/NTP.md)**
 

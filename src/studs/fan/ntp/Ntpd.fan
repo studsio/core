@@ -9,11 +9,11 @@
 using concurrent
 
 **
-** NtpService
+** Ntpd
 **
 const class Ntpd : Daemon
 {
-  new make() : super("ntp", 5sec) {}
+  new make() : super(5sec) {}
 
   ** NTP server pool.
   const Str[] servers := [
