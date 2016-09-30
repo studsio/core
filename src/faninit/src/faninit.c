@@ -41,6 +41,11 @@ static void read_faninit_props()
       // enable debugging
       if (strcmp(p->val, "true") == 0) options.verbose = 1;
     }
+    else if (strcmp(p->name, "tty.console") == 0)
+    {
+      // set terminal
+      options.controlling_terminal = strdup(p->val);
+    }
     else if (strcmp(p->name, "exit.action") == 0)
     {
       // set exit.action

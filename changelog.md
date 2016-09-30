@@ -2,6 +2,7 @@
 
 #### **Version 1.0.1 (working)**
 - faninit: add support for fs.mount option
+- faninit: add support for tty.console option
 - Add Daemon and DaemonSupervisor API
 - Add Proc API
 - Add Ntpd

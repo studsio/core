@@ -21,6 +21,9 @@ are:
     # Enable debug logging
     debug=true
 
+    # Override the controlling terminal (ttyAMA0, tty1, etc.)
+    #tty.console=ttyO0
+
     # Action to take when JVM exits:
     #   'hang'      hang the board rather than rebooting
     #   'reboot'    reboot board
