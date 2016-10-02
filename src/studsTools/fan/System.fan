@@ -35,7 +35,7 @@ const class System
   const Str jre
 
   ** List available systems.
-  static System[] list() { Actor.locals["sys.list"] }
+  static System[] list() { defList }
 
   ** Find System with given name. If system not found throw
   ** Err if 'checked' is true, otherwise return 'null'.
@@ -45,4 +45,10 @@ const class System
     if (sys == null && checked) throw Err("System not found '$name'")
     return sys
   }
+
+  ** Default list of system images - use `list` to get full list.
+  private static const System[] defList := [
+    System { it.name="rpi3"; it.version=Version("0.6.1"); it.jre="linux-armv6-vfp-hflt" },
+    System { it.name="bbb";  it.version=Version("0.7.1"); it.jre="linux-armv6-vfp-hflt" },
+  ]
 }
