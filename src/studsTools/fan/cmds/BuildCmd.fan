@@ -88,13 +88,11 @@ const class BuildCmd : Cmd
     sysDir := baseDir + `$sys.name/`
 
     // check if up-to-date
-    tag := sysDir + `nerves-system.tag`
-    if (tag.exists)
+    sysProps := sysDir + `system.props`
+    if (sysProps.exists)
     {
-      line := tag.readAllLines.first
-      ver  := Version(line[1..-1], false)
-
-      // up-to-date bail
+      // bail here if up-to-date
+      ver := Version(sysProps.readProps["version"] ?: "", false)
       if (sys.version == ver) return
 
       // prompt to upgrade
@@ -110,9 +108,6 @@ const class BuildCmd : Cmd
     // untar
     info("  Install $sys.name system...")
     Proc.run("tar xvf $tar.osPath -C $baseDir.osPath")
-
-    // rename nerves_system_xxx -> xxx
-    (baseDir + `nerves_system_${sys.name}/`).rename(sys.name)
 
     // cleanup
     tar.delete

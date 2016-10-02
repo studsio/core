@@ -14,12 +14,11 @@ using concurrent
 const class System
 {
   ** It-block ctor.
-  new make(|This| f)
+  new make(Str name, Version version)
   {
-    f(this)
-    this.uri =
-      ("https://github.com/nerves-project/nerves_system_${name}/releases/download" +
-      "/v${version}/nerves_system_${name}-v${version}.tar.gz").toUri
+    this.name = name
+    this.version = version
+    this.uri = `https://bitbucket.org/afrankvt/studs/downloads/studs-system-${name}-${version}.tar.gz`
   }
 
   ** Unique name for this system
@@ -32,7 +31,8 @@ const class System
   const Uri uri
 
   ** JRE platform for this system.
-  const Str jre
+// TODO
+  const Str jre := "linux-armv6-vfp-hflt"
 
   ** List available systems.
   static System[] list() { defList }
@@ -48,7 +48,7 @@ const class System
 
   ** Default list of system images - use `list` to get full list.
   private static const System[] defList := [
-    System { it.name="rpi3"; it.version=Version("0.6.1"); it.jre="linux-armv6-vfp-hflt" },
-    System { it.name="bbb";  it.version=Version("0.7.1"); it.jre="linux-armv6-vfp-hflt" },
+    System("bbb",  Version("1.0.0")),
+    System("rpi3", Version("1.0.0")),
   ]
 }
