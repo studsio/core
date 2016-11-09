@@ -1,5 +1,8 @@
 # **Changelog**
 
+#### **Version 1.0.2 (working)**
+- move repo to https://bitbucket.org/studs/studs
+
 #### **Version 1.0.1 (2-Oct-2016)**
 - faninit: add support for fs.mount option
 - faninit: add support for tty.console option
