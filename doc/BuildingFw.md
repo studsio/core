@@ -1,13 +1,13 @@
 # **Building Firmware**
 
-TODO: `fan studs build` detailed docs
+TODO: `fan studs asm` detailed docs
 
 ## Targets
 
-By default build will assemble all targets defined in `studs.props`.  To build
-only a specific target(s) you can pass them on the command line:
+By default asm will assemble all targets defined in `studs.props`.  To
+assemble only a specific target(s) you can pass them on the command line:
 
-    fan studs build rpi3
+    fan studs asm rpi3
 
 ## **Rootfs Additions**
 

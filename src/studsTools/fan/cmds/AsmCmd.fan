@@ -9,19 +9,19 @@
 using util
 
 **
-** Build project.
+** Assemble project.
 **
-const class BuildCmd : Cmd
+const class AsmCmd : Cmd
 {
-  override const Str name := "build"
+  override const Str name := "asm"
   override const Str sig  := "[target]*"
-  override const Str helpShort := "Build project"
+  override const Str helpShort := "Assemble project"
   override const Str? helpFull :=
-    "By default the build command will build a firmware image for each
+    "By default the asm command will assemble a firmware image for each
      target specifed in studs.props.  If target(s) are listed on the
-     command line, only these targets will be built.
+     command line, only these targets will be assembled.
 
-     [target]*  List of specific targets to build, or all if none specified"
+     [target]*  List of specific targets to assemble, or all if none specified"
 
   ** Temp working directory.
   const File tempDir := Env.cur.workDir + `studs/temp/`
@@ -68,7 +68,7 @@ const class BuildCmd : Cmd
     // build each target
     targets.each |t|
     {
-      info("Build [$t]")
+      info("Assemble [$t]")
       sys := System.find(t)
       installSystem(sys)
       buildJre(sys)

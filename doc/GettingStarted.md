@@ -13,7 +13,6 @@ our firmware.  The easiest method is to use [Homebrew](http://brew.sh) and
 
     # Not yet functional:
     #  TODO: need to update homebrew fantom forumla to 1.0.69
-    #  TODO: need to actually post studs to eggbox
 
     $ brew update
     $ brew install fantom
@@ -78,10 +77,10 @@ From here the build tools will manage creating the correct image for your device
 Now we're ready to build!
 
     $ src/build.fan
-    $ fan studs build
+    $ fan studs asm
 
 This will compile your Fantom application and assemble the firmware images for
-your target device(s). The first time `studs build` is run the system
+your target device(s). The first time `studs asm` is run the system
 dependencies will be downloaded which can take a few minutes. After that
 firmware builds will be fast.
 
