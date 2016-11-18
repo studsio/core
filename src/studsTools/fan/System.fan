@@ -18,7 +18,7 @@ const class System
   {
     this.name = name
     this.version = version
-    this.uri = `https://bitbucket.org/studs/studs/downloads/studs-system-${name}-${version}.tar.gz`
+    this.uri = `https://bitbucket.org/studs/core/downloads/studs-system-${name}-${version}.tar.gz`
   }
 
   ** Unique name for this system
