@@ -47,6 +47,9 @@ abstract const class Cmd
     return r == "y"
   }
 
+  ** Profile configuration.
+  static Str:Str profile() { Actor.locals["cmd.profile"] }
+
   ** List all commands.
   static Cmd[] list() { Actor.locals["cmd.list"] }
 
