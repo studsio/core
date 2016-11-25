@@ -116,6 +116,7 @@ const class AsmCmd : Cmd
   ** Build compact JRE for target.
   Void buildJre(System sys)
   {
+    profDir := profile["jres.dir"]?.toUri?.toFile
     baseDir := Env.cur.workDir + `studs/jres/`
     baseDir.create
     jreDir := baseDir + `$sys.jre/`
@@ -123,8 +124,13 @@ const class AsmCmd : Cmd
     // bail if already exists
     if (jreDir.exists) return
 
-    // find source tar image
-    tar := baseDir.listFiles.find |f| { f.name.endsWith("${sys.jre}.tar.gz") }
+    // find source tar image - first check local dir, and if not
+    // found try to find the profile dir if one is defined
+    find := |File dir->File?| {
+      dir.listFiles.find |f| { f.name.endsWith("${sys.jre}.tar.gz") }
+    }
+    tar := find(baseDir)
+    if (tar == null && profDir != null) tar = find(profDir)
     if (tar == null) Proc.abort("no jre found for $sys.name")
 
     // unpack

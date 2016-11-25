@@ -4,6 +4,8 @@
 - Move repo to https://bitbucket.org/studs/core
 - Rename BuildCmd -> AsmCmd
 - Add some real-world functionality into 'init' skeleton Main
+- Add support for ~/.studs profile
+- Add support for looking up jre.tar.gz via 'jre.dirs' profile prop
 
 #### **Version 1.0.1 (2-Oct-2016)**
 - faninit: add support for fs.mount option
