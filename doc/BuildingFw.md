@@ -2,7 +2,7 @@
 
 TODO: `fan studs asm` detailed docs
 
-## Targets
+## **Targets**
 
 By default asm will assemble all targets defined in `studs.props`.  To
 assemble only a specific target(s) you can pass them on the command line:
@@ -26,7 +26,7 @@ default root filesystem for the respective system. If a file in
 `rootfs-additions` already exists in the base image, it will replace the base
 copy.
 
-## Profile Configuration
+## **Profile Configuration**
 
 If you build lots of projects, some configuration may become repetitive --
 particularly finding and copying the source JRE tarball into your project.
