@@ -5,7 +5,6 @@ syntax: glob
 syntax: regexp
 
 ^fan.props
-^design.txt
 ^lib/
 ^src/studsTools/bins/
 ^test/

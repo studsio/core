@@ -17,7 +17,7 @@ using concurrent
 ** on their own thread with life-cycle callbacks for start, stop,
 ** poll, and custom messages.
 **
-** Daemon are managed by a `DaemonSupervisor` instance.
+** Daemons are managed by a `DaemonSupervisor` instance.
 **
 abstract const class Daemon
 {
@@ -104,7 +104,7 @@ abstract const class Daemon
 ** DaemonMsg
 **************************************************************************
 
-** DMsg is used to send messages to Daemon actors.
+** DaemonMsg is used to send messages to Daemon actors.
 const class DaemonMsg
 {
   new make(|This| f) { f(this) }

@@ -3,6 +3,7 @@
 #### **Version 1.0.2 (working)**
 - Move repo to https://bitbucket.org/studs/core
 - Rename BuildCmd -> AsmCmd
+- Add some real-world functionality into 'init' skeleton Main
 
 #### **Version 1.0.1 (2-Oct-2016)**
 - faninit: add support for fs.mount option

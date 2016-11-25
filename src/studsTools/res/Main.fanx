@@ -1,3 +1,4 @@
+using concurrent
 using studs
 
 **
@@ -7,7 +8,33 @@ const class Main
 {
   static Int main()
   {
-    echo("Hello, world :)")
+    // Setup system daemons
+    DaemonSupervisor
+    {
+      it.daemons = [
+        Networkd(),
+        // Ntpd(),
+      ]
+    }.start
+
+    // TODO: switch to dhcp when its ready
+    // but maybe leave this code here in a comment
+    // block so its easy to see how todo static
+    Networkd.cur.setup([
+      "name":    "eth0",
+      "mode":    "static",
+      "ipaddr":  "192.168.1.160",
+      "netmask": "255.255.255.0",
+      "dns":     "8.8.8.8"
+    ])
+
+    // Blink some LEDs and show some console output
+    // to demonstrate this stuff actually works :)
+    // TODO: leds
+    echo("Hello, world from Studs :)")
+
+    // Sleep forever to keep Fantom running
+    Actor.sleep(Duration.maxVal)
     return 0
   }
 }
