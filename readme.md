@@ -1,6 +1,6 @@
 # **Studs**
 
-## **Easily build reliable embedded software with [Fantom](http://fantom.org).**
+## **Build and deploy reliable embedded software with [Fantom](http://fantom.org).**
 
 Inspired by and in cooperation with [Nerves](http://nerves-project.org).
 
