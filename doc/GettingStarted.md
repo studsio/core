@@ -11,9 +11,6 @@ Next we need to install Fantom, Studs and several utilities we'll need to build
 our firmware.  The easiest method is to use [Homebrew](http://brew.sh) and
 [fanr](http://fantom.org/doc/docFanr/Tool):
 
-    # Not yet functional:
-    #  TODO: need to update homebrew fantom forumla to 1.0.69
-
     $ brew update
     $ brew install fantom
     $ brew install fwup squashfs coreutils
