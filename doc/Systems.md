@@ -56,7 +56,7 @@ Afterwards your `studs` directory should look like this:
 
 ### macOS Vagrant Setup
 
-[vf]: https://bitbucket.org/studs/system/src/tip/vagrant/Vagrantfile
+[vf]: https://bitbucket.org/studs/system/src/tip/Vagrantfile
 [hg]: https://www.mercurial-scm.org/downloads
 
 The simplest way to build on macOS is to use the supplied [Vagrantfile][vf],
@@ -67,7 +67,7 @@ Linux VM. To get started with Vagrant:
 
   2. Install [VirtualBox]( https://www.virtualbox.org)
 
-  3. Modify the defaults in `system/vagrant/Vagrantfile` for memory/cores to
+  3. Modify the defaults in `system/Vagrantfile` for memory/cores to
      match your host:
 
         # Change here for more or less memory/cores
