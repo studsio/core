@@ -1,11 +1,13 @@
 # **Changelog**
 
-#### **Version 1.0.2 (working)**
+#### **Version 1.0.2 (18-Jan-2017)**
 - Move repo to https://bitbucket.org/studs/core
 - Rename BuildCmd -> AsmCmd
 - Add some real-world functionality into 'init' skeleton Main
 - Add support for ~/.studs profile
 - Add support for looking up jre.tar.gz via 'jre.dirs' profile prop
+- Rework Cmd to model studs.props with Props
+- Add support for using custom systems via 'target.xxx.uri' system.prop
 
 #### **Version 1.0.1 (2-Oct-2016)**
 - faninit: add support for fs.mount option
