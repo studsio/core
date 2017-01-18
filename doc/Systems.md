@@ -132,7 +132,12 @@ Change to your output directory and run `make`:
     $ cd output-bbb
     $ make
 
-After we have run `make` a new tarball will be created in the target directory:
+This will take a while (25-30min). Once complete, the next step is to package
+your system by running:
+
+    $ make system
+
+This will create a new tarball under the target `releases` directory:
 
     system-bbb/releases/studs-system-bbb-1.0.0.tar.gz
 
