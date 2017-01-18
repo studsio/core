@@ -26,16 +26,16 @@ This will create a stand-alone [PathEnv](http://fantom.org/doc/docLang/Env#PathE
 to keep our application pods separate from our master Fantom lib:
 
     myproj/
-     ├─ fan.props            # fan config for PathEnv
-     ├─ src/
-     |   ├─ fan/
-     |   |   └─ Main.fan     # application entry point
-     |   └─ build.fan        # project build file
-     ├─ studs.props          # firmware configuration file
-     └─ studs/
-         ├─ jres/            # target JREs installed here
-         ├─ systems/         # target systems installed here
-         └─ releases/        # compiled firmware images put here
+    ├── fan.props            # fan config for PathEnv
+    ├── src/
+    │   ├── fan/
+    │   │   └── Main.fan     # application entry point
+    │   └── build.fan        # project build file
+    ├── studs.props          # firmware configuration file
+    └── studs/
+        ├── jres/            # target JREs installed here
+        ├── systems/         # target systems installed here
+        └── releases/        # compiled firmware images put here
 
 `studs.props` contains the configuration for your firmware, including the
 targets you wish to build for. The default target is `rpi3`, but you may change
@@ -63,9 +63,9 @@ BeagleBone Black | [ejdk-8u###-linux-armv6-vfp-hflt.tar.gz](http://www.oracle.co
 Next copy the tar into your project directory:
 
     myproj/
-     └─ studs/
-         └─ jres/
-             └─ ejdk-8u###-linux-armv6-vfp-hflt.tar.gz
+    └── studs/
+        └── jres/
+            └── ejdk-8u###-linux-armv6-vfp-hflt.tar.gz
 
 From here the build tools will manage creating the correct image for your device.
 
@@ -85,9 +85,9 @@ After building the firmware, images are placed under the `releases` dir, where
 the naming convention is `proj-version-target`:
 
     myproj/
-     └─ studs/
-         └─ releases/
-             └─ myproj-1.0.0-rpi3.fw
+    └── studs/
+        └── releases/
+            └── myproj-1.0.0-rpi3.fw
 
 ## **Running your Project**
 
