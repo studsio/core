@@ -40,7 +40,23 @@ const class Props
       if (key.startsWith("target.") && val == "true")
       {
         name := key["target.".size..-1]
-        systems.add(System.makeDef(name))
+        uri  := map["target.${name}.uri"]?.toUri
+        if (uri == null)
+        {
+          // default system
+          systems.add(System.makeDef(name))
+        }
+        else
+        {
+          // custom system
+          base := uri.name[0..<-".tar.gz".size]
+          ver  := base["studs-system-$name-".size..-1]
+          systems.add(System {
+            it.name = name
+            it.version = Version(ver)
+            it.uri     = uri
+          })
+        }
       }
     }
 

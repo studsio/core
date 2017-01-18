@@ -14,7 +14,12 @@ using concurrent
 const class System
 {
   ** It-block ctor.
-  new make(|This| f) { f(this) }
+  new make(|This| f)
+  {
+    f(this)
+    // TODO?
+    this.jre = "linux-armv6-vfp-hflt"
+  }
 
   ** Make default System.
   new makeDef(Str name)
@@ -22,6 +27,7 @@ const class System
     this.name = name
     this.version = defVer[name]
     this.uri = `https://bitbucket.org/studs/core/downloads/studs-system-${name}-${version}.tar.gz`
+    // TODO?
     this.jre = "linux-armv6-vfp-hflt"
   }
 

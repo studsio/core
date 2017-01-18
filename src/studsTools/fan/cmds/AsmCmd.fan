@@ -76,9 +76,18 @@ const class AsmCmd : Cmd
       Proc.run("rm -rf $sysDir.osPath")
     }
 
-    // download
     tar := baseDir + `$sys.uri.name`
-    Proc.download("  Downloading $sys.name system", sys.uri, tar)
+    if (sys.uri.scheme == "http" || sys.uri.scheme == "https")
+    {
+      // download tar
+      Proc.download("  Downloading $sys.name system", sys.uri, tar)
+    }
+    else
+    {
+      // assume uri is a local file
+      tar = sys.uri.toFile
+      if (!tar.exists) abort("file not found: $tar.osPath")
+    }
 
     // untar
     info("  Install $sys.name system...")
