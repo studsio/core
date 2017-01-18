@@ -33,46 +33,21 @@ const class AsmCmd : Cmd
     // sanity check
     if (Env.cur isnot PathEnv) abort("Not a PathEnv")
 
-    f := Env.cur.workDir + `studs.props`
-    if (!f.exists) abort("project not found: $Env.cur.workDir.osPath")
-
     // make sure temp is clean
     tempClean
 
-    // find proj-meata
-    projMeta := Str:Str[:]
-    f.readProps.each |val,key|
-    {
-      if (key.startsWith("proj.")) projMeta[key] = val
-    }
-
-    // find targets - pick up from cmdline or fallback to studs.props
-    targets := args.dup.rw
-    if (targets.isEmpty)
-    {
-      f.readProps.each |val,key|
-      {
-        if (key.startsWith("target.") && val == "true")
-        {
-          name := key["target.".size..-1]
-          targets.add(name)
-        }
-      }
-    }
-
-    // validate targets first
-    targets.each |t| {
-      if (System.find(t, false) == null) abort("unknown target: $t")
-    }
+    // check for cmdline system filter
+    System[] systems := args.isEmpty
+      ? props.systems
+      : args.map |n| { props.system(n) }
 
     // build each target
-    targets.each |t|
+    systems.each |sys|
     {
-      info("Assemble [$t]")
-      sys := System.find(t)
+      info("Assemble [$sys.name]")
       installSystem(sys)
       buildJre(sys)
-      assemble(sys, projMeta)
+      assemble(sys)
     }
 
     // clean up after ourselves
@@ -146,7 +121,7 @@ const class AsmCmd : Cmd
   }
 
   ** Assemble firmware image for target.
-  Void assemble(System sys, Str:Str projMeta)
+  Void assemble(System sys)
   {
     // dir setup
     jreDir := Env.cur.workDir + `studs/jres/$sys.jre/`
@@ -158,8 +133,8 @@ const class AsmCmd : Cmd
     rootfs.create
 
     // release image name
-    proj := projMeta["proj.name"]; if (proj==null) abort("missing 'proj.meta' in studs.props")
-    ver  := projMeta["proj.ver"];  if (ver==null)  abort("missing 'proj.ver' in studs.props")
+    proj := props.projMeta["proj.name"]; if (proj==null) abort("missing 'proj.meta' in studs.props")
+    ver  := props.projMeta["proj.ver"];  if (ver==null)  abort("missing 'proj.ver' in studs.props")
     rel  := relDir + `${proj}-${ver}-${sys.name}.fw`
 
     // defaults

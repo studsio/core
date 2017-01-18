@@ -14,11 +14,15 @@ using concurrent
 const class System
 {
   ** It-block ctor.
-  new make(Str name, Version version)
+  new make(|This| f) { f(this) }
+
+  ** Make default System.
+  new makeDef(Str name)
   {
     this.name = name
-    this.version = version
+    this.version = defVer[name]
     this.uri = `https://bitbucket.org/studs/core/downloads/studs-system-${name}-${version}.tar.gz`
+    this.jre = "linux-armv6-vfp-hflt"
   }
 
   ** Unique name for this system
@@ -31,24 +35,14 @@ const class System
   const Uri uri
 
   ** JRE platform for this system.
-// TODO
-  const Str jre := "linux-armv6-vfp-hflt"
+  const Str jre
 
-  ** List available systems.
-  static System[] list() { defList }
+  ** toStr is {name}-{version}
+  override Str toStr() { "${name}-${version}" }
 
-  ** Find System with given name. If system not found throw
-  ** Err if 'checked' is true, otherwise return 'null'.
-  static System? find(Str name, Bool checked := true)
-  {
-    sys := list.find |s| { s.name == name }
-    if (sys == null && checked) throw Err("System not found '$name'")
-    return sys
-  }
-
-  ** Default list of system images - use `list` to get full list.
-  private static const System[] defList := [
-    System("bbb",  Version("1.0.0")),
-    System("rpi3", Version("1.0.0")),
+  ** Default system versions.
+  private static const Str:Version defVer := [
+    "bbb":  Version("1.0.0"),
+    "rpi3": Version("1.0.0"),
   ]
 }
