@@ -18,7 +18,9 @@ class Build : BuildScript
   @Target { help = "Compile fanuart binary" }
   Void compile()
   {
-    opts := ["-Wall", "-Wextra", "-O2", "-s"]
+    opts := ["-O2", "-Wall", "-Wextra", "-Wno-unused-parameter",
+             "-std=c99", "-D_GNU_SOURCE"]
+
     Method m := Method.find("studsTools::Toolchain.compile")
     m.callOn(null, ["fanuart", scriptDir + `src/`, opts])
   }
