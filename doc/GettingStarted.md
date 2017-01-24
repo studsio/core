@@ -14,7 +14,7 @@ our firmware.  The easiest method is to use [Homebrew](http://brew.sh) and
     $ brew update
     $ brew install fantom
     $ brew install fwup squashfs coreutils
-    $ fanr install -r http://eggbox.fantomfactory.org/fanr/ studs
+    $ fanr install -r http://eggbox.fantomfactory.org/fanr/ "studs,studsTools"
 
 ## **Create a Project**
 
