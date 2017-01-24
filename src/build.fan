@@ -20,9 +20,15 @@ class Build : BuildGroup
   {
     childrenScripts =
     [
-      `faninit/build.fan`,
       `studs/build.fan`,
+      `studsTools/build.fan`,
       `studsTest/build.fan`,
+      `faninit/build.fan`,
+
+      // We need to rebuild studsTools after natives have been
+      // compiled since this is where we package them.  This is
+      // a litte hacky - but saves us from having to keep track
+      // of another resource
       `studsTools/build.fan`,
     ]
   }

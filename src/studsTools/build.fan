@@ -28,8 +28,7 @@ class Build : BuildPod
       "util @{fan.depend}",
       "concurrent @{fan.depend}",
       "web @{fan.depend}",
-      "studs @{buildVersion}",
-      "studsTest @{buildVersion}"]
+      "studs @{buildVersion}"]
     srcDirs = [`fan/`, `fan/cmds/`]
     resDirs = [`res/`,
                `bins/bbb/`,

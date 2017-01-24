@@ -17,7 +17,7 @@ class Build : BuildPod
   new make()
   {
     podName = "studsTest"
-    summary = "Studs Test Hardness"
+    summary = "Studs Test Harness"
     meta    = [
       "proj.name":    "Studs",
       "proj.uri":     "http://studs.io/",
