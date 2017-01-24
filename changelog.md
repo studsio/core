@@ -1,5 +1,10 @@
 # **Changelog**
 
+#### **Version 1.3 (working)**
+- Change versioning to use simpler <major>.<minor>.<patch> convention
+- Rework build scripts to move Toolchain into studsTools
+- Cleanup dependencies so fanr install will work
+
 #### **Version 1.0.2 (18-Jan-2017)**
 - Move repo to https://bitbucket.org/studs/core
 - Rename BuildCmd -> AsmCmd
