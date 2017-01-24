@@ -164,6 +164,14 @@ const class AsmCmd : Cmd
     initProps := Env.cur.workDir + `faninit.props`
     initProps.copyTo(rootfs + `etc/faninit.props`)
 
+    // stage natives
+    ["fanuart"].each |name|
+    {
+      bin := Pod.find("studsTools").file(`/bins/$sys.name/$name`)
+      bin.copyTo(rootfs + `usr/bin/$name`)
+      Proc.run("chmod +x $rootfs.osPath/usr/bin/$name")
+    }
+
     // stage app
     (rootfs + `app/fan/lib/fan/`).create
     (rootfs + `app/fan/lib/java/`).create
