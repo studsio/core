@@ -20,7 +20,7 @@ is an attempt to fill part of that void for developers who's background or
 preference favors languages simliar to [Fantom][fantom].
 
 Early in the original design of Studs, the [Nerves Project][nerves] began to
-gain popularity. Nerves bears an uncanny similarly to what Studs was attempting
-to achieve -- as well as including a number of very useful design decisions
-that had not been considered. The present Studs project is largely based on the
-phenomenal work of the [Nerves team][nerves_team].
+gain popularity. Nerves bears an uncanny similarity to what Studs was
+attempting to achieve -- as well as including a number of very useful design
+decisions that had not been considered. The present Studs project is largely
+based on the phenomenal work of the [Nerves team][nerves_team].
