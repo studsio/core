@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 21.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 495 347" style="enable-background:new 0 0 495 347;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#35495D;}
+	.st1{opacity:0.8;fill:#FFFFFF;enable-background:new    ;}
+	.st2{font-family:'HelveticaNeue';}
+	.st3{font-size:12px;}
+	.st4{fill:#FFFFFF;}
+	.st5{font-size:18px;}
+	.st6{fill:none;stroke:#000000;stroke-miterlimit:10;}
+	.st7{fill:#2F81B7;}
+	.st8{font-size:14px;}
+	.st9{fill:#2F81B7;stroke:#000000;stroke-miterlimit:10;}
+	.st10{fill:#30AD63;}
+	.st11{font-size:20px;}
+</style>
+<g>
+	<g>
+		<rect x="9.5" y="266.5" class="st0" width="476" height="71"/>
+		<path d="M485,267v70H10v-70H485 M486,266H9v72h477V266L486,266z"/>
+	</g>
+	<text transform="matrix(1 0 0 1 184.4832 318.2842)" class="st1 st2 st3">Minimal Buildroot Linux</text>
+	<text transform="matrix(1 0 0 1 219.8232 295.4258)" class="st4 st2 st5">System</text>
+</g>
+<g>
+	<line class="st6" x1="441.5" y1="131" x2="442.5" y2="212"/>
+	<line class="st6" x1="344.5" y1="131" x2="345.5" y2="212"/>
+	<line class="st6" x1="247.5" y1="131" x2="248.5" y2="212"/>
+	<line class="st6" x1="149.5" y1="131" x2="150.5" y2="212"/>
+	<line class="st6" x1="53" y1="131" x2="54" y2="212"/>
+</g>
+<g>
+	<g>
+		<rect x="9.5" y="207.5" class="st7" width="87" height="49"/>
+		<path d="M96,208v48H10v-48H96 M97,207H9v50h88V207L97,207z"/>
+	</g>
+	<text transform="matrix(1 0 0 1 20 235.998)" class="st4 st2 st8">C Daemon</text>
+	<g>
+		<rect x="106.8" y="207.5" class="st7" width="87" height="49"/>
+		<path d="M193.2,208v48h-86v-48H193.2 M194.2,207h-88v50h88V207L194.2,207z"/>
+	</g>
+	<g>
+		<rect x="204" y="207.5" class="st7" width="87" height="49"/>
+		<path d="M290.5,208v48h-86v-48H290.5 M291.5,207h-88v50h88V207L291.5,207z"/>
+	</g>
+	<g>
+		<rect x="301.2" y="207.5" class="st7" width="87" height="49"/>
+		<path d="M387.8,208v48h-86v-48H387.8 M388.8,207h-88v50h88V207L388.8,207z"/>
+	</g>
+	<g>
+		<rect x="398.5" y="207.5" class="st7" width="87" height="49"/>
+		<path d="M485,208v48h-86v-48H485 M486,207h-88v50h88V207L486,207z"/>
+	</g>
+	<text transform="matrix(1 0 0 1 117.25 235.998)" class="st4 st2 st8">C Daemon</text>
+	<text transform="matrix(1 0 0 1 213.9998 235.998)" class="st4 st2 st8">C Daemon</text>
+	<text transform="matrix(1 0 0 1 311 235.998)" class="st4 st2 st8">C Daemon</text>
+	<text transform="matrix(1 0 0 1 408.6733 235.998)" class="st4 st2 st8">C Daemon</text>
+</g>
+<g>
+	<rect x="9.5" y="149.5" class="st9" width="476" height="48"/>
+	<text transform="matrix(1 0 0 1 231.9912 180.4258)" class="st4 st2 st5">JVM</text>
+</g>
+<g>
+	<g>
+		<g>
+			<rect x="9.5" y="90.5" class="st7" width="87" height="49"/>
+			<path d="M96,91v48H10V91H96 M97,90H9v50h88V90L97,90z"/>
+		</g>
+		<text transform="matrix(1 0 0 1 29.137 113)" class="st4 st2 st8">Fantom</text>
+		<text transform="matrix(1 0 0 1 26.637 126.8)" class="st4 st2 st8">Daemon</text>
+	</g>
+	<g>
+		<g>
+			<rect x="106.8" y="90.5" class="st7" width="87" height="49"/>
+			<path d="M193.2,91v48h-86V91H193.2 M194.2,90h-88v50h88V90L194.2,90z"/>
+		</g>
+		<text transform="matrix(1 0 0 1 126.387 113)" class="st4 st2 st8">Fantom</text>
+		<text transform="matrix(1 0 0 1 123.887 126.8)" class="st4 st2 st8">Daemon</text>
+	</g>
+	<g>
+		<g>
+			<rect x="204" y="90.5" class="st7" width="87" height="49"/>
+			<path d="M290.5,91v48h-86V91H290.5 M291.5,90h-88v50h88V90L291.5,90z"/>
+		</g>
+		<text transform="matrix(1 0 0 1 223.637 113)" class="st4 st2 st8">Fantom</text>
+		<text transform="matrix(1 0 0 1 221.137 126.8)" class="st4 st2 st8">Daemon</text>
+	</g>
+	<g>
+		<g>
+			<rect x="301.2" y="90.5" class="st7" width="87" height="49"/>
+			<path d="M387.8,91v48h-86V91H387.8 M388.8,90h-88v50h88V90L388.8,90z"/>
+		</g>
+		<text transform="matrix(1 0 0 1 320.887 113)" class="st4 st2 st8">Fantom</text>
+		<text transform="matrix(1 0 0 1 318.387 126.8)" class="st4 st2 st8">Daemon</text>
+	</g>
+	<g>
+		<g>
+			<rect x="398.5" y="90.5" class="st7" width="87" height="49"/>
+			<path d="M485,91v48h-86V91H485 M486,90h-88v50h88V90L486,90z"/>
+		</g>
+		<text transform="matrix(1 0 0 1 418.137 113)" class="st4 st2 st8">Fantom</text>
+		<text transform="matrix(1 0 0 1 415.637 126.8)" class="st4 st2 st8">Daemon</text>
+	</g>
+</g>
+<g>
+	<g>
+		<rect x="9.5" y="9.5" class="st10" width="476" height="71"/>
+		<path d="M485,10v70H10V10H485 M486,9H9v72h477V9L486,9z"/>
+	</g>
+	<text transform="matrix(1 0 0 1 160.4417 51.1396)" class="st4 st2 st11">Fantom Application</text>
+</g>
+</svg>

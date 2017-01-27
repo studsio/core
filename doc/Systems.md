@@ -1,7 +1,6 @@
 # Systems
 
-[br]:     https://buildroot.org
-[docker]: https://www.docker.com
+[br]: https://buildroot.org
 
 Studs systems are simply minimal Linux images built using [Buildroot][br]. They
 are designed to be small and lightweight, and push as much implementation detail
