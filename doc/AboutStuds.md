@@ -40,10 +40,10 @@ Studs [systems][system] are simply minimal Linux images built using
 [Buildroot][br]. They provide only the bare necessities for booting onto a
 specific hardware platform.
 
-Studs replaces the standard `/etc/init` with a custom [faninit][faninit] binary
-that boots directly into the JVM and starts the Fantom Application. By skipping
-general initialization, and only brining up the required sub-systems, Studs
-applications can boot in seconds.
+Studs replaces the standard `/sbin/init` with a custom [faninit][faninit]
+binary that boots directly into the JVM and starts the Fantom Application. By
+skipping general initialization, and only brining up the required sub-systems,
+Studs applications can boot in seconds.
 
 ### Framework
 
