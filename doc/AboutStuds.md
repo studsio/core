@@ -42,7 +42,7 @@ specific hardware platform.
 
 Studs replaces the standard `/sbin/init` with a custom [faninit][faninit]
 binary that boots directly into the JVM and starts the Fantom Application. By
-skipping general initialization, and only brining up the required sub-systems,
+skipping general initialization, and only bringing up the required sub-systems,
 Studs applications can boot in seconds.
 
 ### Framework
