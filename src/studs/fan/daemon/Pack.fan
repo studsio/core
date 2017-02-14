@@ -7,9 +7,9 @@
 //
 
 **
-** Pak is a binary encoding for name-value pairs.
+** Pack is a binary encoding for name-value pairs.
 **
-class Pak
+class Pack
 {
   static Buf encode(Str:Obj map)
   {
@@ -52,6 +52,8 @@ class Pak
         default: throw ArgErr("Unsupported value type: $v [$v.typeof]")
       }
     }
+
+    // TODO: check len > 0xffff
 
     // backpatch len
     buf.seek(2)

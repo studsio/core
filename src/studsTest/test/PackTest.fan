@@ -8,7 +8,7 @@
 
 using studs
 
-class PakTest : Test
+class PackTest : Test
 {
   Void testBasics()
   {
@@ -41,20 +41,20 @@ class PakTest : Test
 
     // name too big
     x := ""; 256.times { x+="x" }
-    verifyErr(ArgErr#) { Pak.encode([x:false]) }
+    verifyErr(ArgErr#) { Pack.encode([x:false]) }
 
     // non-ascii
-    verifyErr(ArgErr#) { Pak.encode(["\u0019":false]) }
-    verifyErr(ArgErr#) { Pak.encode(["\u007f":false]) }
-    verifyErr(ArgErr#) { Pak.encode(["\u00ff":false]) }
+    verifyErr(ArgErr#) { Pack.encode(["\u0019":false]) }
+    verifyErr(ArgErr#) { Pack.encode(["\u007f":false]) }
+    verifyErr(ArgErr#) { Pack.encode(["\u00ff":false]) }
   }
 
   private Void verifyBuf(Str:Obj map, Str hex)
   {
-    buf := Pak.encode(map)
+    buf := Pack.encode(map)
     verifyEq(buf.toHex, hex.split.join)
 
-    test := Pak.decode(buf)
+    test := Pack.decode(buf)
     verifyEq(map.size, test.size)
 
     mk := map.keys.sort

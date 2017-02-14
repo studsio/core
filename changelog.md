@@ -4,7 +4,7 @@
 - Change versioning to use simpler <major>.<minor>.<patch> convention
 - Rework build scripts to move Toolchain into studsTools
 - Cleanup dependencies so fanr install will work
-- Pak encoder/decoder
+- Pack encoder/decoder
 
 #### **Version 1.0.2 (18-Jan-2017)**
 - Move repo to https://bitbucket.org/studs/core
