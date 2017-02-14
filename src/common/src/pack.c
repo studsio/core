@@ -63,7 +63,7 @@ struct pack_entry * pack_decode(char *buf)
                ((uint64_t)buf[off+4] << 24) |
                ((uint64_t)buf[off+5] << 16) |
                ((uint64_t)buf[off+6] << 8)  |
-               buf[off+7];
+               ((uint8_t)buf[off+7]);
         val.i = (uval <= 0x7fffffffffffffffu)
           ? uval
           : (-1 - (int64_t)(0xffffffffffffffffu - uval));

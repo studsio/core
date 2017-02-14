@@ -62,11 +62,29 @@ void test_basics()
   verify(pack_has(p, "d"));
   verify_str(pack_gets(p, "d"), "foo");
   verify_str(pack_gets(p, "x"), NULL);
+
+  // b:true, i:1000, s:"cool"
+  char m[] = { 0x70, 0x6b, 0x00, 0x18,
+               0x01, 0x62, 0x10, 0x01,
+               0x01, 0x69, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xe8,
+               0x01, 0x73, 0x40, 0x00, 0x04, 0x63, 0x6f, 0x6f, 0x6c };
+
+  p = pack_decode(m);
+  verify(pack_has(p, "b"));
+  verify(pack_has(p, "i"));
+  verify(pack_has(p, "s"));
+  verify(pack_getb(p, "b"));
+  verify_int(pack_geti(p, "i"), 1000);
+  verify_str(pack_gets(p, "s"), "cool");
 }
 
 int main()
 {
   test_basics();
+  // TODO: test_bool
+  // TODO: test_int
+  // TODO: test_str
+  // TODO: test_names
   printf("TEST PASSED\n");
   return 0;
 }
