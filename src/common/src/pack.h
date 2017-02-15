@@ -30,6 +30,8 @@ struct pack_entry {
 };
 
 struct pack_entry * pack_decode(char *buf);
+char * pack_encode(struct pack_entry *p);
+
 struct pack_entry * pack_find(struct pack_entry *p, char *name);
 int pack_has(struct pack_entry *p, char *name);
 int pack_getb(struct pack_entry *p, char *name);

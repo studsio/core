@@ -109,6 +109,85 @@ struct pack_entry * pack_decode(char *buf)
 }
 
 /*
+ * Encode linked list into byte buffer.  Returns pointer
+ * to buffer, or NULL if error occurred.
+ */
+char * pack_encode(struct pack_entry *p)
+{
+  struct pack_entry *head = p;
+
+  // determine packet length
+  uint16_t len = 0;
+  while (p != NULL)
+  {
+    len += 1 + strlen(p->name);
+    switch (p->type)
+    {
+      case PACK_TYPE_BOOL:  len += 2; break;
+      case PACK_TYPE_INT:   len += 9; break;
+      case PACK_TYPE_FLOAT: len += 9; break;
+      case PACK_TYPE_STR:   len += 3 + strlen(p->val.s);
+    }
+    p = p->next;
+  }
+
+  char *buf = (char *)malloc(len+4);
+  uint16_t off = 0;
+  uint8_t i, nlen;
+  uint32_t slen;
+
+  // magic
+  buf[off++] = 0x70;
+  buf[off++] = 0x6b;
+
+  // length
+  buf[off++] = (len >> 8) & 0xff;
+  buf[off++] = len & 0xff;
+
+  // encode entries
+  p = head;
+  while (p != NULL)
+  {
+    nlen = strlen(p->name);
+    buf[off++] = nlen;
+    for (i=0; i<nlen; i++) buf[off++] = p->name[i];
+
+    buf[off++] = p->type;
+    switch (p->type)
+    {
+      case PACK_TYPE_BOOL:
+        buf[off++] = p->val.i & 0xff;
+        break;
+
+      case PACK_TYPE_INT:
+        buf[off++] = (p->val.i >> 56) & 0xff;
+        buf[off++] = (p->val.i >> 48) & 0xff;
+        buf[off++] = (p->val.i >> 40) & 0xff;
+        buf[off++] = (p->val.i >> 32) & 0xff;
+        buf[off++] = (p->val.i >> 24) & 0xff;
+        buf[off++] = (p->val.i >> 16) & 0xff;
+        buf[off++] = (p->val.i >> 8)  & 0xff;
+        buf[off++] = p->val.i & 0xff;
+        break;
+
+      // case PACK_TYPE_FLOAT:
+      //   break;
+
+      case PACK_TYPE_STR:
+       slen = strlen(p->val.s);
+       buf[off++] = (slen >> 8) & 0xff;
+       buf[off++] = slen & 0xff;
+       for (i=0; i<slen; i++) buf[off++] = p->val.s[i];
+       break;
+    }
+
+    p = p->next;
+  }
+
+  return buf;
+}
+
+/*
  * Find the entry for the given name in this list, or
  * returns NULL if name not found.
  */

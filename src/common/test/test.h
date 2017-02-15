@@ -53,3 +53,14 @@ void verify_str(char *test, char *expected)
 
   if (strcmp(test, expected) != 0) fail("%s != %s", test, expected);
 }
+
+void verify_buf(char *test, char *expected)
+{
+  int tlen = sizeof(test) / sizeof(test[0]);
+  int xlen = sizeof(expected) / sizeof(expected[0]);
+  if (tlen != xlen) fail("buf length %d != %d", tlen, xlen);
+  for (int i=0; i<tlen; i++)
+    if (test[i] != expected[i])
+      fail("buf[%d] %d != %d", i, test[i], expected[i]);
+}
+
