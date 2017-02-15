@@ -22,7 +22,7 @@ struct pack_entry * pack_decode(char *buf)
   if (buf[1] != 0x6b) return NULL;
 
   // read length
-  uint16_t len = ((buf[2] << 8) & 0xff) | (buf[3] & 0xff) + 4;
+  uint16_t len = (((buf[2] << 8) & 0xff) | (buf[3] & 0xff)) + 4;
   uint16_t off = 4;
 
   struct pack_entry *head = NULL;
@@ -59,9 +59,8 @@ struct pack_entry * pack_decode(char *buf)
                ((uint64_t)buf[off+5] << 16) |
                ((uint64_t)buf[off+6] << 8)  |
                ((uint8_t)buf[off+7]);
-        val.i = (uval <= 0x7fffffffffffffffu)
-          ? uval
-          : (-1 - (int64_t)(0xffffffffffffffffu - uval));
+        if (uval <= 0x7fffffffffffffffu) val.i = uval;
+        else val.i = (-1 - (int64_t)(0xffffffffffffffffu - uval));
         off += 8;
         break;
 
