@@ -20,10 +20,6 @@ class PackTest : Test
     verifyBuf(["i":0],   "706b 000b 0169 20 0000 0000 0000 0000")
     verifyBuf(["i":255], "706b 000b 0169 20 0000 0000 0000 00ff")
 
-    // float
-    verifyBuf(["f":1.5f],    "706b 000b 0166 30 3ff8 0000 0000 0000")
-    verifyBuf(["f":-12.79f], "706b 000b 0166 30 c029 947a e147 ae14")
-
     // str
     verifyBuf(["s":"foo"],  "706b 0008 0173 40 0003 666f6f")
 

@@ -45,24 +45,9 @@ void test_basics()
   verify(!pack_has(p, "x"));
   verify_int(pack_geti(p, "x"), 0);
   verify(!pack_getb(p, "b"));
-  verify_float(pack_getf(p, "b"), 0.0);
 
   buf = pack_encode(p);
   verify_buf(buf, b);
-
-  // c:1.5f
-  char c[] = { 0x70, 0x6b, 0x00, 0x0b,
-               0x01, 0x63, 0x30, 0x3f, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-  p = pack_decode(c);
-  verify(pack_has(p, "c"));
-  verify_float(pack_getf(p, "c"), 1.5);
-
-  verify(!pack_getb(p, "c"));
-  verify_int(pack_geti(p, "c"), 0);
-
-  // buf = pack_encode(p);
-  // verify_buf(buf, c);
 
   // d:"foo"
   char d[] = { 0x70, 0x6b, 0x00, 0x08,

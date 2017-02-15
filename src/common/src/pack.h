@@ -13,12 +13,10 @@
 
 #define PACK_TYPE_BOOL   0x10
 #define PACK_TYPE_INT    0x20
-#define PACK_TYPE_FLOAT  0x30
 #define PACK_TYPE_STR    0x40
 
 union pack_uval {
   int64_t i;
-  double d;
   char *s;
 };
 
@@ -36,7 +34,6 @@ struct pack_entry * pack_find(struct pack_entry *p, char *name);
 int pack_has(struct pack_entry *p, char *name);
 int pack_getb(struct pack_entry *p, char *name);
 int64_t pack_geti(struct pack_entry *p, char *name);
-double pack_getf(struct pack_entry *p, char *name);
 char * pack_gets(struct pack_entry *p, char *name);
 
 #endif

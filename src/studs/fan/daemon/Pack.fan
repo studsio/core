@@ -40,9 +40,6 @@ class Pack
         case Int#:
           buf.write(tcInt).writeI8(v)
 
-        case Float#:
-          buf.write(tcFloat).writeF8(v)
-
         case Str#:
           // charset checking?
           s := (Str)v
@@ -83,9 +80,6 @@ class Pack
         case tcInt:
           map[name] = buf.readS8
 
-        case tcFloat:
-          map[name] = buf.readF8
-
         case tcStr:
           slen := buf.readU2
           map[name] = buf.readChars(slen)
@@ -101,8 +95,7 @@ class Pack
   static const Int magic := 0x706b
 
   // type codes
-  static const Int tcBool  := 0x10
-  static const Int tcInt   := 0x20
-  static const Int tcFloat := 0x30
-  static const Int tcStr   := 0x40
+  static const Int tcBool := 0x10
+  static const Int tcInt  := 0x20
+  static const Int tcStr  := 0x40
 }

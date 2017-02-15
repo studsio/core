@@ -25,10 +25,6 @@ struct pack_entry * pack_decode(char *buf)
   uint16_t len = ((buf[2] << 8) & 0xff) | (buf[3] & 0xff) + 4;
   uint16_t off = 4;
 
-  // check endianess
-  int n = 1;
-  int le = (*(char *)&n == 1);
-
   struct pack_entry *head = NULL;
   struct pack_entry *tail = NULL;
   char *name;
@@ -37,7 +33,6 @@ struct pack_entry * pack_decode(char *buf)
   uint32_t slen;
   char *sval;
   uint64_t uval;
-  union float_u { double d; char bytes[8]; } fval;
 
   while (off < len)
   {
@@ -67,17 +62,6 @@ struct pack_entry * pack_decode(char *buf)
         val.i = (uval <= 0x7fffffffffffffffu)
           ? uval
           : (-1 - (int64_t)(0xffffffffffffffffu - uval));
-        off += 8;
-        break;
-
-      case PACK_TYPE_FLOAT:
-        // TODO FIXIT: do we support float?
-        for (i=0; i<8; i++)
-        {
-          if (le) fval.bytes[7-i] = buf[off+i];
-          else    fval.bytes[i]   = buf[off+i];
-        }
-        val.d = fval.d;
         off += 8;
         break;
 
@@ -123,10 +107,9 @@ char * pack_encode(struct pack_entry *p)
     len += 1 + strlen(p->name);
     switch (p->type)
     {
-      case PACK_TYPE_BOOL:  len += 2; break;
-      case PACK_TYPE_INT:   len += 9; break;
-      case PACK_TYPE_FLOAT: len += 9; break;
-      case PACK_TYPE_STR:   len += 3 + strlen(p->val.s);
+      case PACK_TYPE_BOOL: len += 2; break;
+      case PACK_TYPE_INT:  len += 9; break;
+      case PACK_TYPE_STR:  len += 3 + strlen(p->val.s);
     }
     p = p->next;
   }
@@ -170,10 +153,7 @@ char * pack_encode(struct pack_entry *p)
         buf[off++] = p->val.i & 0xff;
         break;
 
-      // case PACK_TYPE_FLOAT:
-      //   break;
-
-      case PACK_TYPE_STR:
+        case PACK_TYPE_STR:
        slen = strlen(p->val.s);
        buf[off++] = (slen >> 8) & 0xff;
        buf[off++] = slen & 0xff;
@@ -233,18 +213,6 @@ int64_t pack_geti(struct pack_entry *p, char *name)
   if (p == NULL) return 0;
   if (p->type != PACK_TYPE_INT) return 0;
   return p->val.i;
-}
-
-/*
- * Get value for given name as 64-bit float. If name
- * not found, or if type does not match, returns 0.0.
- */
-double pack_getf(struct pack_entry *p, char *name)
-{
-  p = pack_find(p, name);
-  if (p == NULL) return 0.0;
-  if (p->type != PACK_TYPE_FLOAT) return 0.0;
-  return p->val.d;
 }
 
 /*
