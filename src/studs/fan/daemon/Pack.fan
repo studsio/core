@@ -23,20 +23,12 @@ class Pack
     // encode each name-value pair
     map.each |v,n|
     {
-      // validate name
-      nlen := n.size
-      if (nlen > 255) throw ArgErr("Name length > 255: $n")
-      if (n.any |c| { c < 0x20 || c > 0x7e }) throw ArgErr("Invalid name: $n")
-
-      // encode name
-      buf.write(nlen)
-      buf.print(n)
-
-      // encode value
+      encodeName(n, buf)
       encodeVal(v, buf)
     }
 
-    // TODO: check len > 0xffff
+    // sanity size check
+    if (buf.size-4 > 0xffff) throw ArgErr("Packet size too big > 65536")
 
     // backpatch len
     buf.seek(2)
@@ -64,6 +56,14 @@ class Pack
     return map
   }
 
+  private static Void encodeName(Str n, Buf buf)
+  {
+    nlen := n.size
+    if (nlen > 255) throw ArgErr("Name length > 255: $n")
+    if (n.any |c| { c < 0x20 || c > 0x7e }) throw ArgErr("Invalid name: $n")
+    buf.write(nlen).print(n)
+  }
+
   private static Void encodeVal(Obj v, Buf buf)
   {
     // encode value
@@ -86,6 +86,16 @@ class Pack
         if (list.size > 0xffff) throw ArgErr("List size > 65536")
         buf.write(tcList).writeI2(list.size)
         list.each |i| { encodeVal(i, buf) }
+
+      case [Str:Obj]#:
+        map := (Str:Obj)v
+        if (map.size > 0xffff) throw ArgErr("Map size > 65536")
+        buf.write(tcMap).writeI2(map.size)
+        map.each |mv, mk|
+        {
+          encodeName(mk, buf)
+          encodeVal(mv, buf)
+        }
 
       default: throw ArgErr("Unsupported value type: $v [$v.typeof]")
     }
@@ -111,6 +121,17 @@ class Pack
         llen := buf.readU2
         llen.times { list.add(decodeVal(buf)) }
         return list.toImmutable
+
+      case tcMap:
+        map  := Str:Obj[:]
+        mlen := buf.readU2
+        mlen.times
+        {
+          nlen := buf.read
+          name := buf.readChars(nlen)
+          map[name] = decodeVal(buf)
+        }
+        return map.toImmutable
 
       default: throw IOErr("Unknown type code: 0x$tc.toHex")
     }
