@@ -24,7 +24,7 @@ const class Uartd : Daemon
     return d
   }
 
-  ** List the availabe uart ports on this device.
+  ** List the available uart ports on this device.
   Str[] ports()
   {
     p := Proc { it.cmd=["/usr/bin/fanuart"] }
