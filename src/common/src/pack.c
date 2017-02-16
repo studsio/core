@@ -15,7 +15,7 @@
  * Decode byte buffer into pack_entry linked list. Returns
  * pointr to entry, or NULL if error occurred.
  */
-struct pack_entry * pack_decode(char *buf)
+struct pack_entry * pack_decode(uint8_t *buf)
 {
   // sanity checks
   if (buf[0] != 0x70) return NULL;
@@ -95,7 +95,7 @@ struct pack_entry * pack_decode(char *buf)
  * Encode linked list into byte buffer.  Returns pointer
  * to buffer, or NULL if error occurred.
  */
-char * pack_encode(struct pack_entry *p)
+uint8_t * pack_encode(struct pack_entry *p)
 {
   struct pack_entry *head = p;
 
@@ -113,7 +113,7 @@ char * pack_encode(struct pack_entry *p)
     p = p->next;
   }
 
-  char *buf = (char *)malloc(len+4);
+  uint8_t *buf = (uint8_t *)malloc(len+4);
   uint16_t off = 0;
   uint8_t i, nlen;
   uint32_t slen;

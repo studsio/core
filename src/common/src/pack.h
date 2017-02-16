@@ -27,8 +27,8 @@ struct pack_entry {
   struct pack_entry *next;
 };
 
-struct pack_entry * pack_decode(char *buf);
-char * pack_encode(struct pack_entry *p);
+struct pack_entry * pack_decode(uint8_t *buf);
+uint8_t * pack_encode(struct pack_entry *p);
 
 struct pack_entry * pack_find(struct pack_entry *p, char *name);
 int pack_has(struct pack_entry *p, char *name);

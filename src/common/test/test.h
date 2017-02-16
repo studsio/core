@@ -54,7 +54,7 @@ void verify_str(char *test, char *expected)
   if (strcmp(test, expected) != 0) fail("%s != %s", test, expected);
 }
 
-void verify_buf(char *test, char *expected)
+void verify_buf(uint8_t *test, uint8_t *expected)
 {
   int tlen = sizeof(test) / sizeof(test[0]);
   int xlen = sizeof(expected) / sizeof(expected[0]);
@@ -63,4 +63,3 @@ void verify_buf(char *test, char *expected)
     if (test[i] != expected[i])
       fail("buf[%d] %d != %d", i, test[i], expected[i]);
 }
-
