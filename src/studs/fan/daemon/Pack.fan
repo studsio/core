@@ -11,6 +11,7 @@
 **
 class Pack
 {
+  ** Enode map into a Pack byte buffer.
   static Buf encode(Str:Obj map)
   {
     if (map.isEmpty) throw ArgErr("Cannot encode empty map")
@@ -32,22 +33,7 @@ class Pack
       buf.print(n)
 
       // encode value
-      switch (v.typeof)
-      {
-        case Bool#:
-          buf.write(tcBool).write(v == false ? 0x00 : 0x01)
-
-        case Int#:
-          buf.write(tcInt).writeI8(v)
-
-        case Str#:
-          // charset checking?
-          s := (Str)v
-          if (s.size > 0xffff) throw ArgErr("Value string length > 65536")
-          buf.write(tcStr).writeI2(s.size).print(s)
-
-        default: throw ArgErr("Unsupported value type: $v [$v.typeof]")
-      }
+      encodeVal(v, buf)
     }
 
     // TODO: check len > 0xffff
@@ -58,6 +44,7 @@ class Pack
     return buf.seek(0)
   }
 
+  ** Decode Pack byte buffer into map instance.
   static Str:Obj decode(Buf buf)
   {
     m := buf.readU2
@@ -71,24 +58,62 @@ class Pack
     {
       nlen := buf.read
       name := buf.readChars(nlen)
-      code := buf.read
-      switch (code)
-      {
-        case tcBool:
-          map[name] = buf.read != 0
-
-        case tcInt:
-          map[name] = buf.readS8
-
-        case tcStr:
-          slen := buf.readU2
-          map[name] = buf.readChars(slen)
-
-        default: throw IOErr("Unknown type code: 0x$code.toHex")
-      }
+      map[name] = decodeVal(buf)
     }
 
     return map
+  }
+
+  private static Void encodeVal(Obj v, Buf buf)
+  {
+    // encode value
+    switch (v.typeof)
+    {
+      case Bool#:
+        buf.write(tcBool).write(v == false ? 0x00 : 0x01)
+
+      case Int#:
+        buf.write(tcInt).writeI8(v)
+
+      case Str#:
+        // charset checking?
+        s := (Str)v
+        if (s.size > 0xffff) throw ArgErr("Value string length > 65536")
+        buf.write(tcStr).writeI2(s.size).print(s)
+
+      case Obj[]#:
+        list := (Obj[])v
+        if (list.size > 0xffff) throw ArgErr("List size > 65536")
+        buf.write(tcList).writeI2(list.size)
+        list.each |i| { encodeVal(i, buf) }
+
+      default: throw ArgErr("Unsupported value type: $v [$v.typeof]")
+    }
+  }
+
+  private static Obj decodeVal(Buf buf)
+  {
+    tc := buf.read
+    switch (tc)
+    {
+      case tcBool:
+        return buf.read != 0
+
+      case tcInt:
+        return buf.readS8
+
+      case tcStr:
+        slen := buf.readU2
+        return buf.readChars(slen)
+
+      case tcList:
+        list := Obj[,]
+        llen := buf.readU2
+        llen.times { list.add(decodeVal(buf)) }
+        return list.toImmutable
+
+      default: throw IOErr("Unknown type code: 0x$tc.toHex")
+    }
   }
 
   // magic number 'pk'
@@ -98,4 +123,6 @@ class Pack
   static const Int tcBool := 0x10
   static const Int tcInt  := 0x20
   static const Int tcStr  := 0x40
+  static const Int tcList := 0x50
+  static const Int tcMap  := 0x60
 }

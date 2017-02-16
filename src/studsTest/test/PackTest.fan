@@ -45,6 +45,15 @@ class PackTest : Test
     verifyErr(ArgErr#) { Pack.encode(["\u00ff":false]) }
   }
 
+  Void testLists()
+  {
+    verifyBuf(["a":[true, 12, "foo"]],
+      "706b 0016 0161 50 0003
+       1001
+       20 0000 0000 0000 000c
+       40 0003 666f6f")
+  }
+
   private Void verifyBuf(Str:Obj map, Str hex)
   {
     buf := Pack.encode(map)
