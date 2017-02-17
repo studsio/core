@@ -12,9 +12,9 @@ Studs.
 Pack encodes/decodes between Fantom [Map][fan_map] and [Buf][fan_buf] types.
 The supported primitive value types for Pack maps are:
 
-  - Bool
-  - Int
-  - Str
+  - `Bool`
+  - `Int`
+  - `Str`
 
 Additionally Pack map values can be `Obj[]` lists and `Str:Obj` maps of the
 above primitives.
@@ -34,7 +34,37 @@ above primitives.
 
 ## C Usage
 
-TODO
+The Pack C library is defined in `pack.h` and models the name/value pairs using
+`struct pack_map`.  The primitive value types are stored as:
+
+  - `bool`
+  - `int64_t`
+  - `char *`
+
+Note all integers are 64-bit signed longs for consistency with how integers are
+modeled in Fantom.
+
+     // allocate
+     struct pack_map *map = pack_map_new();
+     pack_map_free(map);
+
+     // setters
+     pack_setb(map, "a", true);
+     pack_seti(map, "b", 12);
+     pack_sets(map, "c", "foo");
+
+     // getters
+     bool b = pack_getb(map, "a");
+     int64_t i = pack_geti(map, "b");
+     char *s = pack_gets(map, "c");
+
+     if (pack_has("foo")) { ... }
+
+     // encode
+     uint8_t *buf = pack_encode(map);
+
+     // decode
+     struct pack_map *map = pack_decode(buf);
 
 ## Spec
 
