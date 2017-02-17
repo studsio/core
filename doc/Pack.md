@@ -67,10 +67,13 @@ modeled in Fantom.
      struct pack_map *map = pack_decode(buf);
 
      // maps
-     struct pack_map *sub = pack_map_new();
-     pack_setb(sub, "foo", true);
-     pack_sets(sub, "bar", "cool beans");
-     pack_setm(map, "sub", sub);
+     struct pack_map *a = pack_map_new();
+     pack_setb(a, "foo", true);
+     pack_sets(a, "bar", "cool beans");
+
+     pack_setm(map, "a", a);
+     sub = pack_getm(map, "a");
+
 
 ## Spec
 
