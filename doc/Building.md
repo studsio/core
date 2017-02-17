@@ -1,4 +1,4 @@
-# **Building Firmware**
+# **Building**
 
 TODO: `fan studs asm` detailed docs
 
