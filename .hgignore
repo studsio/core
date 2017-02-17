@@ -1,6 +1,7 @@
 syntax: glob
 
 .DS_Store
+src/common/test/test
 
 syntax: regexp
 
