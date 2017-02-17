@@ -59,6 +59,9 @@ void test_basics()
   verify(pack_getb(map, "b"));
   verify_int(pack_geti(map, "i"), 5);
   verify_str(pack_gets(map, "s"), "foo");
+
+  // free
+  pack_map_free(map);
 }
 
 int main()

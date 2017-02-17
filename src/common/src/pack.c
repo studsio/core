@@ -60,7 +60,19 @@ struct pack_map* pack_map_new()
  */
 void pack_map_free(struct pack_map *map)
 {
-  // TODO
+  struct pack_entry *p = map->head;
+  struct pack_entry *q;
+
+  while (p != NULL)
+  {
+    q = p->next;
+    free(p->name);
+    if (p->type == PACK_TYPE_STR) free(p->val.s);
+    free(p);
+    p = q;
+  }
+
+  free(map);
 }
 
 //////////////////////////////////////////////////////////////////////////
