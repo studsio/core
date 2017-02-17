@@ -11,72 +11,54 @@
 
 void test_basics()
 {
-  struct pack_entry *p;
+  struct pack_map *map;
   uint8_t *buf;
 
-  // bad magic
-  uint8_t bad_magic[] = { 0, 5, 8 };
-  p = pack_decode(bad_magic);
-  verify(p == NULL);
+  // test new
+  map = pack_map_new();
+  verify(map != NULL);
+  verify(map->head == NULL);
+  verify(map->tail == NULL);
+  verify_int(map->size, 0);
 
-  // a:true
-  uint8_t a[] = { 0x70, 0x6b, 0x00, 0x04,
-                  0x01, 0x61, 0x10, 0x01 };
+  verify(!pack_has(map, "b"));
+  verify(!pack_has(map, "i"));
+  verify(!pack_has(map, "s"));
 
-  p = pack_decode(a);
-  verify(pack_has(p, "a"));
-  verify(pack_getb(p, "a"));
+  // test setb/getb
+  pack_setb(map, "b", true);
+  verify(pack_has(map, "b"));
+  verify_int(map->size, 1);
+  verify(pack_getb(map, "b"));
 
-  verify_int(pack_geti(p, "a"), 0);
+  // test seti/geti
+  pack_seti(map, "i", 5);
+  verify(pack_has(map, "i"));
+  verify_int(map->size, 2);
+  verify_int(pack_geti(map, "i"), 5);
 
-  buf = pack_encode(p);
-  verify_buf(buf, a);
+  // test seti/geti
+  pack_sets(map, "s", "foo");
+  verify(pack_has(map, "s"));
+  verify_int(map->size, 3);
+  verify_str(pack_gets(map, "s"), "foo");
 
-  // b:5
-  uint8_t b[] = { 0x70, 0x6b, 0x00, 0x0b,
-                  0x01, 0x62, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05 };
+  // test encode/decode
+  uint8_t enc[] = { 0x70, 0x6b, 0x00, 0x17,
+                    0x01, 0x62, 0x10, 0x01,
+                    0x01, 0x69, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05,
+                    0x01, 0x73, 0x40, 0x00, 0x03, 0x66, 0x6f, 0x6f };
 
-  p = pack_decode(b);
-  verify(pack_has(p, "b"));
-  verify_int(pack_geti(p, "b"), 5);
+  buf = pack_encode(map);
+  verify_buf(buf, enc);
 
-  verify(!pack_has(p, "bc"));
-  verify(!pack_has(p, "c"));
-  verify(!pack_has(p, "x"));
-  verify_int(pack_geti(p, "x"), 0);
-  verify(!pack_getb(p, "b"));
-
-  buf = pack_encode(p);
-  verify_buf(buf, b);
-
-  // d:"foo"
-  uint8_t d[] = { 0x70, 0x6b, 0x00, 0x08,
-                  0x01, 0x64, 0x40, 0x00, 0x03, 0x66, 0x6f, 0x6f };
-
-  p = pack_decode(d);
-  verify(pack_has(p, "d"));
-  verify_str(pack_gets(p, "d"), "foo");
-  verify_str(pack_gets(p, "x"), NULL);
-
-  buf = pack_encode(p);
-  verify_buf(buf, d);
-
-  // b:true, i:1000, s:"cool"
-  uint8_t m[] = { 0x70, 0x6b, 0x00, 0x18,
-                  0x01, 0x62, 0x10, 0x01,
-                  0x01, 0x69, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xe8,
-                  0x01, 0x73, 0x40, 0x00, 0x04, 0x63, 0x6f, 0x6f, 0x6c };
-
-  p = pack_decode(m);
-  verify(pack_has(p, "b"));
-  verify(pack_has(p, "i"));
-  verify(pack_has(p, "s"));
-  verify(pack_getb(p, "b"));
-  verify_int(pack_geti(p, "i"), 1000);
-  verify_str(pack_gets(p, "s"), "cool");
-
-  buf = pack_encode(p);
-  verify_buf(buf, m);
+  map = pack_decode(enc);
+  verify(pack_has(map, "b"));
+  verify(pack_has(map, "i"));
+  verify(pack_has(map, "s"));
+  verify(pack_getb(map, "b"));
+  verify_int(pack_geti(map, "i"), 5);
+  verify_str(pack_gets(map, "s"), "foo");
 }
 
 int main()

@@ -9,13 +9,17 @@
 #ifndef PACK_H
 #define PACK_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #define PACK_TYPE_BOOL   0x10
 #define PACK_TYPE_INT    0x20
 #define PACK_TYPE_STR    0x40
+#define PACK_TYPE_LIST   0x50
+#define PACK_TYPE_MAP    0x60
 
-union pack_uval {
+union pack_val {
+  bool b;
   int64_t i;
   char *s;
 };
@@ -23,17 +27,29 @@ union pack_uval {
 struct pack_entry {
   char *name;
   uint8_t type;
-  union pack_uval val;
+  union pack_val val;
   struct pack_entry *next;
 };
 
-struct pack_entry * pack_decode(uint8_t *buf);
-uint8_t * pack_encode(struct pack_entry *p);
+struct pack_map {
+  struct pack_entry *head;
+  struct pack_entry *tail;
+  uint16_t size;
+};
 
-struct pack_entry * pack_find(struct pack_entry *p, char *name);
-int pack_has(struct pack_entry *p, char *name);
-int pack_getb(struct pack_entry *p, char *name);
-int64_t pack_geti(struct pack_entry *p, char *name);
-char * pack_gets(struct pack_entry *p, char *name);
+struct pack_map* pack_map_new();
+void pack_map_free(struct pack_map *map);
+
+bool pack_has(struct pack_map *map, char *name);
+bool pack_getb(struct pack_map *map, char *name);
+int64_t pack_geti(struct pack_map *map, char *name);
+char* pack_gets(struct pack_map *map, char *name);
+
+void pack_setb(struct pack_map *map, char *name, bool val);
+void pack_seti(struct pack_map *map, char *name, int64_t val);
+void pack_sets(struct pack_map *map, char *name, char *val);
+
+uint8_t* pack_encode(struct pack_map *map);
+struct pack_map* pack_decode(uint8_t *buf);
 
 #endif

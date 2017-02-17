@@ -11,11 +11,237 @@
 #include <string.h>
 #include "pack.h"
 
+//////////////////////////////////////////////////////////////////////////
+// Private
+//////////////////////////////////////////////////////////////////////////
+
+static struct pack_entry* pack_add_entry(struct pack_map *map)
+{
+  struct pack_entry *e = (struct pack_entry *)malloc(sizeof(struct pack_entry));
+  e->next = NULL;
+  if (map->head == NULL)
+  {
+    map->head = map->tail = e;
+  }
+  else
+  {
+    map->tail->next = e;
+    map->tail = e;
+  }
+  map->size++;
+  return e;
+}
+
+static struct pack_entry* pack_find_entry(struct pack_map *map, char *name)
+{
+  struct pack_entry *e = map->head;
+  while (e != NULL && strcmp(e->name, name) != 0) e = e->next;
+  return e;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Alloc
+//////////////////////////////////////////////////////////////////////////
+
 /*
- * Decode byte buffer into pack_entry linked list. Returns
- * pointr to entry, or NULL if error occurred.
+ * Allocate a new pack_map instance.
  */
-struct pack_entry * pack_decode(uint8_t *buf)
+struct pack_map* pack_map_new()
+{
+  struct pack_map *map = (struct pack_map *)malloc(sizeof(struct pack_map));
+  map->head = NULL;
+  map->tail = NULL;
+  map->size = 0;
+  return map;
+}
+
+/*
+ * Free memory used by given map.
+ */
+void pack_map_free(struct pack_map *map)
+{
+  // TODO
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Getters
+//////////////////////////////////////////////////////////////////////////
+
+/*
+ * Return true if given list contains the key name or
+ * false if name not found.
+ */
+bool pack_has(struct pack_map *map, char *name)
+{
+  return pack_find_entry(map, name) != NULL;
+}
+
+/*
+ * Get value for given name as boolean. If name is not
+ * found, or if type does not match returns false.
+ */
+bool pack_getb(struct pack_map *map, char *name)
+{
+  struct pack_entry *e = pack_find_entry(map, name);
+  if (e == NULL) return false;
+  if (e->type != PACK_TYPE_BOOL) return false;
+  return e->val.b;
+}
+
+/*
+ * Get value for given name as signed 64-bit integer. If
+ * name is not found, or if type does not match, returns 0.
+ */
+int64_t pack_geti(struct pack_map *map, char *name)
+{
+  struct pack_entry *e = pack_find_entry(map, name);
+  if (e == NULL) return 0;
+  if (e->type != PACK_TYPE_INT) return 0;
+  return e->val.i;
+}
+
+/*
+ * Get value for given name as char string. If name is
+ * not found, or if type does not match returns NULL.
+ */
+char* pack_gets(struct pack_map *map, char *name)
+{
+  struct pack_entry *e = pack_find_entry(map, name);
+  if (e == NULL) return NULL;
+  if (e->type != PACK_TYPE_STR) return NULL;
+  return e->val.s;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Setters
+//////////////////////////////////////////////////////////////////////////
+
+/*
+ * Set 'name' to boolean 'val'.  If this name already exists
+ * the value is updated, otherwise a new entry is added.
+ */
+void pack_setb(struct pack_map *map, char *name, bool val)
+{
+  struct pack_entry *e = pack_add_entry(map);
+  e->name  = strdup(name);
+  e->type  = PACK_TYPE_BOOL;
+  e->val.b = val == 0 ? 0 : 1;
+}
+
+/*
+ * Set 'name' to 64-bit signed integer 'val'.  If this name
+ * already exists the value is updated, otherwise a new entry
+ * is added.
+ */
+void pack_seti(struct pack_map *map, char *name, int64_t val)
+{
+  struct pack_entry *e = pack_add_entry(map);
+  e->name  = strdup(name);
+  e->type  = PACK_TYPE_INT;
+  e->val.i = val;
+}
+
+/*
+ * Set 'name' to char string 'val'  If this name already
+ * exists the value is updated, otherwise a new entry is
+ * added.
+ */
+void pack_sets(struct pack_map *map, char *name, char *val)
+{
+  struct pack_entry *e = pack_add_entry(map);
+  e->name  = strdup(name);
+  e->type  = PACK_TYPE_STR;
+  e->val.s = strdup(val);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Encode
+//////////////////////////////////////////////////////////////////////////
+
+/*
+ * Encode pack map into byte buffer.  Returns pointer to buffer,
+ * or NULL if error occurred.
+ */
+uint8_t* pack_encode(struct pack_map *map)
+{
+  struct pack_entry *p = map->head;
+
+  // determine packet length
+  uint16_t len = 0;
+  while (p != NULL)
+  {
+    len += 1 + strlen(p->name);
+    switch (p->type)
+    {
+      case PACK_TYPE_BOOL: len += 2; break;
+      case PACK_TYPE_INT:  len += 9; break;
+      case PACK_TYPE_STR:  len += 3 + strlen(p->val.s);
+    }
+    p = p->next;
+  }
+
+  uint8_t *buf = (uint8_t *)malloc(len+4);
+  uint16_t off = 0;
+  uint8_t i, nlen;
+  uint16_t slen;
+
+  // magic
+  buf[off++] = 0x70;
+  buf[off++] = 0x6b;
+
+  // length
+  buf[off++] = (len >> 8) & 0xff;
+  buf[off++] = len & 0xff;
+
+  // encode entries
+  p = map->head;
+  while (p != NULL)
+  {
+    nlen = strlen(p->name);
+    buf[off++] = nlen;
+    for (i=0; i<nlen; i++) buf[off++] = p->name[i];
+
+    buf[off++] = p->type;
+    switch (p->type)
+    {
+      case PACK_TYPE_BOOL:
+        buf[off++] = p->val.i & 0xff;
+        break;
+
+      case PACK_TYPE_INT:
+        buf[off++] = (p->val.i >> 56) & 0xff;
+        buf[off++] = (p->val.i >> 48) & 0xff;
+        buf[off++] = (p->val.i >> 40) & 0xff;
+        buf[off++] = (p->val.i >> 32) & 0xff;
+        buf[off++] = (p->val.i >> 24) & 0xff;
+        buf[off++] = (p->val.i >> 16) & 0xff;
+        buf[off++] = (p->val.i >> 8)  & 0xff;
+        buf[off++] = p->val.i & 0xff;
+        break;
+
+      case PACK_TYPE_STR:
+        slen = strlen(p->val.s);
+        buf[off++] = (slen >> 8) & 0xff;
+        buf[off++] = slen & 0xff;
+        for (i=0; i<slen; i++) buf[off++] = p->val.s[i];
+        break;
+    }
+
+    p = p->next;
+  }
+
+  return buf;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Decode
+//////////////////////////////////////////////////////////////////////////
+
+/*
+ * Decode byte buffer into pack_map instance. Returns pointer
+ * new map, or NULL if error occurred.
+ */
+struct pack_map* pack_decode(uint8_t *buf)
 {
   // sanity checks
   if (buf[0] != 0x70) return NULL;
@@ -25,12 +251,11 @@ struct pack_entry * pack_decode(uint8_t *buf)
   uint16_t len = (((buf[2] << 8) & 0xff) | (buf[3] & 0xff)) + 4;
   uint16_t off = 4;
 
-  struct pack_entry *head = NULL;
-  struct pack_entry *tail = NULL;
+  struct pack_map *map = pack_map_new();
   char *name;
-  union pack_uval val;
+  union pack_val val;
   uint8_t i, nlen, type;
-  uint32_t slen;
+  uint16_t vlen;
   char *sval;
   uint64_t uval;
 
@@ -65,12 +290,18 @@ struct pack_entry * pack_decode(uint8_t *buf)
         break;
 
       case PACK_TYPE_STR:
-        slen = ((buf[off] << 8) & 0xff) | (buf[off+1] & 0xff);
+        vlen = ((buf[off] << 8) & 0xff) | (buf[off+1] & 0xff);
         off += 2;
-        sval = (char *)malloc(slen+1);
-        for (i=0; i<slen; i++) sval[i] = buf[off++];
-        sval[slen] = '\0';
+        sval = (char *)malloc(vlen+1);
+        for (i=0; i<vlen; i++) sval[i] = buf[off++];
+        sval[vlen] = '\0';
         val.s = sval;
+        break;
+
+
+      case PACK_TYPE_LIST:
+        vlen = ((buf[off] << 8) & 0xff) | (buf[off+1] & 0xff);
+        off += 2;
         break;
 
       default:
@@ -79,149 +310,11 @@ struct pack_entry * pack_decode(uint8_t *buf)
     }
 
     // append node to linked list
-    struct pack_entry *p = (struct pack_entry *)malloc(sizeof(struct pack_entry));
-    p->name = name;
-    p->type = type;
-    p->val  = val;
-    p->next = NULL;
-    if (head == NULL) { head = tail = p; }
-    else { tail->next = p; tail = p; }
+    struct pack_entry *e = pack_add_entry(map);
+    e->name = name;
+    e->type = type;
+    e->val  = val;
   }
 
-  return head;
-}
-
-/*
- * Encode linked list into byte buffer.  Returns pointer
- * to buffer, or NULL if error occurred.
- */
-uint8_t * pack_encode(struct pack_entry *p)
-{
-  struct pack_entry *head = p;
-
-  // determine packet length
-  uint16_t len = 0;
-  while (p != NULL)
-  {
-    len += 1 + strlen(p->name);
-    switch (p->type)
-    {
-      case PACK_TYPE_BOOL: len += 2; break;
-      case PACK_TYPE_INT:  len += 9; break;
-      case PACK_TYPE_STR:  len += 3 + strlen(p->val.s);
-    }
-    p = p->next;
-  }
-
-  uint8_t *buf = (uint8_t *)malloc(len+4);
-  uint16_t off = 0;
-  uint8_t i, nlen;
-  uint32_t slen;
-
-  // magic
-  buf[off++] = 0x70;
-  buf[off++] = 0x6b;
-
-  // length
-  buf[off++] = (len >> 8) & 0xff;
-  buf[off++] = len & 0xff;
-
-  // encode entries
-  p = head;
-  while (p != NULL)
-  {
-    nlen = strlen(p->name);
-    buf[off++] = nlen;
-    for (i=0; i<nlen; i++) buf[off++] = p->name[i];
-
-    buf[off++] = p->type;
-    switch (p->type)
-    {
-      case PACK_TYPE_BOOL:
-        buf[off++] = p->val.i & 0xff;
-        break;
-
-      case PACK_TYPE_INT:
-        buf[off++] = (p->val.i >> 56) & 0xff;
-        buf[off++] = (p->val.i >> 48) & 0xff;
-        buf[off++] = (p->val.i >> 40) & 0xff;
-        buf[off++] = (p->val.i >> 32) & 0xff;
-        buf[off++] = (p->val.i >> 24) & 0xff;
-        buf[off++] = (p->val.i >> 16) & 0xff;
-        buf[off++] = (p->val.i >> 8)  & 0xff;
-        buf[off++] = p->val.i & 0xff;
-        break;
-
-        case PACK_TYPE_STR:
-       slen = strlen(p->val.s);
-       buf[off++] = (slen >> 8) & 0xff;
-       buf[off++] = slen & 0xff;
-       for (i=0; i<slen; i++) buf[off++] = p->val.s[i];
-       break;
-    }
-
-    p = p->next;
-  }
-
-  return buf;
-}
-
-/*
- * Find the entry for the given name in this list, or
- * returns NULL if name not found.
- */
-struct pack_entry * pack_find(struct pack_entry *p, char *name)
-{
-  while (p != NULL)
-  {
-    if (strcmp(p->name, name) == 0) return p;
-    p = p->next;
-  }
-  return NULL;
-}
-
-/*
- * Return TRUE if given list contains the key name or
- * FALSE if name not found.
- */
-int pack_has(struct pack_entry *p, char *name)
-{
-  return pack_find(p, name) != NULL;
-}
-
-/*
- * Get value for given name as boolean. If name is not
- * found, or if type does not match returns FALSE.
- */
-int pack_getb(struct pack_entry *p, char *name)
-{
-  p = pack_find(p, name);
-  if (p == NULL) return 0;
-  if (p->type != PACK_TYPE_BOOL) return 0;
-  return p->val.i;
-}
-
-/*
- * Get value for given name as signed 64-bit integer.
- * If name is not found, or if type does not match,
- * returns 0.
- */
-int64_t pack_geti(struct pack_entry *p, char *name)
-{
-  p = pack_find(p, name);
-  if (p == NULL) return 0;
-  if (p->type != PACK_TYPE_INT) return 0;
-  return p->val.i;
-}
-
-/*
- * Get value for given name as char string. If name
- * not found, or if type does not match, returns NULLv.
- */
-char * pack_gets(struct pack_entry *p, char *name)
-{
-  p = pack_find(p, name);
-  if (p == NULL) return NULL;
-  if (p->type != PACK_TYPE_STR) return NULL;
-  return p->val.s;
+  return map;
 }
