@@ -9,6 +9,10 @@
 #include "test.h"
 #include "../src/pack.h"
 
+//////////////////////////////////////////////////////////////////////////
+// test_basics
+//////////////////////////////////////////////////////////////////////////
+
 void test_basics()
 {
   struct pack_map *map;
@@ -64,9 +68,45 @@ void test_basics()
   pack_map_free(map);
 }
 
+//////////////////////////////////////////////////////////////////////////
+// test_maps
+//////////////////////////////////////////////////////////////////////////
+
+void test_maps()
+{
+  struct pack_map *map = pack_map_new();
+
+  struct pack_map *a = pack_map_new();
+  pack_setb(a, "x", true);
+  pack_seti(a, "y", 12);
+  pack_sets(a, "z", "foo");
+  pack_setm(map, "a", a);
+
+  verify_int(map->size, 1);
+  verify(    pack_getb(pack_getm(map, "a"), "x") == true);
+  verify_int(pack_geti(pack_getm(map, "a"), "y"), 12);
+  verify_str(pack_gets(pack_getm(map, "a"), "z"), "foo");
+
+  uint8_t enc[] = { 0x70, 0x6b, 0x00, 0x1c,
+                    0x01, 0x61, 0x60, 0x00, 0x03,
+                    0x01, 0x78, 0x10, 0x01,
+                    0x01, 0x79, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c,
+                    0x01, 0x7a, 0x40, 0x00, 0x03, 0x66, 0x6f, 0x6f };
+
+  uint8_t *buf = pack_encode(map);
+  verify_buf(buf, enc);
+
+  pack_map_free(map);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// main
+//////////////////////////////////////////////////////////////////////////
+
 int main()
 {
   test_basics();
+  test_maps();
   // TODO: test_bool
   // TODO: test_int
   // TODO: test_str

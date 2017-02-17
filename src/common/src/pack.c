@@ -67,7 +67,11 @@ void pack_map_free(struct pack_map *map)
   {
     q = p->next;
     free(p->name);
-    if (p->type == PACK_TYPE_STR) free(p->val.s);
+    switch (p->type)
+    {
+      case PACK_TYPE_STR: free(p->val.s); break;
+      case PACK_TYPE_MAP: pack_map_free(p->val.m); break;
+    }
     free(p);
     p = q;
   }
@@ -124,6 +128,18 @@ char* pack_gets(struct pack_map *map, char *name)
   return e->val.s;
 }
 
+/*
+ * Get value for given name as pack_map. If name is not
+ * found, or if type does not match returns NULL.
+ */
+struct pack_map* pack_getm(struct pack_map *map, char *name)
+{
+  struct pack_entry *e = pack_find_entry(map, name);
+  if (e == NULL) return NULL;
+  if (e->type != PACK_TYPE_MAP) return NULL;
+  return e->val.m;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Setters
 //////////////////////////////////////////////////////////////////////////
@@ -166,9 +182,46 @@ void pack_sets(struct pack_map *map, char *name, char *val)
   e->val.s = strdup(val);
 }
 
+/*
+ * Set 'name' to pack_map 'val'  If this name already exists
+ * the value is updated, otherwise a new entry is added.
+ */
+void pack_setm(struct pack_map *map, char *name, struct pack_map *val)
+{
+  struct pack_entry *e = pack_add_entry(map);
+  e->name  = strdup(name);
+  e->type  = PACK_TYPE_MAP;
+  e->val.m = val;
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Encode
 //////////////////////////////////////////////////////////////////////////
+
+/*
+ * Determine number of bytes required to encode given map.
+ * Does not include 4-byte header (magic + len).
+ */
+static uint16_t pack_map_enc_size(struct pack_map *map)
+{
+  struct pack_entry *p = map->head;
+  uint16_t len = 0;
+
+  while (p != NULL)
+  {
+    len += 1 + strlen(p->name);
+    switch (p->type)
+    {
+      case PACK_TYPE_BOOL: len += 2; break;
+      case PACK_TYPE_INT:  len += 9; break;
+      case PACK_TYPE_STR:  len += 3 + strlen(p->val.s); break;
+      case PACK_TYPE_MAP:  len += 3 + pack_map_enc_size(p->val.m); break;
+    }
+    p = p->next;
+  }
+
+  return len;
+}
 
 /*
  * Encode pack map into byte buffer.  Returns pointer to buffer,
@@ -178,24 +231,14 @@ uint8_t* pack_encode(struct pack_map *map)
 {
   struct pack_entry *p = map->head;
 
-  // determine packet length
-  uint16_t len = 0;
-  while (p != NULL)
-  {
-    len += 1 + strlen(p->name);
-    switch (p->type)
-    {
-      case PACK_TYPE_BOOL: len += 2; break;
-      case PACK_TYPE_INT:  len += 9; break;
-      case PACK_TYPE_STR:  len += 3 + strlen(p->val.s);
-    }
-    p = p->next;
-  }
+  // TODO: use a auto-grow byte buffer to avoid double scan
+  uint16_t len = pack_map_enc_size(map);
 
   uint8_t *buf = (uint8_t *)malloc(len+4);
   uint16_t off = 0;
   uint8_t i, nlen;
-  uint16_t slen;
+  uint16_t vlen;
+  uint8_t *sub_buf;
 
   // magic
   buf[off++] = 0x70;
@@ -232,10 +275,22 @@ uint8_t* pack_encode(struct pack_map *map)
         break;
 
       case PACK_TYPE_STR:
-        slen = strlen(p->val.s);
-        buf[off++] = (slen >> 8) & 0xff;
-        buf[off++] = slen & 0xff;
-        for (i=0; i<slen; i++) buf[off++] = p->val.s[i];
+        vlen = strlen(p->val.s);
+        buf[off++] = (vlen >> 8) & 0xff;
+        buf[off++] = vlen & 0xff;
+        for (i=0; i<vlen; i++) buf[off++] = p->val.s[i];
+        break;
+
+      case PACK_TYPE_MAP:
+        // TODO: encode directly into auto-grow byte buffer
+        vlen = p->val.m->size;
+        buf[off++] = (vlen >> 8) & 0xff;
+        buf[off++] = vlen & 0xff;
+        sub_buf = pack_encode(p->val.m);
+        vlen = pack_map_enc_size(p->val.m);
+        memcpy(&buf[off], sub_buf, vlen);
+        off += vlen;
+        free(sub_buf);
         break;
     }
 
@@ -310,11 +365,15 @@ struct pack_map* pack_decode(uint8_t *buf)
         val.s = sval;
         break;
 
+      // case PACK_TYPE_LIST:
+      //   vlen = ((buf[off] << 8) & 0xff) | (buf[off+1] & 0xff);
+      //   off += 2;
+      //   break;
 
-      case PACK_TYPE_LIST:
-        vlen = ((buf[off] << 8) & 0xff) | (buf[off+1] & 0xff);
-        off += 2;
-        break;
+      // case PACK_TYPE_MAP;
+      //   vlen = ((buf[off] << 8) & 0xff) | (buf[off+1] & 0xff);
+      //   off += 2;
+      //   break;
 
       default:
         free(name);
