@@ -47,6 +47,16 @@ abstract const class Cmd
     return r == "y"
   }
 
+  ** Convenience for 'prompt' with an integer range choice, returns
+  ** the selected choise, or aborts if invalid input or out of range.
+  Int promptChoice(Str msg, Range range)
+  {
+    s := prompt("$msg [$range] ")
+    i := s.toInt(10, false)
+    if (i == null || !range.contains(i)) abort("invalid selection '$s'")
+    return i
+  }
+
   ** Profile configuration.
   static Str:Str profile() { Actor.locals["cmd.profile"] }
 

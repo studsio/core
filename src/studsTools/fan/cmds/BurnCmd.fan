@@ -46,7 +46,16 @@ const class BurnCmd : Cmd
     }
     else
     {
-      // TODO
+      echo("Discovered devices:")
+      devs.each |d,i|
+      {
+        list := d.split(',')
+        name := list[0]
+        size := list[1].toInt.toLocale("B")
+        echo(" [${i+1}] $name ($size)")
+      }
+      sel := promptChoice("Which device do you want to burn to?", 1..devs.size)
+      dev = devs[sel-1].split(',').first
     }
 
     info("Burning $rel.name to ${dev}...")
