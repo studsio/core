@@ -389,3 +389,27 @@ struct pack_map* pack_decode(uint8_t *buf)
 
   return map;
 }
+
+//////////////////////////////////////////////////////////////////////////
+// Encode
+//////////////////////////////////////////////////////////////////////////
+
+/*
+ * Write Pack map to given file handle. Returns 0 if map
+ * was written successfully, or non-zero if failed.
+ */
+int pack_write(struct pack_map *map, FILE *f)
+{
+  uint8_t *buf = pack_encode(map);
+  uint16_t len = (((buf[2] << 8) & 0xff) | (buf[3] & 0xff)) + 4;
+  uint16_t off = 0;
+
+  while (off < len)
+  {
+    if (putc(buf[off], f) == EOF) break;
+    off++;
+  }
+
+  free(buf);
+  return off == len ? 0 : -1;
+}

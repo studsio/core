@@ -55,4 +55,6 @@ void pack_setm(struct pack_map *map, char *name, struct pack_map *val);
 uint8_t* pack_encode(struct pack_map *map);
 struct pack_map* pack_decode(uint8_t *buf);
 
+int pack_write(struct pack_map *map, FILE *f);
+
 #endif
