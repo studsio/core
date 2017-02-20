@@ -5,6 +5,7 @@
 - Rework build scripts to move Toolchain into studsTools
 - Cleanup dependencies so fanr install will work
 - Pack encoder/decoder
+- BurnCmd: prompt when multiple disk devices found
 
 #### **Version 1.0.2 (18-Jan-2017)**
 - Move repo to https://bitbucket.org/studs/core

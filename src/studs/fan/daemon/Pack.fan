@@ -40,7 +40,7 @@ class Pack
   static Str:Obj decode(Buf buf)
   {
     m := buf.readU2
-    if (m != magic) throw IOErr("Invalid magic number $m.toHex")
+    if (m != magic) throw IOErr("Invalid magic number 0x$m.toHex")
 
     len   := buf.readU2
     start := buf.pos
