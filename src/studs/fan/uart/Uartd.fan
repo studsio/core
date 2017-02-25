@@ -28,14 +28,7 @@ const class Uartd : Daemon
   Str:Obj ports()
   {
     p := Proc { it.cmd=["/usr/bin/fanuart"] }
-    p.run
-
-    // TODO FIXIT
-    if (p.in.readU2 != Pack.magic) throw IOErr("Invalid magic")
-    len := p.in.readU2
-    tmp := p.in.readBufFully(null, len)
-    buf := Buf().writeI2(Pack.magic).writeI2(len).writeBuf(tmp.seek(0))
-    p.waitFor.okOrThrow
-    return Pack.decode(buf.seek(0))
+    p.run.waitFor.okOrThrow
+    return Pack.read(p.in)
   }
 }

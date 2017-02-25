@@ -69,6 +69,31 @@ class PackTest : Test
        017a 40 0003 666f6f")
   }
 
+  Void testIO()
+  {
+    map := Str:Obj[:] {
+      ordered = true
+      it.set("x", true)
+      it.set("y", 12)
+      it.set("z", "foo")
+    }
+
+    enc := "706b 0017
+            0178 1001
+            0179 20 0000 0000 0000 000c
+            017a 40 0003 666f6f"
+
+    verifyBuf(map, enc)
+
+    f := tempDir + `test.pack`
+    out := f.out
+    Pack.write(map, out)
+    out.flush.sync.close
+
+    test := Pack.read(f.in)
+    verifyBuf(test, enc)
+  }
+
   private Void verifyBuf(Str:Obj map, Str hex)
   {
     buf := Pack.encode(map)

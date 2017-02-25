@@ -9,4 +9,5 @@ syntax: regexp
 ^lib/
 ^src/studsTools/bins/
 ^test/
+^temp/
 ^toolchains/

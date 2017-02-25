@@ -11,6 +11,11 @@
 **
 class Pack
 {
+
+//////////////////////////////////////////////////////////////////////////
+// Encode
+//////////////////////////////////////////////////////////////////////////
+
   ** Enode map into a Pack byte buffer.
   static Buf encode(Str:Obj map)
   {
@@ -34,26 +39,6 @@ class Pack
     buf.seek(2)
     buf.writeI2(buf.size-4)
     return buf.seek(0)
-  }
-
-  ** Decode Pack byte buffer into map instance.
-  static Str:Obj decode(Buf buf)
-  {
-    m := buf.readU2
-    if (m != magic) throw IOErr("Invalid magic number 0x$m.toHex")
-
-    len   := buf.readU2
-    start := buf.pos
-    map   := Str:Obj[:]
-
-    while (buf.pos-start < len)
-    {
-      nlen := buf.read
-      name := buf.readChars(nlen)
-      map[name] = decodeVal(buf)
-    }
-
-    return map
   }
 
   private static Void encodeName(Str n, Buf buf)
@@ -101,6 +86,30 @@ class Pack
     }
   }
 
+//////////////////////////////////////////////////////////////////////////
+// Decode
+//////////////////////////////////////////////////////////////////////////
+
+  ** Decode Pack byte buffer into map instance.
+  static Str:Obj decode(Buf buf)
+  {
+    m := buf.readU2
+    if (m != magic) throw IOErr("Invalid magic number 0x$m.toHex")
+
+    len   := buf.readU2
+    start := buf.pos
+    map   := Str:Obj[:]
+
+    while (buf.pos-start < len)
+    {
+      nlen := buf.read
+      name := buf.readChars(nlen)
+      map[name] = decodeVal(buf)
+    }
+
+    return map
+  }
+
   private static Obj decodeVal(Buf buf)
   {
     tc := buf.read
@@ -136,6 +145,37 @@ class Pack
       default: throw IOErr("Unknown type code: 0x$tc.toHex")
     }
   }
+
+//////////////////////////////////////////////////////////////////////////
+// I/O
+//////////////////////////////////////////////////////////////////////////
+
+  ** Read a Pack packet from the given 'InStream' and return
+  ** the decoded name/value pair map.  Throws IOErr if stream
+  ** or encoding error occurs.
+  static Str:Obj read(InStream in)
+  {
+    m := in.readU2
+    if (m != magic) throw IOErr("Invalid magic '0x$m.toHex'")
+    len := in.readU2
+    buf := Buf(256)
+    buf.writeI2(magic)
+    buf.writeI2(len)
+    in.readBufFully(buf, len)
+    return Pack.decode(buf.seek(0))
+  }
+
+  ** Write a Pack packet to given 'OutStream'. Throws 'IOErr'
+  ** if write failed.
+  static Void write(Str:Obj map, OutStream out)
+  {
+    buf := Pack.encode(map)
+    out.writeBuf(buf)
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// Fields
+//////////////////////////////////////////////////////////////////////////
 
   // magic number 'pk'
   static const Int magic := 0x706b
