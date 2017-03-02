@@ -12,10 +12,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <err.h>
+#include <unistd.h>
+#include "../../common/src/log.h"
 #include "../../common/src/pack.h"
 #include "uart_enum.h"
 
+/*
+ * Enumerate the available serial ports.
+ */
 static void enum_ports()
 {
   struct serial_info *port_list = find_serialports();
@@ -38,8 +42,33 @@ static void enum_ports()
   pack_map_free(map);
 }
 
-int main() //int argc, char *argv[])
+/*
+ * Main process loop.
+ */
+static void main_loop()
 {
-  enum_ports();
+  int c = 0;
+  for (;;)
+  {
+    log_debug("fanuart: main_loop tick %d", c++);
+    sleep(5);
+  }
+}
+
+int main(int argc, char *argv[])
+{
+  if (argc == 1)
+  {
+    main_loop();
+  }
+  else if (argc == 2 && strcmp(argv[1], "enum") == 0)
+  {
+    enum_ports();
+  }
+  else
+  {
+    log_err("usage: %s [enum]", argv[0]);
+    exit(1);
+  }
   return 0;
 }

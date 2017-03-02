@@ -21,7 +21,10 @@ class Build : BuildScript
     opts := ["-O2", "-Wall", "-Wextra", "-Wno-unused-parameter",
              "-std=c99", "-D_GNU_SOURCE"]
 
-    xsrc := [scriptDir + `../common/src/pack.c`]
+    xsrc := [
+      scriptDir + `../common/src/log.c`,
+      scriptDir + `../common/src/pack.c`
+    ]
 
     Method m := Method.find("studsTools::Toolchain.compile")
     m.callOn(null, ["fanuart", scriptDir + `src/`, xsrc, opts])

@@ -36,7 +36,9 @@ const class Uartd : Daemon
   ** IOErr if port cannot be opened.
   UartPort open(Str name, UartConfig config)
   {
-    send(DaemonMsg { it.op="open"; it.a=name; it.b=config }).get(5sec)
+    msg := DaemonMsg { it.op="open"; it.a=name; it.b=config }
+    Unsafe unsafe := send(msg).get(5sec)
+    return unsafe.val
   }
 
   ** Close the serial port 'name'.  If port was not open, this
@@ -55,9 +57,13 @@ const class Uartd : Daemon
     if (m.op == "open")
     {
       if (lock[m.a] != null) throw IOErr("Port already open $m.a")
+
+      // TODO FIXIT
+      Proc { it.cmd=["/usr/bin/fanuart"] }.run
+
       port := UartPort {}
       lock[m.a] = port
-      return port
+      return Unsafe(port)
     }
 
     if (m.op == "close")
