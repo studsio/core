@@ -45,13 +45,14 @@ const class UartConfig
   private static const Str[] flows   := ["none", "hw", "sw"]
 }
 
-
 **************************************************************************
 ** UartPort
 **************************************************************************
 
 ** UartPort models a UART port instance.
-// TODO
+class UartPort
+{
+}
 
 
 

@@ -52,7 +52,7 @@ abstract const class Daemon
   const Log log
 
   ** Send this daemon a message.
-  Void send(DaemonMsg m) { actor.send(m) }
+  Future send(DaemonMsg m) { actor.send(m) }
 
   ** Callback when daemon is started.
   protected virtual Void onStart() {}
