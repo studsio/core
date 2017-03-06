@@ -70,9 +70,8 @@ modeled in Fantom.
      struct pack_map *a = pack_map_new();
      pack_setb(a, "foo", true);
      pack_sets(a, "bar", "cool beans");
-
      pack_setm(map, "a", a);
-     sub = pack_getm(map, "a");
+     struct pack_map *x = pack_getm(map, "a");
 
 
 ## Spec
