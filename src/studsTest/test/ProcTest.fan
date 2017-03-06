@@ -42,6 +42,40 @@ class ProcTest : Test
     verifyEq(p.in.readLine, null)
   }
 
+  Void testErrRedirect()
+  {
+    p := Proc { it.cmd=["bash", bash(s2).osPath] }
+    p.run
+    verifyEq(p.in.readLine, "alpha")
+    verifyEq(p.in.readLine, "gamma")
+    verifyEq(p.in.readLine, null)
+    p.waitFor
+
+    p = Proc { it.cmd=["bash", bash(s2).osPath]; it.redirectErr=true }
+    p.run
+    verifyEq(p.in.readLine, "alpha")
+    verifyEq(p.in.readLine, "beta")
+    verifyEq(p.in.readLine, "gamma")
+    verifyEq(p.in.readLine, null)
+  }
+
+  Void testErrSink()
+  {
+    // TODO: need to test sink ring buffer
+    p := Proc { it.cmd=["bash", bash(s2).osPath] }
+    p.run.sinkErr
+    verifyEq(p.in.readLine, "alpha")
+    verifyEq(p.in.readLine, "gamma")
+    verifyEq(p.in.readLine, null)
+    p.waitFor
+
+    c := ["bash", bash(s2).osPath]
+    verifyErr(Err#) { p = Proc { it.cmd=c }.sinkErr }
+    verifyErr(Err#) { p = Proc { it.cmd=c; it.redirectErr=true }.run.sinkErr }
+    verifyErr(Err#) { p = Proc { it.cmd=c }.run.sinkErr; e := p.err }
+    verifyErr(Err#) { p = Proc { it.cmd=c }.run.sinkErr.sinkErr }
+  }
+
   Void testIsRunning()
   {
     p := Proc { it.cmd=["bash", bash("sleep 2").osPath] }
@@ -89,4 +123,9 @@ class ProcTest : Test
     """echo "alpha"; sleep 1
        echo "beta";  sleep 1
        echo "gamma"; sleep 1"""
+
+  private static const Str s2 :=
+    """echo "alpha"
+       >&2 echo "beta"
+       echo "gamma" """
 }

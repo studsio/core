@@ -28,7 +28,7 @@ const class Uartd : Daemon
   Str:Obj ports()
   {
     p := Proc { it.cmd=["/usr/bin/fanuart", "enum"] }
-    p.run.waitFor.okOrThrow
+    p.run.sinkErr.waitFor.okOrThrow
     return Pack.read(p.in)
   }
 
@@ -59,7 +59,7 @@ const class Uartd : Daemon
       if (lock[m.a] != null) throw IOErr("Port already open $m.a")
 
       // TODO FIXIT
-      Proc { it.cmd=["/usr/bin/fanuart"] }.run
+      Proc { it.cmd=["/usr/bin/fanuart"] }.run.sinkErr
 
       port := UartPort {}
       lock[m.a] = port

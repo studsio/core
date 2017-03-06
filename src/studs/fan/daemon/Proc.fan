@@ -6,6 +6,8 @@
 //   27 Sep 2016  Andy Frank  Creation
 //
 
+using concurrent
+
 using [java] java.lang
 using [java] java.lang::Process as JProcess
 using [java] fanx.interop::Interop
@@ -32,7 +34,7 @@ class Proc
   const Str:Str env := [:]
 
   ** If 'true', then stderr is redirected to stdout.
-  const Bool redirectErr := true
+  const Bool redirectErr := false
 
   ** Spawn the child process. See `waitFor` to block until the
   ** process has terminated, and `exitCode` to retreive process
@@ -69,8 +71,32 @@ class Proc
   InStream err()
   {
     if (p == null) throw Err("Proc not running")
+    if (a != null) throw Err("stderr is sinking")
     if (_err == null) _err = Interop.toFan(p.getErrorStream)
     return _err
+  }
+
+  ** Sink the stderr output stream to Fantom's stdout. This
+  ** method will spawn a background actor to pipe the process
+  ** stderr stream to 'Env.cur.out'. Must be called after
+  ** `run` and requires `redirectErr` to be 'false'. Once this
+  ** method has been invoked, `err` is no longer available.
+  This sinkErr()
+  {
+    if (p == null) throw Err("Proc not running")
+    if (a != null) throw Err("stderr is already sinking")
+    if (redirectErr) throw Err("redirectErr must be false")
+
+    u := Unsafe(err)
+    a = Actor(errSinkPool) |m|
+    {
+      Str? line
+      InStream bg_err := u.val
+      while ((line = bg_err.readLine) != null) echo(line)
+      return null
+    }
+    a.send("start")
+    return this
   }
 
   ** Return 'true' if child process is currently running
@@ -120,8 +146,12 @@ class Proc
     throw IOErr("Proc terminated abnormally with exit code $x")
   }
 
+  // TODO: max threads?
+  private static const ActorPool errSinkPool := ActorPool { it.name="ProcErrSink" }
+
   private JProcess? p
   private OutStream? _out
   private InStream? _in
   private InStream? _err
+  private Actor? a
 }
