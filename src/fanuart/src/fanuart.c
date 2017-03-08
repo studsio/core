@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+#include <poll.h>
 #include <unistd.h>
 #include "../../common/src/log.h"
 #include "../../common/src/pack.h"
@@ -36,10 +38,22 @@ static void enum_ports()
     pack_setm(map, port->name, m);
   }
 
-  pack_write(map, stdout);
+  pack_write(stdout, map);
 
   serial_info_free_list(port_list);
   pack_map_free(map);
+}
+
+/*
+ * Callback to process an incoming Fantom request.
+ * Returns -1 if process should exit, or 0 to continue;
+ */
+static int on_proc_req(struct pack_map *req)
+{
+  char *op = pack_gets(req, "op");
+  if (strcmp(op, "exit") == 0) return -1;
+  log_debug("fanuart: unknown op '%s'", op);
+  return 0;
 }
 
 /*
@@ -47,14 +61,51 @@ static void enum_ports()
  */
 static void main_loop()
 {
-  int c = 0;
+  struct pack_buf *buf = pack_buf_new();
+
   for (;;)
   {
-    log_debug("fanuart: main_loop tick %d", c++);
-    sleep(5);
+    struct pollfd fdset[3];
+
+    fdset[0].fd = STDIN_FILENO;
+    fdset[0].events = POLLIN;
+    fdset[0].revents = 0;
+
+    int timeout = -1; // Wait forever unless told by otherwise
+    int count = 0; //uart_add_poll_events(uart, &fdset[1], &timeout);
+
+    int rc = poll(fdset, count + 1, timeout);
+    if (rc < 0)
+    {
+      // Retry if EINTR
+      if (errno == EINTR) continue;
+      log_fatal("poll");
+    }
+
+    if (fdset[0].revents & (POLLIN | POLLHUP))
+    {
+      if (pack_read(stdin, buf) < 0)
+      {
+        log_debug("fanuart: pack_read failed");
+        pack_buf_clear(buf);
+      }
+      else if (buf->ready)
+      {
+        struct pack_map *req = pack_decode(buf->bytes);
+        int r = on_proc_req(req);
+        pack_map_free(req);
+        pack_buf_clear(buf);
+        if (r < 0) break;
+      }
+    }
   }
+
+  log_debug("fanuart: bye-bye");
 }
 
+/*
+ * Entry-point
+ */
 int main(int argc, char *argv[])
 {
   if (argc == 1)

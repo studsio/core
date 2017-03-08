@@ -87,7 +87,7 @@ class PackTest : Test
 
     f := tempDir + `test.pack`
     out := f.out
-    Pack.write(map, out)
+    Pack.write(out, map)
     out.flush.sync.close
 
     test := Pack.read(f.in)

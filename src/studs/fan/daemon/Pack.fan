@@ -166,11 +166,12 @@ class Pack
   }
 
   ** Write a Pack packet to given 'OutStream'. Throws 'IOErr'
-  ** if write failed.
-  static Void write(Str:Obj map, OutStream out)
+  ** if write failed.  This method invokes 'out.flush' after
+  ** writing packet content.
+  static Void write(OutStream out, Str:Obj map)
   {
     buf := Pack.encode(map)
-    out.writeBuf(buf)
+    out.writeBuf(buf).flush
   }
 
 //////////////////////////////////////////////////////////////////////////

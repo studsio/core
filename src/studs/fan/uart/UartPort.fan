@@ -52,6 +52,15 @@ const class UartConfig
 ** UartPort models a UART port instance.
 class UartPort
 {
+  ** Internal constructor.
+  internal new make(Proc proc) { this.proc = proc }
+
+  Void test()
+  {
+    Pack.write(proc.out, ["op":"foo"])
+  }
+
+  internal Proc proc
 }
 
 

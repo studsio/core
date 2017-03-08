@@ -57,18 +57,21 @@ const class Uartd : Daemon
     if (m.op == "open")
     {
       if (lock[m.a] != null) throw IOErr("Port already open $m.a")
-
-      // TODO FIXIT
-      Proc { it.cmd=["/usr/bin/fanuart"] }.run.sinkErr
-
-      port := UartPort {}
+      proc := Proc { it.cmd=["/usr/bin/fanuart"] }.run.sinkErr
+      port := UartPort(proc)
       lock[m.a] = port
       return Unsafe(port)
     }
 
     if (m.op == "close")
     {
-      if (lock[m.a] == null) return null
+      // TODO: this has some fishy concurrent semantics
+      // we really should be processing all this on the
+      // same thread as UartPort instance
+      p := lock[m.a] as UartPort
+      if (p == null) return null
+      Pack.write(p.proc.out, ["op":"exit"])
+      p.proc.waitFor
       lock.remove(m.a)
     }
 
