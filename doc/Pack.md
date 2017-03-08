@@ -73,6 +73,39 @@ modeled in Fantom.
      pack_setm(map, "a", a);
      struct pack_map *x = pack_getm(map, "a");
 
+### C I/O
+
+Encoded Pack messages can be exchanged using `pack_read` and `pack_write`.
+The `pack_read_fully` method is provided as a convenience if you wish to block
+until the entire message can be read.
+
+    // write
+    FILE *f = fopen("foo.pack", "w");
+    pack_write(f, map);
+    fclose(f);
+
+    // read
+    struct pack_buf *buf = pack_buf_new();
+    FILE *f = fopen("foo.pack", "r");
+    if (pack_read_fully(f, buf) != 0) { /* read failed */ }
+    fclose(f);
+    struct pack_map *map = pack_decode(buf->bytes);
+
+Reads are read into a holding buffer using `struct pack_buf`. Once the complete
+message has been read, the `ready` field will be set to `true`.  If you wish
+to reuse a buffer instance for multiple reads, you must call `pack_buf_clear`
+to reset its state after each completed read:
+
+    struct pack_buf *buf = pack_buf_new();
+    for (;;)
+    {
+      if (pack_read(f, b) != 0) { /* read failed */ }
+      if (buf->ready)
+      {
+        struct pack_map *map = pack_decode(buf->bytes);
+        pack_buf_clear(buf);
+      }
+    }
 
 ## Spec
 

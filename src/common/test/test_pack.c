@@ -6,6 +6,7 @@
 //   28 Jan 2017  Andy Frank  Creation
 */
 
+#include <stdio.h>
 #include "test.h"
 #include "../src/pack.h"
 
@@ -100,6 +101,44 @@ void test_maps()
 }
 
 //////////////////////////////////////////////////////////////////////////
+// test_io
+//////////////////////////////////////////////////////////////////////////
+
+void test_io()
+{
+  struct pack_map *m = pack_map_new();
+  pack_setb(m, "b", true);
+  pack_seti(m, "i", 5);
+  pack_sets(m, "s", "foo");
+
+  // write
+  FILE *f = fopen("test/test.tmp", "w");
+  pack_write(f, m);
+  fclose(f);
+
+  // read
+  struct pack_buf *b = pack_buf_new();
+  f = fopen("test/test.tmp", "r");
+  while (!b->ready)
+    if (pack_read(f, b) != 0) fail("pack_read failed");
+  fclose(f);
+  struct pack_map *test = pack_decode(b->bytes);
+  verify(pack_getb(test, "b"));
+  verify_int(pack_geti(test, "i"), 5);
+  verify_str(pack_gets(test, "s"), "foo");
+
+  // read_fully
+  pack_buf_clear(b);
+  f = fopen("test/test.tmp", "r");
+  if (pack_read_fully(f, b) != 0) fail("pack_read failed");
+  fclose(f);
+  test = pack_decode(b->bytes);
+  verify(pack_getb(test, "b"));
+  verify_int(pack_geti(test, "i"), 5);
+  verify_str(pack_gets(test, "s"), "foo");
+}
+
+//////////////////////////////////////////////////////////////////////////
 // main
 //////////////////////////////////////////////////////////////////////////
 
@@ -111,6 +150,7 @@ int main()
   // TODO: test_int
   // TODO: test_str
   // TODO: test_names
+  test_io();
   printf("TEST PASSED\n");
   return 0;
 }

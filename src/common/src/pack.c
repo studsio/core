@@ -9,7 +9,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+#include <unistd.h>
 #include "pack.h"
+
+#define BYTES_TO_U16(high,low) (((high << 8) & 0xff) | (low & 0xff))
 
 //////////////////////////////////////////////////////////////////////////
 // Private
@@ -315,7 +319,7 @@ struct pack_map* pack_decode(uint8_t *buf)
   if (buf[1] != 0x6b) return NULL;
 
   // read length
-  uint16_t len = (((buf[2] << 8) & 0xff) | (buf[3] & 0xff)) + 4;
+  uint16_t len = BYTES_TO_U16(buf[2], buf[3]) + 4;
   uint16_t off = 4;
 
   struct pack_map *map = pack_map_new();
@@ -357,7 +361,7 @@ struct pack_map* pack_decode(uint8_t *buf)
         break;
 
       case PACK_TYPE_STR:
-        vlen = ((buf[off] << 8) & 0xff) | (buf[off+1] & 0xff);
+        vlen = BYTES_TO_U16(buf[off], buf[off+1]);
         off += 2;
         sval = (char *)malloc(vlen+1);
         for (i=0; i<vlen; i++) sval[i] = buf[off++];
@@ -395,13 +399,100 @@ struct pack_map* pack_decode(uint8_t *buf)
 //////////////////////////////////////////////////////////////////////////
 
 /*
+ * Allocate a new message structure.
+ */
+struct pack_buf* pack_buf_new()
+{
+  struct pack_buf *b = malloc(sizeof(struct pack_buf));
+  memset(b, 0, sizeof(*b));
+  return b;
+}
+
+/*
+ * Free memory used by given message.
+ */
+void pack_buf_free(struct pack_buf* buf)
+{
+  free(buf);
+}
+
+/*
+ * Clear a message so that it may be used again.
+ */
+void pack_buf_clear(struct pack_buf* buf)
+{
+  buf->pos = 0;
+  buf->ready = false;
+}
+
+/*
+ * Convenience to block until a complete encoded Pack message can
+ * be read using 'pack_read.  See 'pack_read' for semantics and
+ * details.
+ */
+int pack_read_fully(FILE *f, struct pack_buf *buf)
+{
+  while (!buf->ready)
+  {
+    int r = pack_read(f, buf);
+    if (r != 0) return r;
+  }
+  return 0;
+}
+
+/*
+ * Read the next number of available bytes for an encoded Pack
+ * message.  Only part of the message may be read on each call.
+ * Once the entire encoded message has been read, the 'buf->ready'
+ * flag will be set to 'true'.
+ *
+ * To reuse a 'struct pack_buf' instance after it has been read,
+ * you must call 'pack_buf_clear' to reset its state before
+ * passing this 'pack_read' again.
+ *
+ * Returns 0 if read was successful, or -1 if an error occured.
+ * If an error occurred, you should consider the message corrupt.
+ */
+int pack_read(FILE *f, struct pack_buf *buf)
+{
+  // short-circut if we are trying to read an existing buf
+  if (buf->ready) return -1;
+
+  ssize_t r = read(fileno(f), buf->bytes + buf->pos, sizeof(buf->bytes) - buf->pos);
+  if (r < 0)
+  {
+    // EINTR is ok to get, since we were interrupted by a signal
+    if (errno == EINTR) return 0;
+
+    // everything else is unexpected
+    return -1;
+  }
+  else if (r == 0)
+  {
+    // EOF - JVM process was terminated - this happens after a
+    // release or if there was an error
+    return -1;
+  }
+
+  // check if message is ready
+  buf->pos += r;
+  if (buf->pos >= 4)
+  {
+    uint16_t len = BYTES_TO_U16(buf->bytes[2], buf->bytes[3]);
+    buf->ready = buf->pos >= len + 4;
+  }
+
+  return 0;
+}
+
+/*
  * Write Pack map to given file handle. Returns 0 if map
  * was written successfully, or non-zero if failed.
  */
-int pack_write(struct pack_map *map, FILE *f)
+int pack_write(FILE *f, struct pack_map *map)
 {
   uint8_t *buf = pack_encode(map);
-  uint16_t len = (((buf[2] << 8) & 0xff) | (buf[3] & 0xff)) + 4;
+  uint16_t len = BYTES_TO_U16(buf[2], buf[3]) + 4;
   uint16_t off = 0;
 
   while (off < len)

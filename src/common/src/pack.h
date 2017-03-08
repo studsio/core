@@ -18,6 +18,8 @@
 #define PACK_TYPE_LIST   0x50
 #define PACK_TYPE_MAP    0x60
 
+#define PACK_BUF_SIZE    65536
+
 union pack_val {
   bool b;
   int64_t i;
@@ -38,6 +40,12 @@ struct pack_map {
   uint16_t size;
 };
 
+struct pack_buf {
+  uint8_t bytes[PACK_BUF_SIZE];
+  ssize_t pos;
+  bool ready;
+};
+
 struct pack_map* pack_map_new();
 void pack_map_free(struct pack_map *map);
 
@@ -55,6 +63,12 @@ void pack_setm(struct pack_map *map, char *name, struct pack_map *val);
 uint8_t* pack_encode(struct pack_map *map);
 struct pack_map* pack_decode(uint8_t *buf);
 
-int pack_write(struct pack_map *map, FILE *f);
+struct pack_buf* pack_buf_new();
+void pack_buf_free(struct pack_buf* buf);
+void pack_buf_clear(struct pack_buf* buf);
+
+int pack_read_fully(FILE *f, struct pack_buf *buf);
+int pack_read(FILE *f, struct pack_buf *buf);
+int pack_write(FILE *f, struct pack_map *map);
 
 #endif
