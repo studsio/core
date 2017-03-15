@@ -84,7 +84,7 @@ void pack_map_free(struct pack_map *map)
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Err
+// Err/Debug
 //////////////////////////////////////////////////////////////////////////
 
 /*
@@ -95,6 +95,46 @@ struct pack_map* pack_err(char *msg)
   struct pack_map *map = pack_map_new();
   pack_sets(map, "err", msg);
   return map;
+}
+
+/*
+ * Serialize map instance to a debug string.
+ */
+char* pack_debug(struct pack_map *map)
+{
+  int max_len = 4096;
+  int off = 0;
+  char *buf = (char *)malloc(max_len+3);
+
+  buf[off++] = '[';
+
+  struct pack_entry *p = map->head;
+  while (p != NULL && off < max_len)
+  {
+    int tlen = 1024;
+    char temp[tlen+1];
+    int i = 0;
+
+    if (off > 1) i += sprintf(temp, ", ");
+    i += snprintf(&temp[i], (tlen-i), "%s:", p->name);
+
+    switch (p->type)
+    {
+      case PACK_TYPE_BOOL: i += snprintf(&temp[i], (tlen-i), "%d",   p->val.b); break;
+      case PACK_TYPE_INT:  i += snprintf(&temp[i], (tlen-i), "%lld", p->val.i); break;
+      case PACK_TYPE_STR:  i += snprintf(&temp[i], (tlen-i), "%s",   p->val.s); break;
+      case PACK_TYPE_LIST: i += snprintf(&temp[i], (tlen-i), "TODO"); break;
+      case PACK_TYPE_MAP:  i += snprintf(&temp[i], (tlen-i), "%s", pack_debug(p->val.m)); break;
+    }
+
+    temp[i] = '\0';
+    off += snprintf(&buf[off], (max_len-off), "%s", temp);
+    p = p->next;
+  }
+
+  buf[off++] = ']';
+  buf[off++] = '\0';
+  return buf;
 }
 
 //////////////////////////////////////////////////////////////////////////

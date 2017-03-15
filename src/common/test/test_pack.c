@@ -109,6 +109,26 @@ void test_err()
   struct pack_map *map = pack_err("oops");
   verify_int(map->size, 1);
   verify_str(pack_gets(map, "err"), "oops");
+  pack_map_free(map);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// test_debug
+//////////////////////////////////////////////////////////////////////////
+
+void test_debug()
+{
+  struct pack_map *a = pack_map_new();
+  pack_setb(a, "x", true);
+  pack_seti(a, "y", 12);
+  pack_sets(a, "z", "foo");
+  verify_str(pack_debug(a), "[x:1, y:12, z:foo]");
+
+  struct pack_map *b = pack_map_new();
+  pack_setm(b, "m", a);
+  verify_str(pack_debug(b), "[m:[x:1, y:12, z:foo]]");
+
+  pack_map_free(b); // will free a
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -162,6 +182,7 @@ int main()
   // TODO: test_str
   // TODO: test_names
   test_err();
+  test_debug();
   test_io();
   printf("TEST PASSED\n");
   return 0;
