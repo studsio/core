@@ -37,7 +37,7 @@ const class Uartd : Daemon
   UartPort open(Str name, UartConfig config)
   {
     msg := DaemonMsg { it.op="open"; it.a=name; it.b=config }
-    Unsafe unsafe := send(msg).get(5sec)
+    Unsafe unsafe := send(msg).get(30sec)
     return unsafe.val
   }
 
@@ -60,6 +60,10 @@ const class Uartd : Daemon
       proc := Proc { it.cmd=["/usr/bin/fanuart"] }.run.sinkErr
       port := UartPort(proc)
       lock[m.a] = port
+
+      Pack.write(proc.out, ["op":"open", "name":m.a])
+      echo("# " + Pack.read(proc.in))
+
       return Unsafe(port)
     }
 

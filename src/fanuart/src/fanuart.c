@@ -18,6 +18,7 @@
 #include "../../common/src/log.h"
 #include "../../common/src/pack.h"
 #include "uart_enum.h"
+#include "uart_comm.h"
 
 /*
  * Enumerate the available serial ports.
@@ -45,13 +46,47 @@ static void enum_ports()
 }
 
 /*
+ * Open serial port.
+ */
+static void on_open(struct pack_map *req)
+{
+  char *d = pack_debug(req);
+  log_debug("fanuart: on_open %s", d);
+  free(d);
+
+  struct pack_map *res;
+  res = pack_err("open: not yet implemented");
+  pack_write(stdout, res);
+  pack_map_free(res);
+}
+
+/*
+ * Close serial port.
+ */
+static void on_close(struct pack_map *req)
+{
+  char *d = pack_debug(req);
+  log_debug("fanuart: on_close %s", d);
+  free(d);
+
+  struct pack_map *res;
+  res = pack_err("close: not yet implemented");
+  pack_write(stdout, res);
+  pack_map_free(res);
+}
+
+/*
  * Callback to process an incoming Fantom request.
- * Returns -1 if process should exit, or 0 to continue;
+ * Returns -1 if process should exit, or 0 to continue.
  */
 static int on_proc_req(struct pack_map *req)
 {
   char *op = pack_gets(req, "op");
-  if (strcmp(op, "exit") == 0) return -1;
+
+  if (strcmp(op, "open")  == 0) { on_open(req);  return 0; }
+  if (strcmp(op, "close") == 0) { on_close(req); return 0; }
+  if (strcmp(op, "exit")  == 0) { return -1; }
+
   log_debug("fanuart: unknown op '%s'", op);
   return 0;
 }

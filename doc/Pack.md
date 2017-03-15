@@ -99,7 +99,7 @@ to reset its state after each completed read:
     struct pack_buf *buf = pack_buf_new();
     for (;;)
     {
-      if (pack_read(f, b) != 0) { /* read failed */ }
+      if (pack_read(f, buf) != 0) { /* read failed */ }
       if (buf->ready)
       {
         struct pack_map *map = pack_decode(buf->bytes);
