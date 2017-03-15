@@ -8,11 +8,9 @@
 
 using concurrent
 
-**************************************************************************
-** UartConfig
-**************************************************************************
-
-** UartConfig models configuration for a `UartPort`
+**
+** UartConfig models configuration for a `Uart` port.
+**
 const class UartConfig
 {
   ** It-block constructor.
@@ -44,24 +42,3 @@ const class UartConfig
   private static const Str[] paritys := ["none", "even", "odd"]
   private static const Str[] flows   := ["none", "hw", "sw"]
 }
-
-**************************************************************************
-** UartPort
-**************************************************************************
-
-** UartPort models a UART port instance.
-class UartPort
-{
-  ** Internal constructor.
-  internal new make(Proc proc) { this.proc = proc }
-
-  Void test()
-  {
-    Pack.write(proc.out, ["op":"foo"])
-  }
-
-  internal Proc proc
-}
-
-
-
