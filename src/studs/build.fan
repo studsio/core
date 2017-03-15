@@ -34,6 +34,7 @@ class Build : BuildPod
     srcDirs = [
       `fan/`,
       `fan/daemon/`,
+      `fan/dt/`,
       `fan/led/`,
       `fan/net/`,
       `fan/ntp/`,
