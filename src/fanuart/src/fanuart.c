@@ -20,6 +20,38 @@
 #include "uart_enum.h"
 #include "uart_comm.h"
 
+static struct uart *uart = NULL;
+static struct uart_config cur_config;
+
+//////////////////////////////////////////////////////////////////////////
+// Helpers
+//////////////////////////////////////////////////////////////////////////
+
+/*
+ * Send an ok pack response to stdout.
+ */
+static void send_ok()
+{
+  struct pack_map *res = pack_map_new();
+  pack_sets(res, "status", "ok");
+  pack_write(stdout, res);
+  pack_map_free(res);
+}
+
+/*
+ * Send an error pack response to stdout.
+ */
+static void send_err(char *msg)
+{
+  struct pack_map *res = pack_err(msg);
+  pack_write(stdout, res);
+  pack_map_free(res);
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Enum
+//////////////////////////////////////////////////////////////////////////
+
 /*
  * Enumerate the available serial ports.
  */
@@ -45,19 +77,44 @@ static void enum_ports()
   pack_map_free(map);
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Callback handlers
+//////////////////////////////////////////////////////////////////////////
+
 /*
  * Open serial port.
  */
 static void on_open(struct pack_map *req)
 {
+  // debug
   char *d = pack_debug(req);
   log_debug("fanuart: on_open %s", d);
   free(d);
 
-  struct pack_map *res;
-  res = pack_err("open: not yet implemented");
-  pack_write(stdout, res);
-  pack_map_free(res);
+  // check name
+  if (!pack_has(req, "name")) { send_err("missing 'name' field"); return; }
+  char *name = pack_gets(req, "name");
+
+  // check config
+  struct uart_config config = cur_config;
+  // if (parse_option_list(req, req_index, &config) < 0) {
+  //     send_error_response("einval");
+  //     return;
+  // }
+
+  // if uart already open, close and open it again
+  if (uart_is_open(uart)) uart_close(uart);
+
+  // open
+  if (uart_open(uart, name, &config) >= 0)
+  {
+    cur_config = config;
+    send_ok();
+  }
+  else
+  {
+    send_err((char *)uart_last_error());
+  }
 }
 
 /*
@@ -65,14 +122,14 @@ static void on_open(struct pack_map *req)
  */
 static void on_close(struct pack_map *req)
 {
+  // debug
   char *d = pack_debug(req);
   log_debug("fanuart: on_close %s", d);
   free(d);
 
-  struct pack_map *res;
-  res = pack_err("close: not yet implemented");
-  pack_write(stdout, res);
-  pack_map_free(res);
+  // close of open
+  if (uart_is_open(uart)) uart_close(uart);
+  send_ok();
 }
 
 /*
@@ -91,11 +148,24 @@ static int on_proc_req(struct pack_map *req)
   return 0;
 }
 
+//////////////////////////////////////////////////////////////////////////
+// Main
+//////////////////////////////////////////////////////////////////////////
+
+static void on_write_completed(int rc, const uint8_t *data) {}
+static void on_read_completed(int rc, const uint8_t *data, size_t len) {}
+static void on_notify_read(int rc, const uint8_t *data, size_t len) {}
+
 /*
  * Main process loop.
  */
 static void main_loop()
 {
+  // init uart
+  uart_default_config(&cur_config);
+  if (uart_init(&uart, on_write_completed, on_read_completed, on_notify_read) < 0)
+    log_fatal("uart_init failed");
+
   struct pack_buf *buf = pack_buf_new();
 
   for (;;)
@@ -107,7 +177,7 @@ static void main_loop()
     fdset[0].revents = 0;
 
     int timeout = -1; // Wait forever unless told by otherwise
-    int count = 0; //uart_add_poll_events(uart, &fdset[1], &timeout);
+    int count = uart_add_poll_events(uart, &fdset[1], &timeout);
 
     int rc = poll(fdset, count + 1, timeout);
     if (rc < 0)
@@ -135,6 +205,8 @@ static void main_loop()
     }
   }
 
+  // graceful exit
+  if (uart_is_open(uart)) uart_flush_all(uart);
   log_debug("fanuart: bye-bye");
 }
 

@@ -8,6 +8,7 @@
 - BurnCmd: prompt when multiple disk devices found
 - Proc.sinkErr
 - Prototype DevTree
+- Prototype Uart API
 
 #### **Version 1.0.2 (18-Jan-2017)**
 - Move repo to https://bitbucket.org/studs/core
