@@ -73,8 +73,8 @@ integers are modeled in Fantom.
      struct pack_map *map = pack_decode(buf);
 
      // byte array
-     uint8_t bytes[] = { 0xde, 0xad, 0xbe, 0xef };
-     pack_setd(map, "data", bytes, 4);
+     uint8_t bytes[] = { 0x01, 0x02, 0x03 };
+     pack_setd(map, "data", bytes, 3);
      utin8_t *x = pack_getd(map, "data")
 
      // maps
