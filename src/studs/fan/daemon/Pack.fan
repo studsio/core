@@ -52,7 +52,9 @@ class Pack
   private static Void encodeVal(Obj v, Buf buf)
   {
     // encode value
-    switch (v.typeof)
+    t := v.typeof
+    if (t.fits(Buf#)) t = Buf#
+    switch (t)
     {
       case Bool#:
         buf.write(tcBool).write(v == false ? 0x00 : 0x01)
@@ -65,6 +67,10 @@ class Pack
         s := (Str)v
         if (s.size > 0xffff) throw ArgErr("Value string length > 65536")
         buf.write(tcStr).writeI2(s.size).print(s)
+
+      case Buf#:
+        b := (Buf)v
+        buf.write(tcBuf).writeI2(b.size).writeBuf(b.seek(0))
 
       case Obj[]#:
         list := (Obj[])v
@@ -124,6 +130,10 @@ class Pack
       case tcStr:
         slen := buf.readU2
         return buf.readChars(slen)
+
+      case tcBuf:
+        blen := buf.readU2
+        return buf.readBufFully(null, blen)
 
       case tcList:
         list := Obj[,]
@@ -185,6 +195,7 @@ class Pack
   static const Int tcBool := 0x10
   static const Int tcInt  := 0x20
   static const Int tcStr  := 0x40
-  static const Int tcList := 0x50
-  static const Int tcMap  := 0x60
+  static const Int tcBuf  := 0x50
+  static const Int tcList := 0x60
+  static const Int tcMap  := 0x70
 }

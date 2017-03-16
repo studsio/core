@@ -15,6 +15,7 @@ The supported primitive value types for Pack maps are:
   - `Bool`
   - `Int`
   - `Str`
+  - `Buf`
 
 Additionally Pack map values can be `Obj[]` lists and `Str:Obj` maps of the
 above primitives.
@@ -25,6 +26,10 @@ above primitives.
 
     // decode
     map := Pack.decode(buf)
+
+    // byte array
+    bytes := Buf().write(0x01).write(0x02).write(0x03)
+    map := ["data":bytes]
 
     // list and maps
     map := [

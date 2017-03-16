@@ -15,8 +15,9 @@
 #define PACK_TYPE_BOOL   0x10
 #define PACK_TYPE_INT    0x20
 #define PACK_TYPE_STR    0x40
-#define PACK_TYPE_LIST   0x50
-#define PACK_TYPE_MAP    0x60
+#define PACK_TYPE_BUF    0x50
+#define PACK_TYPE_LIST   0x60
+#define PACK_TYPE_MAP    0x70
 
 #define PACK_BUF_SIZE    65536
 

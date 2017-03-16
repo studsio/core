@@ -23,6 +23,9 @@ class PackTest : Test
     // str
     verifyBuf(["s":"foo"],  "706b 0008 0173 40 0003 666f6f")
 
+    // buf
+    verifyBuf(["x":Buf().writeI4(0xdeadbeef)], "706b 0009 0178 50 0004 deadbeef")
+
     // mixed
     map := Str:Obj[:] { it.ordered=true }
     map["b"] = true
@@ -48,7 +51,7 @@ class PackTest : Test
   Void testLists()
   {
     verifyBuf(["a":[true, 12, "foo"]],
-      "706b 0016 0161 50 0003
+      "706b 0016 0161 60 0003
        1001
        20 0000 0000 0000 000c
        40 0003 666f6f")
@@ -63,7 +66,7 @@ class PackTest : Test
       it.set("z", "foo")
     }
     verifyBuf(["a":map],
-      "706b 001c 0161 60 0003
+      "706b 001c 0161 70 0003
        0178 1001
        0179 20 0000 0000 0000 000c
        017a 40 0003 666f6f")
@@ -109,7 +112,10 @@ class PackTest : Test
     {
       t := tk[i]
       verifyEq(k, t)
-      verifyEq(map[k], test[t])
+      if (map[k] is Buf)
+        verifyEq(map[k]->toHex, test[t]->toHex)
+      else
+        verifyEq(map[k], test[t])
     }
   }
 }
