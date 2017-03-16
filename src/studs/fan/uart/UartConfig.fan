@@ -25,7 +25,7 @@ const class UartConfig
   }
 
   ** Baud rate (ex: 9600, 38400, 115200)
-  const Int speed := 115200
+  const Int speed := 9600
 
   ** Number of data bits to use (5..8)
   const Int data := 8

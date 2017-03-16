@@ -82,6 +82,19 @@ static void enum_ports()
 //////////////////////////////////////////////////////////////////////////
 
 /*
+ * Parse uart_config from pack_map.
+ */
+static void parse_config(struct pack_map *m, struct uart_config *config)
+{
+  // TODO
+  // if (pack_has("speed")) config->speed = pack_geti(m, "speed");
+  // if (pack_has("data")) config->data_bits = 8;
+  // if (pack_has("stop")) config->stop_bits = 1;
+  // if (pack_has("parity")) config->parity = UART_PARITY_NONE;
+  // if (pack_has("flow")) config->flow_control = UART_FLOWCONTROL_NONE;
+}
+
+/*
  * Open serial port.
  */
 static void on_open(struct pack_map *req)
@@ -97,10 +110,7 @@ static void on_open(struct pack_map *req)
 
   // check config
   struct uart_config config = cur_config;
-  // if (parse_option_list(req, req_index, &config) < 0) {
-  //     send_error_response("einval");
-  //     return;
-  // }
+  parse_config(req, &config);
 
   // if uart already open, close and open it again
   if (uart_is_open(uart)) uart_close(uart);
@@ -133,6 +143,34 @@ static void on_close(struct pack_map *req)
 }
 
 /*
+ * Read bytes from serial port.
+ */
+static void on_read(struct pack_map *req)
+{
+  // debug
+  char *d = pack_debug(req);
+  log_debug("fanuart: on_read %s", d);
+  free(d);
+
+  // TODO
+  send_ok();
+}
+
+/*
+ * Write bytes to serial port.
+ */
+static void on_write(struct pack_map *req)
+{
+  // debug
+  char *d = pack_debug(req);
+  log_debug("fanuart: on_write %s", d);
+  free(d);
+
+  // TODO
+  send_ok();
+}
+
+/*
  * Callback to process an incoming Fantom request.
  * Returns -1 if process should exit, or 0 to continue.
  */
@@ -140,6 +178,8 @@ static int on_proc_req(struct pack_map *req)
 {
   char *op = pack_gets(req, "op");
 
+  if (strcmp(op, "read")  == 0) { on_read(req);  return 0; }
+  if (strcmp(op, "write") == 0) { on_write(req); return 0; }
   if (strcmp(op, "open")  == 0) { on_open(req);  return 0; }
   if (strcmp(op, "close") == 0) { on_close(req); return 0; }
   if (strcmp(op, "exit")  == 0) { return -1; }
@@ -177,7 +217,7 @@ static void main_loop()
     fdset[0].revents = 0;
 
     int timeout = -1; // Wait forever unless told by otherwise
-    int count = uart_add_poll_events(uart, &fdset[1], &timeout);
+    int count = 0; //uart_add_poll_events(uart, &fdset[1], &timeout);
 
     int rc = poll(fdset, count + 1, timeout);
     if (rc < 0)
