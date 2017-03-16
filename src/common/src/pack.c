@@ -187,6 +187,18 @@ char* pack_gets(struct pack_map *map, char *name)
 }
 
 /*
+ * Get value for given name as byte array. If name is
+ * not found, or if type does not match returns NULL.
+ */
+uint8_t* pack_getd(struct pack_map *map, char *name)
+{
+  struct pack_entry *e = pack_find_entry(map, name);
+  if (e == NULL) return NULL;
+  if (e->type != PACK_TYPE_BUF) return NULL;
+  return e->val.d;
+}
+
+/*
  * Get value for given name as pack_map. If name is not
  * found, or if type does not match returns NULL.
  */
@@ -234,10 +246,31 @@ void pack_seti(struct pack_map *map, char *name, int64_t val)
  */
 void pack_sets(struct pack_map *map, char *name, char *val)
 {
+  // TODO FIXIT: free if reuse
+
   struct pack_entry *e = pack_add_entry(map);
   e->name  = strdup(name);
   e->type  = PACK_TYPE_STR;
   e->val.s = strdup(val);
+}
+
+/*
+ * Set 'name' to byte array 'val'  If this name already
+ * exists the value is updated, otherwise a new entry is
+ * added.
+ */
+void pack_setd(struct pack_map *map, char *name, uint8_t *val, uint16_t len)
+{
+  // TODO FIXIT: free if reuse
+
+  struct pack_entry *e = pack_add_entry(map);
+  e->name  = strdup(name);
+  e->type  = PACK_TYPE_BUF;
+
+  uint8_t *data = (uint8_t *)malloc(len);
+  memcpy(data, val, len);
+  e->val.d = data;
+  e->vlen  = len;
 }
 
 /*
@@ -273,6 +306,7 @@ static uint16_t pack_map_enc_size(struct pack_map *map)
       case PACK_TYPE_BOOL: len += 2; break;
       case PACK_TYPE_INT:  len += 9; break;
       case PACK_TYPE_STR:  len += 3 + strlen(p->val.s); break;
+      case PACK_TYPE_BUF:  len += 3 + p->vlen; break;
       case PACK_TYPE_MAP:  len += 3 + pack_map_enc_size(p->val.m); break;
     }
     p = p->next;
@@ -339,6 +373,13 @@ uint8_t* pack_encode(struct pack_map *map)
         for (i=0; i<vlen; i++) buf[off++] = p->val.s[i];
         break;
 
+      case PACK_TYPE_BUF:
+        vlen = p->vlen;
+        buf[off++] = (vlen >> 8) & 0xff;
+        buf[off++] = vlen & 0xff;
+        for (i=0; i<vlen; i++) buf[off++] = p->val.d[i];
+        break;
+
       case PACK_TYPE_MAP:
         // TODO: encode directly into auto-grow byte buffer
         vlen = p->val.m->size;
@@ -346,7 +387,7 @@ uint8_t* pack_encode(struct pack_map *map)
         buf[off++] = vlen & 0xff;
         sub_buf = pack_encode(p->val.m);
         vlen = pack_map_enc_size(p->val.m);
-        memcpy(&buf[off], sub_buf, vlen);
+        memcpy(&buf[off], &sub_buf[4], vlen);
         off += vlen;
         free(sub_buf);
         break;
@@ -382,6 +423,7 @@ struct pack_map* pack_decode(uint8_t *buf)
   uint8_t i, nlen, type;
   uint16_t vlen;
   char *sval;
+  uint8_t *dval;
   uint64_t uval;
 
   while (off < len)
@@ -423,6 +465,14 @@ struct pack_map* pack_decode(uint8_t *buf)
         val.s = sval;
         break;
 
+      case PACK_TYPE_BUF:
+        vlen = BYTES_TO_U16(buf[off], buf[off+1]);
+        off += 2;
+        dval = (uint8_t *)malloc(vlen);
+        for (i=0; i<vlen; i++) dval[i] = buf[off++];
+        val.d = dval;
+        break;
+
       // case PACK_TYPE_LIST:
       //   vlen = ((buf[off] << 8) & 0xff) | (buf[off+1] & 0xff);
       //   off += 2;
@@ -443,6 +493,7 @@ struct pack_map* pack_decode(uint8_t *buf)
     e->name = name;
     e->type = type;
     e->val  = val;
+    e->vlen = type==PACK_TYPE_BUF ? vlen : 0;
   }
 
   return map;

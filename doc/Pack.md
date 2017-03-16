@@ -45,9 +45,10 @@ The Pack C library is defined in `pack.h` and models the name/value pairs using
   - `bool`
   - `int64_t`
   - `char *`
+  - `uint8_t *`
 
-Note all integers are 64-bit signed longs for consistency with how integers are
-modeled in Fantom.
+Note that the integer val type is a 64-bit signed long for consistency with how
+integers are modeled in Fantom.
 
      // allocate
      struct pack_map *map = pack_map_new();
@@ -70,6 +71,11 @@ modeled in Fantom.
 
      // decode
      struct pack_map *map = pack_decode(buf);
+
+     // byte array
+     uint8_t bytes[] = { 0xde, 0xad, 0xbe, 0xef };
+     pack_setd(map, "data", bytes, 4);
+     utin8_t *x = pack_getd(map, "data")
 
      // maps
      struct pack_map *a = pack_map_new();

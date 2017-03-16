@@ -42,28 +42,38 @@ void test_basics()
   verify_int(map->size, 2);
   verify_int(pack_geti(map, "i"), 5);
 
-  // test seti/geti
+  // test sets/gets
   pack_sets(map, "s", "foo");
   verify(pack_has(map, "s"));
   verify_int(map->size, 3);
   verify_str(pack_gets(map, "s"), "foo");
 
+  // test setd/getd
+  uint8_t d[] = { 0xde, 0xad, 0xbe, 0xef };
+  pack_setd(map, "d", d, 4);
+  verify(pack_has(map, "d"));
+  verify_int(map->size, 4);
+  verify_buf(pack_getd(map, "d"), d, 4);
+
   // test encode/decode
-  uint8_t enc[] = { 0x70, 0x6b, 0x00, 0x17,
+  uint8_t enc[] = { 0x70, 0x6b, 0x00, 0x20,
                     0x01, 0x62, 0x10, 0x01,
                     0x01, 0x69, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05,
-                    0x01, 0x73, 0x40, 0x00, 0x03, 0x66, 0x6f, 0x6f };
+                    0x01, 0x73, 0x40, 0x00, 0x03, 0x66, 0x6f, 0x6f,
+                    0x01, 0x64, 0x50, 0x00, 0x04, 0xde, 0xad, 0xbe, 0xef };
 
   buf = pack_encode(map);
-  verify_buf(buf, enc);
+  verify_buf(buf, enc, sizeof(enc));
 
   map = pack_decode(enc);
   verify(pack_has(map, "b"));
   verify(pack_has(map, "i"));
   verify(pack_has(map, "s"));
+  verify(pack_has(map, "d"));
   verify(pack_getb(map, "b"));
   verify_int(pack_geti(map, "i"), 5);
   verify_str(pack_gets(map, "s"), "foo");
+  verify_buf(pack_getd(map, "d"), d, 4);
 
   // free
   pack_map_free(map);
@@ -89,13 +99,13 @@ void test_maps()
   verify_str(pack_gets(pack_getm(map, "a"), "z"), "foo");
 
   uint8_t enc[] = { 0x70, 0x6b, 0x00, 0x1c,
-                    0x01, 0x61, 0x60, 0x00, 0x03,
+                    0x01, 0x61, 0x70, 0x00, 0x03,
                     0x01, 0x78, 0x10, 0x01,
                     0x01, 0x79, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c,
                     0x01, 0x7a, 0x40, 0x00, 0x03, 0x66, 0x6f, 0x6f };
 
   uint8_t *buf = pack_encode(map);
-  verify_buf(buf, enc);
+  verify_buf(buf, enc, sizeof(enc));
 
   pack_map_free(map);
 }
