@@ -25,6 +25,7 @@ class PackTest : Test
 
     // buf
     verifyBuf(["x":Buf().writeI4(0xdeadbeef)], "706b 0009 0178 50 0004 deadbeef")
+    verifyBuf(["empty":Buf()], "706b 0009 05 656d707479 50 0000")
 
     // mixed
     map := Str:Obj[:] { it.ordered=true }

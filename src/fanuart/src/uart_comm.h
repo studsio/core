@@ -67,8 +67,6 @@ struct uart_signals
     bool rng;
 };
 
-struct uart;
-
 uint64_t current_time();
 
 void uart_default_config(struct uart_config *config);
@@ -78,6 +76,31 @@ const char *uart_last_error();
 typedef void (*uart_write_completed_callback)(int rc, const uint8_t *data);
 typedef void (*uart_read_completed_callback)(int rc, const uint8_t *data, size_t len);
 typedef void (*uart_notify_read)(int error_reason, const uint8_t *data, size_t len);
+
+struct uart {
+    // UART file handle
+    int fd;
+
+    // Read handling
+    bool active_mode_enabled;
+
+    // Write buffering
+    const uint8_t *write_data;
+//    off_t write_offset;
+size_t write_offset;
+    size_t write_len;
+    uint64_t write_completion_deadline;
+
+    // Read buffer
+    bool read_pending;
+    uint8_t read_buffer[4096];
+    uint64_t read_completion_deadline;
+
+    // Callbacks
+    uart_write_completed_callback write_completed;
+    uart_read_completed_callback read_completed;
+    uart_notify_read notify_read;
+};
 
 /**
  * @brief Initialize the UART data

@@ -55,6 +55,20 @@ class Uart
     catch (Err err) { throw IOErr("Uart.close failed", err) }
   }
 
+  ** TODO
+  Buf? read()
+  {
+    Pack.write(proc.out, ["op":"read"])
+    res := Pack.read(proc.in)
+    checkErr(res)
+    return res["data"] as Buf
+  }
+
+  ** TODO
+  Void write(Buf buf)
+  {
+  }
+
   ** Check pack message and throw Err if contains 'err' key.
   private Void checkErr(Str:Obj pack)
   {

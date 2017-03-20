@@ -168,7 +168,7 @@ class Pack
     m := in.readU2
     if (m != magic) throw IOErr("Invalid magic '0x$m.toHex'")
     len := in.readU2
-    buf := Buf(256)
+    buf := Buf(len+4)
     buf.writeI2(magic)
     buf.writeI2(len)
     in.readBufFully(buf, len)

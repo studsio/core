@@ -14,7 +14,7 @@ class UartTest : Test
   Void testConfig()
   {
     c := UartConfig {}
-    verifyConfig(c, 115200, 8, 1, "none", "none")
+    verifyConfig(c, 9600, 8, 1, "none", "none")
 
     c = UartConfig {
       it.speed  = 38400

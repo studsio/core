@@ -34,30 +34,6 @@
 #include "uart_comm.h"
 #include "../../common/src/log.h"
 
-struct uart {
-    // UART file handle
-    int fd;
-
-    // Read handling
-    bool active_mode_enabled;
-
-    // Write buffering
-    const uint8_t *write_data;
-    off_t write_offset;
-    size_t write_len;
-    uint64_t write_completion_deadline;
-
-    // Read buffer
-    bool read_pending;
-    uint8_t read_buffer[4096];
-    uint64_t read_completion_deadline;
-
-    // Callbacks
-    uart_write_completed_callback write_completed;
-    uart_read_completed_callback read_completed;
-    uart_notify_read notify_read;
-};
-
 /**
  * @return a monotonic timestamp in milliseconds
  */
@@ -125,6 +101,12 @@ static void record_last_error(int err)
         break;
     case EIO:
         last_error = "eio";
+        break;
+    case EINTR:
+        last_error = "eintr";
+        break;
+    case ENOTTY:
+        last_error = "enotty";
         break;
     case EINVAL:
     default:

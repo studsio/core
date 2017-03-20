@@ -23,6 +23,9 @@
 static struct uart *uart = NULL;
 static struct uart_config cur_config;
 
+static uint8_t empty_buf[] = {};
+static char err_msg[128];
+
 //////////////////////////////////////////////////////////////////////////
 // Helpers
 //////////////////////////////////////////////////////////////////////////
@@ -34,7 +37,20 @@ static void send_ok()
 {
   struct pack_map *res = pack_map_new();
   pack_sets(res, "status", "ok");
-  pack_write(stdout, res);
+  if (pack_write(stdout, res) < 0) log_debug("fanuart: send_ok failed");
+  pack_map_free(res);
+}
+
+/*
+ * Send an ok pack response with a data buffer to stdout.
+ */
+static void send_ok_data(uint8_t *buf, uint16_t len)
+{
+  struct pack_map *res = pack_map_new();
+  pack_sets(res, "status", "ok");
+  pack_seti(res, "len",    len);
+  pack_setd(res, "data",   uart->read_buffer, len);
+  if (pack_write(stdout, res) < 0) log_debug("fanuart: send_ok_data failed");
   pack_map_free(res);
 }
 
@@ -44,7 +60,7 @@ static void send_ok()
 static void send_err(char *msg)
 {
   struct pack_map *res = pack_err(msg);
-  pack_write(stdout, res);
+  if (pack_write(stdout, res) < 0) log_debug("fanuart: send_err failed");
   pack_map_free(res);
 }
 
@@ -152,8 +168,65 @@ static void on_read(struct pack_map *req)
   log_debug("fanuart: on_read %s", d);
   free(d);
 
-  // TODO
-  send_ok();
+  // verify open
+  if (!uart_is_open(uart))
+  {
+    send_err("port not open");
+    return;
+  }
+
+  struct pollfd fdset[1];
+  fdset[0].fd = uart->fd;
+  fdset[0].events = POLLIN;
+  fdset[0].revents = 0;
+  int timeout = 10000; // 10sec
+
+  // wait until timeout for data to be available
+  int c = poll(fdset, 1, timeout);
+  if (c < 0)
+  {
+    if (errno == EINTR)
+    {
+      // ok if interrupted -- return we read zero bytes
+      send_ok_data(empty_buf, 0);
+      return;
+    }
+    else
+    {
+      // send_err(why)
+      send_err("TODO");
+      return;
+    }
+  }
+  if (c == 0)
+  {
+    send_err("Read timed out");
+    return;
+  }
+
+  // read available data
+  ssize_t len;
+  do {
+    len = read(uart->fd, uart->read_buffer, sizeof(uart->read_buffer));
+  } while (len < 0 && errno == EINTR);
+
+  // send response
+  if (len > 0)
+  {
+    send_ok_data(uart->read_buffer, len);
+  }
+  else if (len == 0 || (len < 0 && errno == EAGAIN))
+  {
+    // nothing to read
+    send_ok_data(empty_buf, 0);
+  }
+  else
+  {
+    // unrecoverable error
+    uart_close(uart);
+    sprintf(err_msg, "Read failed [err=%d]", errno);
+    send_err(err_msg);
+  }
 }
 
 /*
@@ -210,16 +283,13 @@ static void main_loop()
 
   for (;;)
   {
-    struct pollfd fdset[3];
-
+    struct pollfd fdset[1];
     fdset[0].fd = STDIN_FILENO;
     fdset[0].events = POLLIN;
     fdset[0].revents = 0;
 
-    int timeout = -1; // Wait forever unless told by otherwise
-    int count = 0; //uart_add_poll_events(uart, &fdset[1], &timeout);
-
-    int rc = poll(fdset, count + 1, timeout);
+    // wait for stdin message
+    int rc = poll(fdset, 1, -1);
     if (rc < 0)
     {
       // Retry if EINTR
@@ -227,21 +297,19 @@ static void main_loop()
       log_fatal("poll");
     }
 
-    if (fdset[0].revents & (POLLIN | POLLHUP))
+    // read message
+    if (pack_read(stdin, buf) < 0)
     {
-      if (pack_read(stdin, buf) < 0)
-      {
-        log_debug("fanuart: pack_read failed");
-        pack_buf_clear(buf);
-      }
-      else if (buf->ready)
-      {
-        struct pack_map *req = pack_decode(buf->bytes);
-        int r = on_proc_req(req);
-        pack_map_free(req);
-        pack_buf_clear(buf);
-        if (r < 0) break;
-      }
+      log_debug("fanuart: pack_read failed");
+      pack_buf_clear(buf);
+    }
+    else if (buf->ready)
+    {
+      struct pack_map *req = pack_decode(buf->bytes);
+      int r = on_proc_req(req);
+      pack_map_free(req);
+      pack_buf_clear(buf);
+      if (r < 0) break;
     }
   }
 

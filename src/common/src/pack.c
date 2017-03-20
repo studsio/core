@@ -13,7 +13,7 @@
 #include <unistd.h>
 #include "pack.h"
 
-#define BYTES_TO_U16(high,low) (((high << 8) & 0xff) | (low & 0xff))
+#define BYTES_TO_U16(high,low) (((high << 8) & 0xff00) | (low & 0xff))
 
 //////////////////////////////////////////////////////////////////////////
 // Private
@@ -324,12 +324,13 @@ uint8_t* pack_encode(struct pack_map *map)
   struct pack_entry *p = map->head;
 
   // TODO: use a auto-grow byte buffer to avoid double scan
+  // TODO: check bounds!!!
   uint16_t len = pack_map_enc_size(map);
 
   uint8_t *buf = (uint8_t *)malloc(len+4);
   uint16_t off = 0;
-  uint8_t i, nlen;
-  uint16_t vlen;
+  uint8_t nlen;
+  uint16_t i, vlen;
   uint8_t *sub_buf;
 
   // magic
@@ -420,8 +421,8 @@ struct pack_map* pack_decode(uint8_t *buf)
   struct pack_map *map = pack_map_new();
   char *name;
   union pack_val val;
-  uint8_t i, nlen, type;
-  uint16_t vlen;
+  uint8_t nlen, type;
+  uint16_t i, vlen;
   char *sval;
   uint8_t *dval;
   uint64_t uval;
