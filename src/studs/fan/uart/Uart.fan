@@ -33,6 +33,10 @@ class Uart
       // initiate open
       Pack.write(proc.out, ["op":"open", "name":name])
       checkErr(Pack.read(proc.in))
+
+      // setup streams
+      _in  = UartInStream(this)
+      _out = UartOutStream(this)
       return this
     }
     catch (Err err) { throw IOErr("Uart.open failed", err) }
@@ -47,6 +51,8 @@ class Uart
       // close port
       Pack.write(proc.out, ["op":"close"])
       checkErr(Pack.read(proc.in))
+      _in  = null
+      _out = null
 
       // exit proc
       Pack.write(proc.out, ["op":"exit"])
@@ -69,6 +75,22 @@ class Uart
   {
   }
 
+  ** Get an `InStream` to read this port.
+  ** Throws IOErr if port not open.
+  InStream in()
+  {
+    if (proc == null) throw IOErr("Port not open")
+    return _in
+  }
+
+  ** Get an `OutStream` to write to this port.
+  ** Throws IOErr if port not open.
+  OutStream out()
+  {
+    if (proc == null) throw IOErr("Port not open")
+    return _out
+  }
+
   ** Check pack message and throw Err if contains 'err' key.
   private Void checkErr(Str:Obj pack)
   {
@@ -78,4 +100,6 @@ class Uart
   }
 
   private Proc? proc := null
+  private InStream? _in   := null
+  private OutStream? _out := null
 }

@@ -34,4 +34,25 @@ class UartTest : Test
     verifyEq(c.parity, parity)
     verifyEq(c.flow,   flow)
   }
+
+  Void testStreamRead()
+  {
+    // internal test for how UartInStream reads from Uart.read Buf blocks
+    buf := Buf()
+    5.times
+    {
+      if (buf.pos == buf.size) buf.clear.writeBuf(genBuf.seek(0)).seek(0)
+      verifyEq(buf.read, 'a'); verifyNotEq(buf.pos, buf.size)
+      verifyEq(buf.read, 'b'); verifyNotEq(buf.pos, buf.size)
+      verifyEq(buf.read, 'c'); verifyNotEq(buf.pos, buf.size)
+      verifyEq(buf.read, 'd'); verifyNotEq(buf.pos, buf.size)
+      verifyEq(buf.read, 'e'); verifyEq(buf.pos, buf.size)
+      verifyEq(buf.read, null)
+    }
+  }
+
+  private Buf genBuf()
+  {
+    Buf().print("abcde")
+  }
 }
