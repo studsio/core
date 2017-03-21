@@ -84,18 +84,8 @@ void pack_map_free(struct pack_map *map)
 }
 
 //////////////////////////////////////////////////////////////////////////
-// Err/Debug
+// Debug
 //////////////////////////////////////////////////////////////////////////
-
-/*
- * Allocate and return a new map and set [err:msg].
- */
-struct pack_map* pack_err(char *msg)
-{
-  struct pack_map *map = pack_map_new();
-  pack_set_str(map, "err", msg);
-  return map;
-}
 
 /*
  * Serialize map instance to a debug string.

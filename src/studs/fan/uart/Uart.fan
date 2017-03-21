@@ -94,9 +94,8 @@ class Uart
   ** Check pack message and throw Err if contains 'err' key.
   private Void checkErr(Str:Obj pack)
   {
-    msg := pack["err"]
-    if (msg == null) return
-    throw Err(msg)
+    if (pack["status"] == "err")
+      throw Err(pack["msg"] ?: "Unknown error")
   }
 
   private Proc? proc := null

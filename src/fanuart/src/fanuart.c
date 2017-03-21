@@ -59,7 +59,9 @@ static void send_ok_data(uint8_t *buf, uint16_t len)
  */
 static void send_err(char *msg)
 {
-  struct pack_map *res = pack_err(msg);
+  struct pack_map *res = pack_map_new();
+  pack_set_str(res, "status", "err");
+  pack_set_str(res, "msg",    msg);
   if (pack_write(stdout, res) < 0) log_debug("fanuart: send_err failed");
   pack_map_free(res);
 }

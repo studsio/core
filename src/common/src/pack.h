@@ -52,7 +52,6 @@ struct pack_buf {
 struct pack_map* pack_map_new();
 void pack_map_free(struct pack_map *map);
 
-struct pack_map* pack_err(char *msg);
 char* pack_debug(struct pack_map *map);
 
 bool pack_has(struct pack_map *map, char *name);
