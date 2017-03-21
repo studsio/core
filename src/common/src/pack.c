@@ -93,7 +93,7 @@ void pack_map_free(struct pack_map *map)
 struct pack_map* pack_err(char *msg)
 {
   struct pack_map *map = pack_map_new();
-  pack_sets(map, "err", msg);
+  pack_set_str(map, "err", msg);
   return map;
 }
 
@@ -154,7 +154,7 @@ bool pack_has(struct pack_map *map, char *name)
  * Get value for given name as boolean. If name is not
  * found, or if type does not match returns false.
  */
-bool pack_getb(struct pack_map *map, char *name)
+bool pack_get_bool(struct pack_map *map, char *name)
 {
   struct pack_entry *e = pack_find_entry(map, name);
   if (e == NULL) return false;
@@ -166,7 +166,7 @@ bool pack_getb(struct pack_map *map, char *name)
  * Get value for given name as signed 64-bit integer. If
  * name is not found, or if type does not match, returns 0.
  */
-int64_t pack_geti(struct pack_map *map, char *name)
+int64_t pack_get_int(struct pack_map *map, char *name)
 {
   struct pack_entry *e = pack_find_entry(map, name);
   if (e == NULL) return 0;
@@ -178,7 +178,7 @@ int64_t pack_geti(struct pack_map *map, char *name)
  * Get value for given name as char string. If name is
  * not found, or if type does not match returns NULL.
  */
-char* pack_gets(struct pack_map *map, char *name)
+char* pack_get_str(struct pack_map *map, char *name)
 {
   struct pack_entry *e = pack_find_entry(map, name);
   if (e == NULL) return NULL;
@@ -190,7 +190,7 @@ char* pack_gets(struct pack_map *map, char *name)
  * Get value for given name as byte array. If name is
  * not found, or if type does not match returns NULL.
  */
-uint8_t* pack_getd(struct pack_map *map, char *name)
+uint8_t* pack_get_buf(struct pack_map *map, char *name)
 {
   struct pack_entry *e = pack_find_entry(map, name);
   if (e == NULL) return NULL;
@@ -202,7 +202,7 @@ uint8_t* pack_getd(struct pack_map *map, char *name)
  * Get value for given name as pack_map. If name is not
  * found, or if type does not match returns NULL.
  */
-struct pack_map* pack_getm(struct pack_map *map, char *name)
+struct pack_map* pack_get_map(struct pack_map *map, char *name)
 {
   struct pack_entry *e = pack_find_entry(map, name);
   if (e == NULL) return NULL;
@@ -218,7 +218,7 @@ struct pack_map* pack_getm(struct pack_map *map, char *name)
  * Set 'name' to boolean 'val'.  If this name already exists
  * the value is updated, otherwise a new entry is added.
  */
-void pack_setb(struct pack_map *map, char *name, bool val)
+void pack_set_bool(struct pack_map *map, char *name, bool val)
 {
   struct pack_entry *e = pack_add_entry(map);
   e->name  = strdup(name);
@@ -231,7 +231,7 @@ void pack_setb(struct pack_map *map, char *name, bool val)
  * already exists the value is updated, otherwise a new entry
  * is added.
  */
-void pack_seti(struct pack_map *map, char *name, int64_t val)
+void pack_set_int(struct pack_map *map, char *name, int64_t val)
 {
   struct pack_entry *e = pack_add_entry(map);
   e->name  = strdup(name);
@@ -244,7 +244,7 @@ void pack_seti(struct pack_map *map, char *name, int64_t val)
  * exists the value is updated, otherwise a new entry is
  * added.
  */
-void pack_sets(struct pack_map *map, char *name, char *val)
+void pack_set_str(struct pack_map *map, char *name, char *val)
 {
   // TODO FIXIT: free if reuse
 
@@ -259,7 +259,7 @@ void pack_sets(struct pack_map *map, char *name, char *val)
  * exists the value is updated, otherwise a new entry is
  * added.
  */
-void pack_setd(struct pack_map *map, char *name, uint8_t *val, uint16_t len)
+void pack_set_buf(struct pack_map *map, char *name, uint8_t *val, uint16_t len)
 {
   // TODO FIXIT: free if reuse
 
@@ -277,7 +277,7 @@ void pack_setd(struct pack_map *map, char *name, uint8_t *val, uint16_t len)
  * Set 'name' to pack_map 'val'  If this name already exists
  * the value is updated, otherwise a new entry is added.
  */
-void pack_setm(struct pack_map *map, char *name, struct pack_map *val)
+void pack_set_map(struct pack_map *map, char *name, struct pack_map *val)
 {
   struct pack_entry *e = pack_add_entry(map);
   e->name  = strdup(name);

@@ -56,17 +56,17 @@ struct pack_map* pack_err(char *msg);
 char* pack_debug(struct pack_map *map);
 
 bool pack_has(struct pack_map *map, char *name);
-bool pack_getb(struct pack_map *map, char *name);
-int64_t pack_geti(struct pack_map *map, char *name);
-char* pack_gets(struct pack_map *map, char *name);
-uint8_t* pack_getd(struct pack_map *map, char *name);
-struct pack_map* pack_getm(struct pack_map *map, char *name);
+bool pack_get_bool(struct pack_map *map, char *name);
+int64_t pack_get_int(struct pack_map *map, char *name);
+char* pack_get_str(struct pack_map *map, char *name);
+uint8_t* pack_get_buf(struct pack_map *map, char *name);
+struct pack_map* pack_get_map(struct pack_map *map, char *name);
 
-void pack_setb(struct pack_map *map, char *name, bool val);
-void pack_seti(struct pack_map *map, char *name, int64_t val);
-void pack_sets(struct pack_map *map, char *name, char *val);
-void pack_setd(struct pack_map *map, char *name, uint8_t *val, uint16_t len);
-void pack_setm(struct pack_map *map, char *name, struct pack_map *val);
+void pack_set_bool(struct pack_map *map, char *name, bool val);
+void pack_set_int(struct pack_map *map, char *name, int64_t val);
+void pack_set_str(struct pack_map *map, char *name, char *val);
+void pack_set_buf(struct pack_map *map, char *name, uint8_t *val, uint16_t len);
+void pack_set_map(struct pack_map *map, char *name, struct pack_map *val);
 
 uint8_t* pack_encode(struct pack_map *map);
 struct pack_map* pack_decode(uint8_t *buf);

@@ -55,14 +55,14 @@ integers are modeled in Fantom.
      pack_map_free(map);
 
      // setters
-     pack_setb(map, "a", true);
-     pack_seti(map, "b", 12);
-     pack_sets(map, "c", "foo");
+     pack_set_bool(map, "a", true);
+     pack_set_int(map, "b", 12);
+     pack_set_str(map, "c", "foo");
 
      // getters
-     bool b = pack_getb(map, "a");
-     int64_t i = pack_geti(map, "b");
-     char *s = pack_gets(map, "c");
+     bool b = pack_get_bool(map, "a");
+     int64_t i = pack_get_int(map, "b");
+     char *s = pack_get_str(map, "c");
 
      if (pack_has("foo")) { ... }
 
@@ -74,15 +74,15 @@ integers are modeled in Fantom.
 
      // byte array
      uint8_t bytes[] = { 0x01, 0x02, 0x03 };
-     pack_setd(map, "data", bytes, 3);
-     utin8_t *x = pack_getd(map, "data")
+     pack_set_buf(map, "data", bytes, 3);
+     utin8_t *x = pack_get_buf(map, "data")
 
      // maps
      struct pack_map *a = pack_map_new();
-     pack_setb(a, "foo", true);
-     pack_sets(a, "bar", "cool beans");
-     pack_setm(map, "a", a);
-     struct pack_map *x = pack_getm(map, "a");
+     pack_set_bool(a, "foo", true);
+     pack_set_str(a, "bar", "cool beans");
+     pack_set_map(map, "a", a);
+     struct pack_map *x = pack_get_map(map, "a");
 
 ### C I/O
 

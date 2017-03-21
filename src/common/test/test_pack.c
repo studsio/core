@@ -31,29 +31,29 @@ void test_basics()
   verify(!pack_has(map, "s"));
 
   // test setb/getb
-  pack_setb(map, "b", true);
+  pack_set_bool(map, "b", true);
   verify(pack_has(map, "b"));
   verify_int(map->size, 1);
-  verify(pack_getb(map, "b"));
+  verify(pack_get_bool(map, "b"));
 
   // test seti/geti
-  pack_seti(map, "i", 5);
+  pack_set_int(map, "i", 5);
   verify(pack_has(map, "i"));
   verify_int(map->size, 2);
-  verify_int(pack_geti(map, "i"), 5);
+  verify_int(pack_get_int(map, "i"), 5);
 
   // test sets/gets
-  pack_sets(map, "s", "foo");
+  pack_set_str(map, "s", "foo");
   verify(pack_has(map, "s"));
   verify_int(map->size, 3);
-  verify_str(pack_gets(map, "s"), "foo");
+  verify_str(pack_get_str(map, "s"), "foo");
 
   // test setd/getd
   uint8_t d[] = { 0xde, 0xad, 0xbe, 0xef };
-  pack_setd(map, "d", d, 4);
+  pack_set_buf(map, "d", d, 4);
   verify(pack_has(map, "d"));
   verify_int(map->size, 4);
-  verify_buf(pack_getd(map, "d"), d, 4);
+  verify_buf(pack_get_buf(map, "d"), d, 4);
 
   // test encode/decode
   uint8_t enc[] = { 0x70, 0x6b, 0x00, 0x20,
@@ -70,10 +70,10 @@ void test_basics()
   verify(pack_has(map, "i"));
   verify(pack_has(map, "s"));
   verify(pack_has(map, "d"));
-  verify(pack_getb(map, "b"));
-  verify_int(pack_geti(map, "i"), 5);
-  verify_str(pack_gets(map, "s"), "foo");
-  verify_buf(pack_getd(map, "d"), d, 4);
+  verify(pack_get_bool(map, "b"));
+  verify_int(pack_get_int(map, "i"), 5);
+  verify_str(pack_get_str(map, "s"), "foo");
+  verify_buf(pack_get_buf(map, "d"), d, 4);
 
   // free
   pack_map_free(map);
@@ -92,10 +92,10 @@ void test_bufs_empty()
 
   // test new
   map = pack_map_new();
-  pack_setd(map, "empty", empty_buf, 0);
+  pack_set_buf(map, "empty", empty_buf, 0);
   verify(pack_has(map, "empty"));
   verify_int(map->size, 1);
-  verify_buf(pack_getd(map, "empty"), empty_buf, 0);
+  verify_buf(pack_get_buf(map, "empty"), empty_buf, 0);
 
   // test encode/decode
   uint8_t enc[] = { 0x70, 0x6b, 0x00, 0x09,
@@ -142,10 +142,10 @@ void test_bufs_big()
 
   // test new
   map = pack_map_new();
-  pack_setd(map, "big", big, 320);
+  pack_set_buf(map, "big", big, 320);
   verify(pack_has(map, "big"));
   verify_int(map->size, 1);
-  verify_buf(pack_getd(map, "big"), big, 320);
+  verify_buf(pack_get_buf(map, "big"), big, 320);
 
   // test encode/decode
   uint8_t enc_prefix[] = { 0x70, 0x6b, 0x01, 0x47,
@@ -170,7 +170,7 @@ void test_bufs_big()
   fclose(f);
   struct pack_map *test = pack_decode(b->bytes);
   verify(pack_has(test, "big"));
-  buf = pack_getd(test, "big");
+  buf = pack_get_buf(test, "big");
   verify_buf(buf, big, sizeof(big));
 
   // free
@@ -190,15 +190,15 @@ void test_maps()
   struct pack_map *map = pack_map_new();
 
   struct pack_map *a = pack_map_new();
-  pack_setb(a, "x", true);
-  pack_seti(a, "y", 12);
-  pack_sets(a, "z", "foo");
-  pack_setm(map, "a", a);
+  pack_set_bool(a, "x", true);
+  pack_set_int(a, "y", 12);
+  pack_set_str(a, "z", "foo");
+  pack_set_map(map, "a", a);
 
   verify_int(map->size, 1);
-  verify(    pack_getb(pack_getm(map, "a"), "x") == true);
-  verify_int(pack_geti(pack_getm(map, "a"), "y"), 12);
-  verify_str(pack_gets(pack_getm(map, "a"), "z"), "foo");
+  verify(    pack_get_bool(pack_get_map(map, "a"), "x") == true);
+  verify_int(pack_get_int(pack_get_map(map, "a"), "y"), 12);
+  verify_str(pack_get_str(pack_get_map(map, "a"), "z"), "foo");
 
   uint8_t enc[] = { 0x70, 0x6b, 0x00, 0x1c,
                     0x01, 0x61, 0x70, 0x00, 0x03,
@@ -221,7 +221,7 @@ void test_err()
 {
   struct pack_map *map = pack_err("oops");
   verify_int(map->size, 1);
-  verify_str(pack_gets(map, "err"), "oops");
+  verify_str(pack_get_str(map, "err"), "oops");
   pack_map_free(map);
 }
 
@@ -232,13 +232,13 @@ void test_err()
 void test_debug()
 {
   struct pack_map *a = pack_map_new();
-  pack_setb(a, "x", true);
-  pack_seti(a, "y", 12);
-  pack_sets(a, "z", "foo");
+  pack_set_bool(a, "x", true);
+  pack_set_int(a, "y", 12);
+  pack_set_str(a, "z", "foo");
   verify_str(pack_debug(a), "[x:1, y:12, z:foo]");
 
   struct pack_map *b = pack_map_new();
-  pack_setm(b, "m", a);
+  pack_set_map(b, "m", a);
   verify_str(pack_debug(b), "[m:[x:1, y:12, z:foo]]");
 
   pack_map_free(b); // will free a
@@ -251,9 +251,9 @@ void test_debug()
 void test_io()
 {
   struct pack_map *m = pack_map_new();
-  pack_setb(m, "b", true);
-  pack_seti(m, "i", 5);
-  pack_sets(m, "s", "foo");
+  pack_set_bool(m, "b", true);
+  pack_set_int(m, "i", 5);
+  pack_set_str(m, "s", "foo");
 
   // write
   FILE *f = fopen("test/test.tmp", "w");
@@ -267,9 +267,9 @@ void test_io()
     if (pack_read(f, b) != 0) fail("pack_read failed");
   fclose(f);
   struct pack_map *test = pack_decode(b->bytes);
-  verify(pack_getb(test, "b"));
-  verify_int(pack_geti(test, "i"), 5);
-  verify_str(pack_gets(test, "s"), "foo");
+  verify(pack_get_bool(test, "b"));
+  verify_int(pack_get_int(test, "i"), 5);
+  verify_str(pack_get_str(test, "s"), "foo");
 
   // read_fully
   pack_buf_clear(b);
@@ -277,9 +277,9 @@ void test_io()
   if (pack_read_fully(f, b) != 0) fail("pack_read failed");
   fclose(f);
   test = pack_decode(b->bytes);
-  verify(pack_getb(test, "b"));
-  verify_int(pack_geti(test, "i"), 5);
-  verify_str(pack_gets(test, "s"), "foo");
+  verify(pack_get_bool(test, "b"));
+  verify_int(pack_get_int(test, "i"), 5);
+  verify_str(pack_get_str(test, "s"), "foo");
 }
 
 //////////////////////////////////////////////////////////////////////////

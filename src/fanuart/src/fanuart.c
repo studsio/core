@@ -36,7 +36,7 @@ static char err_msg[128];
 static void send_ok()
 {
   struct pack_map *res = pack_map_new();
-  pack_sets(res, "status", "ok");
+  pack_set_str(res, "status", "ok");
   if (pack_write(stdout, res) < 0) log_debug("fanuart: send_ok failed");
   pack_map_free(res);
 }
@@ -47,9 +47,9 @@ static void send_ok()
 static void send_ok_data(uint8_t *buf, uint16_t len)
 {
   struct pack_map *res = pack_map_new();
-  pack_sets(res, "status", "ok");
-  pack_seti(res, "len",    len);
-  pack_setd(res, "data",   uart->read_buffer, len);
+  pack_set_str(res, "status", "ok");
+  pack_set_int(res, "len",    len);
+  pack_set_buf(res, "data",   uart->read_buffer, len);
   if (pack_write(stdout, res) < 0) log_debug("fanuart: send_ok_data failed");
   pack_map_free(res);
 }
@@ -79,12 +79,12 @@ static void enum_ports()
   for (struct serial_info *port=port_list; port != NULL; port=port->next)
   {
     struct pack_map *m = pack_map_new();
-    if (port->description)   pack_sets(m, "desc",    port->description);
-    if (port->manufacturer)  pack_sets(m, "man",     port->manufacturer);
-    if (port->serial_number) pack_sets(m, "ser_num", port->serial_number);
-    if (port->vid)           pack_seti(m, "vid",     port->vid);
-    if (port->pid)           pack_seti(m, "pid",     port->pid);
-    pack_setm(map, port->name, m);
+    if (port->description)   pack_set_str(m, "desc",    port->description);
+    if (port->manufacturer)  pack_set_str(m, "man",     port->manufacturer);
+    if (port->serial_number) pack_set_str(m, "ser_num", port->serial_number);
+    if (port->vid)           pack_set_int(m, "vid",     port->vid);
+    if (port->pid)           pack_set_int(m, "pid",     port->pid);
+    pack_set_map(map, port->name, m);
   }
 
   pack_write(stdout, map);
@@ -103,7 +103,7 @@ static void enum_ports()
 static void parse_config(struct pack_map *m, struct uart_config *config)
 {
   // TODO
-  // if (pack_has("speed")) config->speed = pack_geti(m, "speed");
+  // if (pack_has("speed")) config->speed = pack_get_int(m, "speed");
   // if (pack_has("data")) config->data_bits = 8;
   // if (pack_has("stop")) config->stop_bits = 1;
   // if (pack_has("parity")) config->parity = UART_PARITY_NONE;
@@ -122,7 +122,7 @@ static void on_open(struct pack_map *req)
 
   // check name
   if (!pack_has(req, "name")) { send_err("missing 'name' field"); return; }
-  char *name = pack_gets(req, "name");
+  char *name = pack_get_str(req, "name");
 
   // check config
   struct uart_config config = cur_config;
@@ -249,7 +249,7 @@ static void on_write(struct pack_map *req)
  */
 static int on_proc_req(struct pack_map *req)
 {
-  char *op = pack_gets(req, "op");
+  char *op = pack_get_str(req, "op");
 
   if (strcmp(op, "read")  == 0) { on_read(req);  return 0; }
   if (strcmp(op, "write") == 0) { on_write(req); return 0; }
