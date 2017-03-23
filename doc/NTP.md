@@ -1,6 +1,6 @@
-# **NTP**
+# NTP
 
-## **Ntpd**
+## Ntpd
 
 TODO: yadda yadda
 

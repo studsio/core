@@ -1,4 +1,4 @@
-# **Daemons**
+# Daemons
 
 TODO: talk about Daemon, DaemonSupervisor, and built daemons
 

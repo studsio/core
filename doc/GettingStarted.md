@@ -1,6 +1,6 @@
-# **Getting Started**
+# Getting Started
 
-## **Installation**
+## Installation
 
 **NOTE: still under heavy development -- not ready for use yet!**
 
@@ -16,7 +16,7 @@ our firmware.  The easiest method is to use [Homebrew](http://brew.sh) and
     $ brew install fwup squashfs coreutils
     $ fanr install -r http://eggbox.fantomfactory.org/fanr/ "studs,studsTools"
 
-## **Create a Project**
+## Create a Project
 
 To get started, first we need to create a new project:
 
@@ -47,7 +47,7 @@ or add additional targets by commenting/uncommenting them:
     #target.bbb=true
     target.rpi3=true
 
-## **Install Embedded JRE**
+## Install Embedded JRE
 
 Oracle requires you to jump through several hoops in order to get a JRE for
 embedded platforms, so unfortunately this part of the process must be manually
@@ -69,7 +69,7 @@ Next copy the tar into your project directory:
 
 From here the build tools will manage creating the correct image for your device.
 
-## **Build your Project**
+## Build your Project
 
 Now we're ready to build!
 
@@ -89,7 +89,7 @@ the naming convention is `proj-version-target`:
         └── releases/
             └── myproj-1.0.0-rpi3.fw
 
-## **Running your Project**
+## Running your Project
 
 To run your freshly minted project we need to burn our firmware image onto a
 SD card:

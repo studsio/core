@@ -1,6 +1,6 @@
-# **Networking**
+# Networking
 
-## **Networkd**
+## Networkd
 
 TODO
 
@@ -10,7 +10,7 @@ TODO
       ]
     }.start
 
-## **Static IP Address**
+## Static IP Address
 
 TODO
 

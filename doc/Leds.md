@@ -1,4 +1,4 @@
-# **LEDs**
+# LEDs
 
 TODO
 
