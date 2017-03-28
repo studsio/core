@@ -84,11 +84,13 @@ next `CRLF` terminator.
 
 ## Running
 
+[console]: Console.html
+
 To build and run your project:
 
     $ src/build.fan
     $ fan studs asm
     $ fan studs burn
 
-Insert your SD card and power up your BBB. If you have the serial console
+Insert your SD card and power up your BBB. If you have the [serial console][console]
 connected to your PC you should start seeing the stdout from our application.
