@@ -11,7 +11,7 @@ using inet
 **
 ** SntpClient retrieves network time using SNTP protocol.
 **
-class SntpClient
+@NoDoc class SntpClient
 {
   **
   ** Request the time offset between the current system clock and

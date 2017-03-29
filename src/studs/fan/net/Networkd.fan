@@ -13,7 +13,7 @@ using concurrent
 **
 const class Networkd : Daemon
 {
-  new make() : super(5sec) {}
+  @NoDoc new make() : super(5sec) {}
 
   ** Get the Networkd instance for this vm.  If an instance is
   ** not found, throw Err if 'checked' otherwise reutrn null.
@@ -35,13 +35,13 @@ const class Networkd : Daemon
 // Actor local
 //////////////////////////////////////////////////////////////////////////
 
-  override Void onStart() {}
+  @NoDoc override Void onStart() {}
 
-  override Void onStop() {}
+  @NoDoc override Void onStop() {}
 
-  override Void onPoll() {}
+  @NoDoc override Void onPoll() {}
 
-  override Obj? onMsg(DaemonMsg m)
+  @NoDoc override Obj? onMsg(DaemonMsg m)
   {
     if (m.op === "setup") return onSetup(m.a)
     throw ArgErr("Unsupported message op '$m.op'")

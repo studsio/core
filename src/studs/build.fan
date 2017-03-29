@@ -40,6 +40,6 @@ class Build : BuildPod
       `fan/ntp/`,
       `fan/uart/`,
       `fan/util/`]
-    docSrc = true
+    docSrc = false
   }
 }

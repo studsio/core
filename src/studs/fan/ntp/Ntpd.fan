@@ -11,7 +11,7 @@ using concurrent
 **
 ** Ntpd
 **
-const class Ntpd : Daemon
+@NoDoc const class Ntpd : Daemon
 {
   new make() : super(5sec) {}
 

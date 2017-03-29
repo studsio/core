@@ -75,7 +75,7 @@ class Uart
   {
   }
 
-  ** Get an `InStream` to read this port.
+  ** Get an [InStream]`sys::InStream` to read this port.
   ** Throws IOErr if port not open.
   InStream in()
   {
@@ -83,7 +83,7 @@ class Uart
     return _in
   }
 
-  ** Get an `OutStream` to write to this port.
+  ** Get an  [OutStream]`sys::OutStream` to write to this port.
   ** Throws IOErr if port not open.
   OutStream out()
   {

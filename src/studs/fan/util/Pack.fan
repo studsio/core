@@ -189,13 +189,13 @@ class Pack
 //////////////////////////////////////////////////////////////////////////
 
   // magic number 'pk'
-  static const Int magic := 0x706b
+  @NoDoc static const Int magic := 0x706b
 
   // type codes
-  static const Int tcBool := 0x10
-  static const Int tcInt  := 0x20
-  static const Int tcStr  := 0x40
-  static const Int tcBuf  := 0x50
-  static const Int tcList := 0x60
-  static const Int tcMap  := 0x70
+  @NoDoc static const Int tcBool := 0x10
+  @NoDoc static const Int tcInt  := 0x20
+  @NoDoc static const Int tcStr  := 0x40
+  @NoDoc static const Int tcBuf  := 0x50
+  @NoDoc static const Int tcList := 0x60
+  @NoDoc static const Int tcMap  := 0x70
 }

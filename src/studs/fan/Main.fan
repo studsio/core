@@ -6,7 +6,7 @@
 //   21 Aug 2016  Andy Frank  Creation
 //
 
-class Main
+@NoDoc class Main
 {
   ** Convenience to invoke 'studsTools::Main'.
   static Int main()
