@@ -5,5 +5,5 @@ proj.name={{proj.name}}
 proj.ver=1.0.0
 
 # Uncomment to add target platform to build
-#target.bbb=true
-target.rpi3=true
+target.bbb=true
+#target.rpi3=true
