@@ -17,7 +17,7 @@ class Build : BuildPod
   new make()
   {
     podName = "studs"
-    summary = "Studs"
+    summary = "Studs embedded Fantom API"
     meta    = [
       "proj.name":    "Studs",
       "proj.uri":     "http://studs.io/",
