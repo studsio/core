@@ -17,7 +17,7 @@ using concurrent
 ** on their own thread with life-cycle callbacks for start, stop,
 ** poll, and custom messages.
 **
-** Daemons are managed by a `DaemonSupervisor` instance.
+** Daemons are managed by a `DaemonMgr` instance.
 **
 abstract const class Daemon
 {

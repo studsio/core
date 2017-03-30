@@ -14,7 +14,7 @@ class DaemonTest : Test
   {
     // TODO
 
-    DaemonSupervisor {
+    DaemonMgr {
       it.daemons = [
         Alphad(),
         Betad(),

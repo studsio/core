@@ -4,7 +4,7 @@
 
 TODO: yadda yadda
 
-    DaemonSupervisor {
+    DaemonMgr {
       it.daemons = [
         Ntpd()
       ]

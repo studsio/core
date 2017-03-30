@@ -4,7 +4,7 @@
 
 TODO
 
-    DaemonSupervisor {
+    DaemonMgr {
       it.daemons = [
         Networkd()
       ]

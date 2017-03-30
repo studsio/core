@@ -9,10 +9,10 @@
 using concurrent
 
 **
-** DaemonSupervisor manages starting, stopping, and monitoring
-** `Daemon` instances.
+** DaemonMgr manages starting, stopping, and monitoring `Daemon`
+** instances.
 **
-const class DaemonSupervisor
+const class DaemonMgr
 {
   ** It-block constructor.
   new make(|This| f) { f(this) }

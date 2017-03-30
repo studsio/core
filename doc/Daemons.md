@@ -1,9 +1,9 @@
 # Daemons
 
-TODO: talk about Daemon, DaemonSupervisor, and built daemons
+TODO: talk about Daemon, DaemonMgr, and built daemons
 
     // Start daemons
-    DaemonSupervisor {
+    DaemonMgr {
       it.daemons = [
         Ntpd()
       ]

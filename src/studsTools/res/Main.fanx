@@ -9,7 +9,7 @@ const class Main
   static Int main()
   {
     // Setup system daemons
-    DaemonSupervisor
+    DaemonMgr
     {
       it.daemons = [
         Networkd(),

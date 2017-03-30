@@ -9,6 +9,7 @@
 - Proc.sinkErr
 - Prototype DevTree
 - Prototype Uart API
+- Rename DaemonSupervisor -> DaemonMgr
 
 #### **Version 1.0.2 (18-Jan-2017)**
 - Move repo to https://bitbucket.org/studs/core
