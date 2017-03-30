@@ -24,7 +24,7 @@ the available meta-data about each port:
 
 Open and close a serial port using [open][open] and [close][close]:
 
-    uart := Uart.open("ttyS0")
+    uart := Uart().open("ttyS0", UartConfig {})
     uart.close
 
 Read and write data using the standard Fantom I/O streams with [in][in] and
