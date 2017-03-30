@@ -1,6 +1,6 @@
 # **Changelog**
 
-#### **Version 1.3 (working)**
+#### **Version 1.3 (29-Mar-2017)**
 - Change versioning to use simpler `<major>.<minor>.<patch>` convention
 - Rework build scripts to move Toolchain into studsTools
 - Cleanup dependencies so fanr install will work
