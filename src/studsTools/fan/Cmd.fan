@@ -61,7 +61,12 @@ abstract const class Cmd
   static Str:Str profile() { Actor.locals["cmd.profile"] }
 
   ** Props configuration.
-  static Props props() { Actor.locals["cmd.props"] }
+  static Props props()
+  {
+    p := Actor.locals["cmd.props"] as Props
+    if (p == null) Actor.locals["cmd.props"] = p = Props()
+    return p
+  }
 
   ** List all commands.
   static Cmd[] list() { Actor.locals["cmd.list"] }

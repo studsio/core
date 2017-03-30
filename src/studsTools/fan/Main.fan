@@ -34,9 +34,6 @@ class Main
     finally {}
     Actor.locals["cmd.profile"] = profile.toImmutable
 
-    // setup Cmd.props
-    Actor.locals["cmd.props"] = Props()
-
     // setup Cmd.list
     types := Cmd#.pod.types.findAll |t| { t != Cmd# && t.fits(Cmd#) }
     Cmd[] cmds := types.map |c| { c.make }
