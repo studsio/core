@@ -1,7 +1,7 @@
 # **Changelog**
 
 #### **Version 1.3 (working)**
-- Change versioning to use simpler <major>.<minor>.<patch> convention
+- Change versioning to use simpler `<major>.<minor>.<patch>` convention
 - Rework build scripts to move Toolchain into studsTools
 - Cleanup dependencies so fanr install will work
 - Pack encoder/decoder

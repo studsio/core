@@ -3,7 +3,7 @@
 The [Uart](../api/studs/Uart.html) API allows you to communicate over serial
 UART interfaces.
 
-## Enumerating Available Ports
+## Enumerating Ports
 
 [Uart.list](../api/studs/Uart.html#list) will enumerate the current serial
 ports as a `Str:Obj` map, where the keys are the port names and the values are
