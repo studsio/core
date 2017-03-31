@@ -35,6 +35,7 @@ class Build : BuildPod
       `fan/`,
       `fan/daemon/`,
       `fan/dt/`,
+      `fan/gpio/`,
       `fan/led/`,
       `fan/net/`,
       `fan/ntp/`,
