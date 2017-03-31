@@ -38,14 +38,14 @@ to keep our application pods separate from our master Fantom lib:
         └── releases/        # compiled firmware images put here
 
 `studs.props` contains the configuration for your firmware, including the
-targets you wish to build for. The default target is `rpi3`, but you may change
+targets you wish to build for. The default target is `bbb`, but you may change
 or add additional targets by commenting/uncommenting them:
 
     # studs.props
 
     # Uncomment to add target platform to build
-    #target.bbb=true
-    target.rpi3=true
+    target.bbb=true
+    #target.rpi3=true
 
 ## Install Embedded JRE
 
@@ -57,8 +57,8 @@ Download the appropriate embedded JDK for your target platform:
 
 Target           | eJDK
 -----------------|-------------------------------------------------------------
-Raspberry Pi 3   | [ejdk-8u###-linux-armv6-vfp-hflt.tar.gz](http://www.oracle.com/technetwork/java/embedded/embedded-se/downloads/javase-embedded-downloads-2209751.html)
 BeagleBone Black | [ejdk-8u###-linux-armv6-vfp-hflt.tar.gz](http://www.oracle.com/technetwork/java/embedded/embedded-se/downloads/javase-embedded-downloads-2209751.html)
+Raspberry Pi 3   | [ejdk-8u###-linux-armv6-vfp-hflt.tar.gz](http://www.oracle.com/technetwork/java/embedded/embedded-se/downloads/javase-embedded-downloads-2209751.html)
 
 Next copy the tar into your project directory:
 
@@ -87,7 +87,7 @@ the naming convention is `proj-version-target`:
     myproj/
     └── studs/
         └── releases/
-            └── myproj-1.0.0-rpi3.fw
+            └── myproj-1.0.0-bbb.fw
 
 ## Running your Project
 
