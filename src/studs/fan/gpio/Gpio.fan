@@ -53,6 +53,7 @@ class Gpio
     if (proc == null) throw IOErr("Gpio port not open")
     Pack.write(proc.out, ["op":"read"])
     res := Pack.read(proc.in)
+    checkErr(res)
     return res["val"]
   }
 
@@ -68,6 +69,27 @@ class Gpio
     Pack.write(proc.out, ["op":"write", "val":val==0])
     checkErr(Pack.read(proc.in))
     return this
+  }
+
+  **
+  ** Register an interrupt handler to listen for GPIO output
+  ** changes.  Invoke the given callback function when a change
+  ** occurs. This method will block listening until `close` is
+  ** called.
+  **
+  Void listen(|Int val| callback)
+  {
+    // register interrupt
+    Pack.write(proc.out, ["op":"listen"])
+    checkErr(Pack.read(proc.in))
+
+    // block until proc exists
+    while (proc != null)
+    {
+      res := Pack.read(proc.in)
+      checkErr(res)
+      callback(res["val"])
+    }
   }
 
   ** Check pack message and throw Err if contains 'err' key.
