@@ -46,7 +46,7 @@ struct gpio {
  * @brief write a string to a sysfs file
  * @return returns 0 on failure, >0 on success
  */
-int sysfs_write_file(const char *pathname, const char *value)
+static int sysfs_write_file(const char *pathname, const char *value)
 {
   int fd = open(pathname, O_WRONLY);
   if (fd < 0) {
@@ -66,20 +66,43 @@ int sysfs_write_file(const char *pathname, const char *value)
   return written;
 }
 
+/*
+ * Send an ok pack response to stdout.
+ */
+static void send_ok()
+{
+  struct pack_map *res = pack_map_new();
+  pack_set_str(res, "status", "ok");
+  if (pack_write(stdout, res) < 0) log_debug("fangpio: send_ok failed");
+  pack_map_free(res);
+}
+
+/*
+ * Send an error pack response to stdout.
+ */
+static void send_err(char *msg)
+{
+  struct pack_map *res = pack_map_new();
+  pack_set_str(res, "status", "err");
+  pack_set_str(res, "msg",    msg);
+  if (pack_write(stdout, res) < 0) log_debug("fangpio: send_err failed");
+  pack_map_free(res);
+}
+
 //////////////////////////////////////////////////////////////////////////
 // GPIO functions
 //////////////////////////////////////////////////////////////////////////
 
 /**
- * @brief	Open and configure a GPIO
+ * @brief  Open and configure a GPIO
  *
- * @param	pin           The pin structure
- * @param	pin_number    The GPIO pin
- * @param   dir           Direction of pin (input or output)
+ * @param  pin         The pin structure
+ * @param  pin_number  The GPIO pin
+ * @param  dir         Direction of pin (input or output)
  *
- * @return 	1 for success, -1 for failure
+ * @return  1 for success, -1 for failure
  */
-int gpio_init(struct gpio *pin, unsigned int pin_number, enum gpio_state dir)
+static int gpio_init(struct gpio *pin, unsigned int pin_number, enum gpio_state dir)
 {
   // Initialize the pin structure
   pin->state = dir;
@@ -134,14 +157,14 @@ int gpio_init(struct gpio *pin, unsigned int pin_number, enum gpio_state dir)
 }
 
 /**
- * @brief	Set pin with the value "0" or "1"
+ * @brief  Set pin with the value "0" or "1"
  *
- * @param	pin           The pin structure
- * @param       value         Value to set (0 or 1)
+ * @param  pin    The pin structure
+ * @param  value  Value to set (0 or 1)
  *
- * @return 	1 for success, -1 for failure
+ * @return  1 for success, -1 for failure
  */
-int gpio_write(struct gpio *pin, unsigned int val)
+static int gpio_write(struct gpio *pin, unsigned int val)
 {
   if (pin->state != GPIO_OUTPUT)
     return -1;
@@ -155,13 +178,13 @@ int gpio_write(struct gpio *pin, unsigned int val)
 }
 
 /**
-* @brief	Read the value of the pin
+* @brief  Read the value of the pin
 *
-* @param	pin            The GPIO pin
+* @param  pin  The GPIO pin
 *
-* @return 	The pin value if success, -1 for failure
+* @return  The pin value if success, -1 for failure
 */
-int gpio_read(struct gpio *pin)
+static int gpio_read(struct gpio *pin)
 {
   char buf;
   ssize_t amount_read = pread(pin->fd, &buf, sizeof(buf), 0);
@@ -178,12 +201,12 @@ int gpio_read(struct gpio *pin)
  * isr is called whenever the edge specified occurs, receiving as
  * argument the number of the pin which triggered the interrupt.
  *
- * @param   pin	Pin number to attach interrupt to
- * @param   mode	Interrupt mode
+ * @param   pin   Pin number to attach interrupt to
+ * @param   mode  Interrupt mode
  *
  * @return  Returns 1 on success.
  */
-int gpio_set_int(struct gpio *pin, const char *mode)
+static int gpio_set_int(struct gpio *pin, const char *mode)
 {
   char path[64];
   sprintf(path, "/sys/class/gpio/gpio%d/edge", pin->pin_number);
@@ -202,7 +225,65 @@ int gpio_set_int(struct gpio *pin, const char *mode)
 // Pack
 //////////////////////////////////////////////////////////////////////////
 
-// TODO
+/*
+ * Send current state of GPIO pin.
+ */
+static void on_gpio(struct gpio *pin)
+{
+  int val = gpio_read(pin);
+  struct pack_map *res = pack_map_new();
+  pack_set_str(res, "status", "ok");
+  pack_set_bool(res, "val", val);
+  if (pack_write(stdout, res) < 0) log_debug("fangpio: on_read failed");
+  pack_map_free(res);
+}
+
+/*
+ * Send current state of GPIO pin.
+ */
+static void on_read(struct pack_map *req, struct gpio *pin)
+{
+  // debug
+  char *d = pack_debug(req);
+  log_debug("fangpio: on_read %s", d);
+  free(d);
+
+  // read and return pin value
+  on_gpio(pin);
+}
+
+/*
+ * Write current state of GPIO pin.
+ */
+static void on_write(struct pack_map *req, struct gpio *pin)
+{
+  // debug
+  char *d = pack_debug(req);
+  log_debug("fangpio: on_write %s", d);
+  free(d);
+
+  // set pin value
+  if (!pack_has(req, "val")) { send_err("missing 'val' field"); return; }
+  int64_t val = pack_get_int(req, "val");
+  gpio_write(pin, val);
+  send_ok();
+}
+
+/*
+ * Callback to process an incoming Fantom request.
+ * Returns -1 if process should exit, or 0 to continue.
+ */
+static int on_proc_req(struct pack_map *req, struct gpio *pin)
+{
+  char *op = pack_get_str(req, "op");
+
+  if (strcmp(op, "read")  == 0) { on_read(req, pin);  return 0; }
+  if (strcmp(op, "write") == 0) { on_write(req, pin); return 0; }
+  if (strcmp(op, "exit")  == 0) { return -1; }
+
+  log_debug("fangpio: unknown op '%s'", op);
+  return 0;
+}
 
 //////////////////////////////////////////////////////////////////////////
 // Main
@@ -226,6 +307,8 @@ int main(int argc, char *argv[])
   if (gpio_init(&pin, pin_number, initial_state) < 0)
     log_fatal("Error initializing GPIO %d as %s", pin_number, argv[3]);
 
+  struct pack_buf *buf = pack_buf_new();
+
   for (;;)
   {
     struct pollfd fdset[2];
@@ -247,11 +330,27 @@ int main(int argc, char *argv[])
       log_fatal("poll");
     }
 
-    // if (fdset[0].revents & (POLLIN | POLLHUP))
-    //   erlcmd_process(&handler);
-    //
-    // if (fdset[1].revents & POLLPRI)
-    //   gpio_process(&pin);
+    // check stdin
+    if (fdset[0].revents & (POLLIN | POLLHUP))
+    {
+      // read message
+      if (pack_read(stdin, buf) < 0)
+      {
+        log_debug("fangpio: pack_read failed");
+        pack_buf_clear(buf);
+      }
+      else if (buf->ready)
+      {
+        struct pack_map *req = pack_decode(buf->bytes);
+        int r = on_proc_req(req, &pin);
+        pack_map_free(req);
+        pack_buf_clear(buf);
+        if (r < 0) break;
+      }
+    }
+
+    // push state change
+    if (fdset[1].revents & POLLPRI) on_gpio(&pin);
   }
 
   return 0;
