@@ -30,12 +30,8 @@ class Gpio
     this.dir = dir
 
     // spawn fangpio process
-    this.proc = Proc { it.cmd=["/usr/bin/fangpio"] }
+    this.proc = Proc { it.cmd=["/usr/bin/fangpio", pin.toStr, dir] }
     this.proc.run.sinkErr
-
-    // initiate open
-    Pack.write(proc.out, ["op":"open", "pin":pin, "dir":dir])
-    checkErr(Pack.read(proc.in))
   }
 
   ** Close this port.
@@ -46,6 +42,7 @@ class Gpio
     {
       Pack.write(proc.out, ["op":"exit"])
       proc.waitFor
+      proc = null
     }
     catch (Err err) { throw IOErr("Gpio.close failed", err) }
   }
@@ -53,6 +50,7 @@ class Gpio
   ** Read the current value of the pin.
   Int read()
   {
+    if (proc == null) throw IOErr("Gpio port not open")
     Pack.write(proc.out, ["op":"read"])
     res := Pack.read(proc.in)
     return res["val"]
@@ -66,6 +64,7 @@ class Gpio
   **
   This write(Int val)
   {
+    if (proc == null) throw IOErr("Gpio port not open")
     Pack.write(proc.out, ["op":"write", "val":val==0])
     checkErr(Pack.read(proc.in))
     return this

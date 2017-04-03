@@ -98,7 +98,7 @@ static void send_err(char *msg)
  *
  * @param  pin         The pin structure
  * @param  pin_number  The GPIO pin
- * @param  dir         Direction of pin (input or output)
+ * @param  dir         Direction of pin (in or out)
  *
  * @return  1 for success, -1 for failure
  */
@@ -292,16 +292,16 @@ static int on_proc_req(struct pack_map *req, struct gpio *pin)
 int main(int argc, char *argv[])
 {
   // sanity checks
-  if (argc != 4) log_fatal("%s gpio <pin#> <input|output>", argv[0]);
+  if (argc != 3) log_fatal("%s <pin#> <in|out>", argv[0]);
 
   int pin_number = strtol(argv[2], NULL, 0);
   enum gpio_state initial_state = GPIO_INPUT;
-  if (strcmp(argv[3], "input") == 0)
+  if (strcmp(argv[3], "in") == 0)
     initial_state = GPIO_INPUT;
-  else if (strcmp(argv[3], "output") == 0)
+  else if (strcmp(argv[3], "out") == 0)
     initial_state = GPIO_OUTPUT;
   else
-    log_fatal("Specify 'input' or 'output'");
+    log_fatal("Specify 'in' or 'out'");
 
   struct gpio pin;
   if (gpio_init(&pin, pin_number, initial_state) < 0)
