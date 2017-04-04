@@ -39,6 +39,7 @@ class Build : BuildPod
       `fan/led/`,
       `fan/net/`,
       `fan/ntp/`,
+      `fan/spi/`,
       `fan/uart/`,
       `fan/util/`]
     docSrc = false

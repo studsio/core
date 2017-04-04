@@ -25,6 +25,7 @@ class Build : BuildGroup
       `studsTest/build.fan`,
       `faninit/build.fan`,
       `fangpio/build.fan`,
+      `fanspi/build.fan`,
       `fanuart/build.fan`,
 
       // We need to rebuild studsTools after natives have been
