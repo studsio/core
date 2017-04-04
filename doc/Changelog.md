@@ -1,6 +1,8 @@
 # Changelog
 
 #### Version 1.4 (working)
+- New `inspect` on-device unit testing app: [BitBucket](https://bitbucket.org/studs/inspect)
+- Add Sys API
 - Prototype Gpio API
 - Prototype SPI API
 
