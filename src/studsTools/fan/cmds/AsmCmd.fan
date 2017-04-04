@@ -164,6 +164,17 @@ const class AsmCmd : Cmd
     initProps := Env.cur.workDir + `faninit.props`
     initProps.copyTo(rootfs + `etc/faninit.props`)
 
+    // sys.props
+    sysProps := Str:Str[:] {
+      it.ordered = true
+      it.set("proj.name",      proj)
+      it.set("proj.version",   ver)
+      it.set("studs.version",  AsmCmd#.pod.version.toStr)
+      it.set("system.name",    sys.name)
+      it.set("system.version", sys.version.toStr)
+    }
+    (rootfs + `etc/sys.props`).writeProps(sysProps)
+
     // stage natives
     ["fangpio", "fanspi", "fanuart"].each |name|
     {

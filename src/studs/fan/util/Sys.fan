@@ -6,15 +6,27 @@
 //    4 Apr 2017  Andy Frank  Creation
 //
 
+using concurrent
+
 **
 ** Sys provides system level information and utilites for a target device.
 **
 class Sys
 {
-  ** Return the Studs system name for this device (ex: bbb, rpi3).
-  static Str system()
+  **
+  ** Get 'etc/studs.props' system properites, which includes:
+  **  - 'proj.name'
+  **  - 'proj.version'
+  **  - 'studs.version'
+  **  - 'system.name'
+  **  - 'system.version'
+  **
+  static Str:Str props()
   {
-    "TODO"
+    if (propsRef.val == null)
+      propsRef.val = File(`/etc/sys.props`).readProps.toImmutable
+
+    return propsRef.val
   }
 
   ** Reboot this device.
@@ -22,4 +34,6 @@ class Sys
   {
     Proc { it.cmd=["/sbin/reboot"] }.run.waitFor.okOrThrow
   }
+
+  private static const AtomicRef propsRef := AtomicRef(null)
 }
