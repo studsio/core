@@ -264,7 +264,7 @@ static void on_write(struct pack_map *req, struct gpio *pin)
 
   // set pin value
   if (!pack_has(req, "val")) { send_err("missing 'val' field"); return; }
-  int64_t val = pack_get_int(req, "val");
+  bool val = pack_get_bool(req, "val");
   gpio_write(pin, val);
   send_ok();
 }
@@ -312,20 +312,22 @@ int main(int argc, char *argv[])
   // sanity checks
   if (argc != 3) log_fatal("%s <pin#> <in|out>", argv[0]);
 
-  int pin_number = strtol(argv[2], NULL, 0);
+  int pin_number = strtol(argv[1], NULL, 0);
   enum gpio_state initial_state = GPIO_INPUT;
-  if (strcmp(argv[3], "in") == 0)
+  if (strcmp(argv[2], "in") == 0)
     initial_state = GPIO_INPUT;
-  else if (strcmp(argv[3], "out") == 0)
+  else if (strcmp(argv[2], "out") == 0)
     initial_state = GPIO_OUTPUT;
   else
     log_fatal("Specify 'in' or 'out'");
 
   struct gpio pin;
   if (gpio_init(&pin, pin_number, initial_state) < 0)
-    log_fatal("Error initializing GPIO %d as %s", pin_number, argv[3]);
+    log_fatal("Error initializing GPIO %d as %s", pin_number, argv[2]);
 
   struct pack_buf *buf = pack_buf_new();
+
+  log_debug("fangpio: started @ %d %s", pin_number, argv[2]);
 
   for (;;)
   {

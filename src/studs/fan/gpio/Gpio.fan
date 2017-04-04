@@ -54,7 +54,7 @@ class Gpio
     Pack.write(proc.out, ["op":"read"])
     res := Pack.read(proc.in)
     checkErr(res)
-    return res["val"]
+    return res["val"] == false ? 0 : 1
   }
 
   **
@@ -66,7 +66,7 @@ class Gpio
   This write(Int val)
   {
     if (proc == null) throw IOErr("Gpio port not open")
-    Pack.write(proc.out, ["op":"write", "val":val==0])
+    Pack.write(proc.out, ["op":"write", "val":val==0 ? false : true])
     checkErr(Pack.read(proc.in))
     return this
   }
