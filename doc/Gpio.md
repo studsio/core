@@ -3,14 +3,25 @@
 The [Gpio](../api/studs/Gpio.html) API provides high level access to GPIO pins
 through the Linux sysclass interface.
 
-# Basics
+## Basics
+
+[open]:  ../api/studs/Gpio.html#open
+[read]:  ../api/studs/Gpio.html#read
+[write]: ../api/studs/Gpio.html#write
+[close]: ../api/studs/Gpio.html#close
+
+Invoke [Gpio.open][open] to open a given GPIO pin number and direction. Use
+[read][read] and [write][write] to read and toggle the pin value:
 
     g := Gpio.open(18, "out")
     g.write(1)
     g.read
     g.close
 
-# Listening for Changes
+Once you are finished with a pin, call [close][close] to free the backing
+native process.
+
+## Listening for Changes
 
 [listen]: ../api/studs/Gpio.html#listen
 
