@@ -241,7 +241,35 @@ static void on_write(struct pack_map *req)
   log_debug("fanuart: on_write %s", d);
   free(d);
 
-  // TODO
+  // verify open
+  if (!uart_is_open(uart))
+  {
+    send_err("port not open");
+    return;
+  }
+
+  uint16_t len  = pack_get_int(req, "len");
+  uint8_t *data = pack_get_buf(req, "data");
+  ssize_t written = 0, w = 0;
+
+  if (len  <= 0)    { send_err("missing or invalid 'len' field"); return;  }
+  if (data == NULL) { send_err("missing or invalid 'data' field"); return; }
+
+  // loop until all bytes written
+  while (written < len)
+  {
+    do {
+      w = write(uart->fd, data+written, len-written);
+      log_debug("fanuart: wrote %d/%d, errno=%d (%s) data=%p, fd=%d",
+        (int)len, (int)len, errno, strerror(errno), data, uart->fd);
+    } while (w < 0 && errno == EINTR);
+
+    // write failed
+    if (w < 0) { send_err("write failed"); return; }
+
+    written += w;
+  }
+
   send_ok();
 }
 

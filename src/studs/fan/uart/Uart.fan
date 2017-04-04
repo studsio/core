@@ -61,18 +61,22 @@ class Uart
     catch (Err err) { throw IOErr("Uart.close failed", err) }
   }
 
-  ** TODO
-  Buf? read()
+  ** Read the available bytes this port, which may be '0' if
+  ** data is not available. Throws IOErr if read failed.
+  Buf read()
   {
     Pack.write(proc.out, ["op":"read"])
     res := Pack.read(proc.in)
     checkErr(res)
-    return res["data"] as Buf
+    return res["data"]
   }
 
-  ** TODO
+  ** Write the given bytes to this port. Throws IOErr if write failed.
   Void write(Buf buf)
   {
+    if (buf.size == 0) return
+    Pack.write(proc.out, ["op":"write", "len":buf.size, "data":buf])
+    checkErr(Pack.read(proc.in))
   }
 
   ** Get an [InStream]`sys::InStream` to read this port.
