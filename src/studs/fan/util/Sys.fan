@@ -14,7 +14,7 @@ using concurrent
 class Sys
 {
   **
-  ** Get 'etc/studs.props' system properites, which includes:
+  ** Get 'etc/sys.props' system properites, which includes:
   **  - 'proj.name'
   **  - 'proj.version'
   **  - 'studs.version'
