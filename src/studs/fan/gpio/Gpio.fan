@@ -73,12 +73,18 @@ class Gpio
 
   **
   ** Register an interrupt handler to listen for GPIO output
-  ** changes.  Invoke the given callback function when a change
-  ** occurs. This method will block listening until `close` is
-  ** called.
+  ** changes. The 'mode' should be one of the strings "rising",
+  ** "falling" or "both" to indicate which edge(s) the ISR is
+  ** to be triggered on. Invoke the given callback function when
+  ** a change occurs. This method will block listening until
+  ** `close` is called.
   **
-  Void listen(|Int val| callback)
+  Void listen(Str mode, |Int val| callback)
   {
+    // check mode
+    if (mode != "rising" && mode != "falling" && mode != "both")
+      throw ArgErr("Invalid mode '$mode")
+
     // register interrupt
     Pack.write(proc.out, ["op":"listen"])
     checkErr(Pack.read(proc.in))

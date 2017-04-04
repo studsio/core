@@ -15,13 +15,13 @@ through the Linux sysclass interface.
 [listen]: ../api/studs/Gpio.html#listen
 
 To monitor changes to a GPIO pin output, you can use [Gpio.listen][listen].
-This method will register an interrupt handler and efficiently poll for pin
-state changes:
+This method will register an interrupt handler that triggers on the falling
+edge and efficiently poll for pin state changes:
 
     g := Gpio.open(18, "out")
     i := 0
 
-    g.listen |val|
+    g.listen("falling") |val|
     {
       echo("Pin is now $val")
       if (++i == 5) g.close

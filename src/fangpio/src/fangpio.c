@@ -270,6 +270,23 @@ static void on_write(struct pack_map *req, struct gpio *pin)
 }
 
 /*
+ * Register interrupt handler for GPIO pin changes.
+ */
+static void on_listen(struct pack_map *req, struct gpio *pin)
+{
+  // debug
+  char *d = pack_debug(req);
+  log_debug("fangpio: on_listen %s", d);
+  free(d);
+
+  char *mode = pack_get_str(req, "mode");
+  if (mode == NULL) { send_err("missing or invalid 'mode' field"); return; }
+
+  if (gpio_set_int(pin, mode)) send_ok();
+  else send_err("listen failed");
+}
+
+/*
  * Callback to process an incoming Fantom request.
  * Returns -1 if process should exit, or 0 to continue.
  */
@@ -277,9 +294,10 @@ static int on_proc_req(struct pack_map *req, struct gpio *pin)
 {
   char *op = pack_get_str(req, "op");
 
-  if (strcmp(op, "read")  == 0) { on_read(req, pin);  return 0; }
-  if (strcmp(op, "write") == 0) { on_write(req, pin); return 0; }
-  if (strcmp(op, "exit")  == 0) { return -1; }
+  if (strcmp(op, "read")   == 0) { on_read(req, pin);   return 0; }
+  if (strcmp(op, "write")  == 0) { on_write(req, pin);  return 0; }
+  if (strcmp(op, "listen") == 0) { on_listen(req, pin); return 0; }
+  if (strcmp(op, "exit")   == 0) { return -1; }
 
   log_debug("fangpio: unknown op '%s'", op);
   return 0;
