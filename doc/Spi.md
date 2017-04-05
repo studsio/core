@@ -19,5 +19,5 @@ method:
     resp := spi.transfer(data)
     spi.close
 
-Once you are finished with a pin, call [close][close] to free the backing
+Once you are finished with a port, call [close][close] to free the backing
 native process.
