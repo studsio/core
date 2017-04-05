@@ -17,13 +17,13 @@ const class SpiConfig
   new make(|This| f)
   {
     f(this)
-    if (mode < 0 || mode > 2)    throw ArgErr("Invalid mode '$mode'")
-    if (bits != 8 && bits != 16) throw ArgErr("Invalid speed '$speed'")
+    if (mode < 0 || mode > 3)    throw ArgErr("Invalid mode '$mode'")
+    if (bits != 8 && bits != 16) throw ArgErr("Invalid bits '$bits'")
     if (speed <= 0)              throw ArgErr("Invalid speed '$speed'")
     if (delay <= 0)              throw ArgErr("Invalid delay '$delay'")
   }
 
-  ** Mode specifies the clock polarity and phase to use (0..2)
+  ** Mode specifies the clock polarity and phase to use (0..3)
   const Int mode := 0
 
   ** Number of bits per word on the bus (8 or 16; defaults to 8)

@@ -49,7 +49,7 @@ static void send_ok_data(uint8_t *buf, uint16_t len)
   struct pack_map *res = pack_map_new();
   pack_set_str(res, "status", "ok");
   pack_set_int(res, "len",    len);
-  pack_set_buf(res, "data",   uart->read_buffer, len);
+  pack_set_buf(res, "data",   buf, len);
   if (pack_write(stdout, res) < 0) log_debug("fanuart: send_ok_data failed");
   pack_map_free(res);
 }

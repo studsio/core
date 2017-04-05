@@ -65,6 +65,7 @@ class Uart
   ** data is not available. Throws IOErr if read failed.
   Buf read()
   {
+    if (proc == null) throw IOErr("Port not open")
     Pack.write(proc.out, ["op":"read"])
     res := Pack.read(proc.in)
     checkErr(res)
@@ -74,6 +75,7 @@ class Uart
   ** Write the given bytes to this port. Throws IOErr if write failed.
   Void write(Buf buf)
   {
+    if (proc == null) throw IOErr("Port not open")
     if (buf.size == 0) return
     Pack.write(proc.out, ["op":"write", "len":buf.size, "data":buf])
     checkErr(Pack.read(proc.in))

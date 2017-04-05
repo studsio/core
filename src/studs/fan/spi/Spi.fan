@@ -45,6 +45,22 @@ class Spi
     }
     catch (Err err) { throw IOErr("Spi.close failed", err) }
   }
+
+  **
+  ** Perform a SPI transfer. The 'data' should be a binary
+  ** containing the bytes to send. Since SPI transfers
+  ** simultaneously send and receive, the return value will
+  ** be a 'Buf' of the same length.
+  **
+  Buf transfer(Buf data)
+  {
+    if (proc == null) throw IOErr("Port not open")
+    Pack.write(proc.out, ["op":"transfer", "len":data.size, "data":data])
+    res := Pack.read(proc.in)
+    checkErr(res)
+    return res["data"]
+  }
+
   ** Check pack message and throw Err if contains 'err' key.
   private Void checkErr(Str:Obj pack)
   {

@@ -45,27 +45,29 @@ struct spi_info
 //////////////////////////////////////////////////////////////////////////
 
 /*
- * Send an ok pack response to stdout.
+ * Send an ok pack response with a data buffer to stdout.
  */
-// static void send_ok()
-// {
-//   struct pack_map *res = pack_map_new();
-//   pack_set_str(res, "status", "ok");
-//   if (pack_write(stdout, res) < 0) log_debug("fanspi: send_ok failed");
-//   pack_map_free(res);
-// }
+static void send_ok_data(uint8_t *buf, uint16_t len)
+{
+  struct pack_map *res = pack_map_new();
+  pack_set_str(res, "status", "ok");
+  pack_set_int(res, "len",    len);
+  pack_set_buf(res, "data",   buf, len);
+  if (pack_write(stdout, res) < 0) log_debug("fanuart: send_ok_data failed");
+  pack_map_free(res);
+}
 
 /*
  * Send an error pack response to stdout.
  */
-// static void send_err(char *msg)
-// {
-//   struct pack_map *res = pack_map_new();
-//   pack_set_str(res, "status", "err");
-//   pack_set_str(res, "msg",    msg);
-//   if (pack_write(stdout, res) < 0) log_debug("fanspi: send_err failed");
-//   pack_map_free(res);
-// }
+static void send_err(char *msg)
+{
+  struct pack_map *res = pack_map_new();
+  pack_set_str(res, "status", "err");
+  pack_set_str(res, "msg",    msg);
+  if (pack_write(stdout, res) < 0) log_debug("fanspi: send_err failed");
+  pack_map_free(res);
+}
 
 //////////////////////////////////////////////////////////////////////////
 // SPI
@@ -147,27 +149,43 @@ static int spi_transfer(struct spi_info *spi, const char *tx, char *rx, unsigned
 //////////////////////////////////////////////////////////////////////////
 
 /*
- * TODO
+ * Peform SPI transfer.
  */
-static void on_transfer(struct pack_map *req)
+static void on_transfer(struct spi_info *spi, struct pack_map *req)
 {
   // debug
   char *d = pack_debug(req);
   log_debug("fanspi: on_transfer %s", d);
   free(d);
 
-  // TODO
+  uint16_t len  = pack_get_int(req, "len");
+  uint8_t *data = pack_get_buf(req, "data");
+
+  // check inputs
+  if (len <= 1 || len > SPI_TRANSFER_MAX) { send_err("missing or invalid 'len' field"); return; }
+  if (data == NULL) { send_err("missing or invalid 'data' field"); return; }
+
+  // transfer
+  char rx[SPI_TRANSFER_MAX];
+  if (spi_transfer(spi, (char*)data, rx, len))
+  {
+    send_ok_data((uint8_t*)rx, len);
+  }
+  else
+  {
+    send_err("transfer failed");
+  }
 }
 
 /*
  * Callback to process an incoming Fantom request.
  * Returns -1 if process should exit, or 0 to continue.
  */
-static int on_proc_req(struct pack_map *req)
+static int on_proc_req(struct spi_info *spi, struct pack_map *req)
 {
   char *op = pack_get_str(req, "op");
 
-  if (strcmp(op, "transfer") == 0) { on_transfer(req); return 0; }
+  if (strcmp(op, "transfer") == 0) { on_transfer(spi, req); return 0; }
   if (strcmp(op, "exit")     == 0) { return -1; }
 
   log_debug("fanspi: unknown op '%s'", op);
@@ -219,7 +237,7 @@ int main(int argc, char *argv[])
     else if (buf->ready)
     {
       struct pack_map *req = pack_decode(buf->bytes);
-      int r = on_proc_req(req);
+      int r = on_proc_req(&spi, req);
       pack_map_free(req);
       pack_buf_clear(buf);
       if (r < 0) break;
