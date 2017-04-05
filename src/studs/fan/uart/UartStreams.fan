@@ -71,19 +71,21 @@ internal class UartOutStream : OutStream
     this.uart = uart
   }
 
+  // TODO: override higher level writexxx/printxxx funcs
+  // to optimize IPC using writeBuf
+
   override This write(Int b)
   {
-    // TODO
+    uart.write(single.clear.write(b))
     return this
   }
 
   override This writeBuf(Buf buf, Int n := buf.remaining)
   {
-    // TODO
-    // start := buf.pos
-    // while (buf.pos < start+n) write(buf.read)
+    uart.write(n==buf.remaining ? buf : buf[buf.pos..n])
     return this
   }
 
   private Uart uart
+  private Buf single := Buf()  // reused for writing single bytes
 }

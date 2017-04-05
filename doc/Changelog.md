@@ -4,6 +4,7 @@
 - New `inspect` on-device unit testing app: [BitBucket](https://bitbucket.org/studs/inspect)
 - Add `/etc/sys.props`
 - Add Sys API
+- Working Uart.read/write support
 - Prototype Gpio API
 - Prototype SPI API
 - Indicate release file size in AsmCmd
