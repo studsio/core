@@ -74,6 +74,13 @@ abstract const class Cmd
   ** Get the given command, or 'null' if not found.
   static Cmd? get(Str name) { list.find |c| { c.name == name } }
 
+  ** Get the current working directory.
+  File workDir()
+  {
+    path := Env.cur.vars["user.dir"]
+    return path==null ? Env.cur.workDir : File.os(path)
+  }
+
   ** List command arguments. Arguments are any terms that
   ** trail the command name not prefixied with '-'.
   Str[] args() { Actor.locals["cmd.args"] }

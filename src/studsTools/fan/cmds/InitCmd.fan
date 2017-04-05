@@ -19,16 +19,13 @@ const class InitCmd : Cmd
 
   override Int run()
   {
-    // opts
-    test := opts.contains("test")
-
     // validate input
     name := args.getSafe(0)
     if (name == null)  abort("missing arg: name")
     if (!isName(name)) abort("invalid arg: name")
 
     // check if dir exists
-    dir := Env.cur.workDir + `$name/`
+    dir := workDir + `$name/`
     if (dir.exists) abort("dir already exists: $dir.osPath")
 
     // prompt to continue
@@ -41,8 +38,7 @@ const class InitCmd : Cmd
     (dir + `studs/jres/`).create
     (dir + `studs/systems/`).create
     (dir + `studs/releases/`).create
-    fanProps := test ? `fan-test.propsx` : `fan.propsx`
-    apply(typeof.pod.file(`/res/$fanProps`),      macros, dir + `fan.props`)
+    apply(typeof.pod.file(`/res/fan.propsx`),     macros, dir + `fan.props`)
     apply(typeof.pod.file(`/res/faninit.propsx`), macros, dir + `faninit.props`)
     apply(typeof.pod.file(`/res/studs.propsx`),   macros, dir + `studs.props`)
     apply(typeof.pod.file(`/res/build.fanx`),     macros, dir + `src/build.fan`, true)
