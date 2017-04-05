@@ -13,14 +13,9 @@ class DaemonTest : Test
   Void test()
   {
     // TODO
-
-    DaemonMgr {
-      it.daemons = [
-        Alphad(),
-        Betad(),
-        Gammad(),
-      ]
-    }.start
+    Alphad().start
+    Betad().start
+    Gammad().start
 
     concurrent::Actor.sleep(10sec)
   }

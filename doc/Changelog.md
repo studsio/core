@@ -9,6 +9,7 @@
 - Prototype `studs::I2C`
 - Prototype `studs::Spi`
 - Indicate release file size in AsmCmd
+- Remove `DaemonMgr` and simply use `Daemon.start`
 
 #### Version 1.3 (29-Mar-2017)
 - Change versioning to use simpler `<major>.<minor>.<patch>` convention

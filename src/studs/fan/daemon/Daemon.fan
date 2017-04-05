@@ -51,6 +51,23 @@ abstract const class Daemon
   ** Log for this daemon.
   const Log log
 
+  ** Start this daemon instance. This method is guaranteed not to
+  ** throw an exception (but will log errors to `log`). Any error
+  ** handling required should be implemented inside the `onStart`
+  ** override method.
+  This start()
+  {
+    try
+    {
+      send(DaemonMsg { it.op="start" })
+    }
+    catch (Err err)
+    {
+      log.err("$name failed to start", err)
+    }
+    return this
+  }
+
   ** Send this daemon a message.
   Future send(DaemonMsg m) { actor.send(m) }
 
