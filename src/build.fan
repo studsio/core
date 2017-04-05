@@ -25,6 +25,7 @@ class Build : BuildGroup
       `studsTest/build.fan`,
       `faninit/build.fan`,
       `fangpio/build.fan`,
+      `fani2c/build.fan`,
       `fanspi/build.fan`,
       `fanuart/build.fan`,
 
