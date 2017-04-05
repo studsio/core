@@ -5,7 +5,7 @@ SPI interfaces.
 
 ## Basics
 
-[config]:   ../api/studs/Spi.html
+[config]:   ../api/studs/SpiConfig.html
 [open]:     ../api/studs/Spi.html#open
 [transfer]: ../api/studs/Spi.html#transfer
 [close]:    ../api/studs/Spi.html#close

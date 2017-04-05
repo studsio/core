@@ -1,6 +1,6 @@
 # I2C
 
-The [I2C](../api/studs/Spi.html) API allows you to communicate over serial
+The [I2C](../api/studs/I2C.html) API allows you to communicate over serial
 I2C interfaces.
 
 ## Basics
