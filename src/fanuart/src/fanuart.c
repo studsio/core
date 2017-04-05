@@ -104,12 +104,23 @@ static void enum_ports()
  */
 static void parse_config(struct pack_map *m, struct uart_config *config)
 {
-  // TODO
-  // if (pack_has("speed")) config->speed = pack_get_int(m, "speed");
-  // if (pack_has("data")) config->data_bits = 8;
-  // if (pack_has("stop")) config->stop_bits = 1;
-  // if (pack_has("parity")) config->parity = UART_PARITY_NONE;
-  // if (pack_has("flow")) config->flow_control = UART_FLOWCONTROL_NONE;
+  if (pack_has(m, "speed")) config->speed     = pack_get_int(m, "speed");
+  if (pack_has(m, "data"))  config->data_bits = pack_get_int(m, "data");
+  if (pack_has(m, "stop"))  config->stop_bits = pack_get_int(m, "stop");
+  if (pack_has(m, "parity"))
+  {
+    char *p = pack_get_str(m, "parity");
+         if (strcmp(p, "none") == 0) config->parity = UART_PARITY_NONE;
+    else if (strcmp(p, "even") == 0) config->parity = UART_PARITY_EVEN;
+    else if (strcmp(p, "odd")  == 0) config->parity = UART_PARITY_ODD;
+  }
+  if (pack_has(m, "flow"))
+  {
+    char *f = pack_get_str(m, "flow");
+         if (strcmp(f, "none") == 0) config->flow_control = UART_FLOWCONTROL_NONE;
+    else if (strcmp(f, "hw")   == 0) config->flow_control = UART_FLOWCONTROL_HARDWARE;
+    else if (strcmp(f, "sw")   == 0) config->flow_control = UART_FLOWCONTROL_SOFTWARE;
+  }
 }
 
 /*
@@ -129,6 +140,8 @@ static void on_open(struct pack_map *req)
   // check config
   struct uart_config config = cur_config;
   parse_config(req, &config);
+  log_debug("fanuart: parse_config speed=%d data=%d stop=%d parity=%d flow=%d",
+    config.speed, config.data_bits, config.stop_bits, config.parity, config.flow_control);
 
   // if uart already open, close and open it again
   if (uart_is_open(uart)) uart_close(uart);

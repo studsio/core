@@ -31,7 +31,15 @@ class Uart
       this.proc.run.sinkErr
 
       // initiate open
-      Pack.write(proc.out, ["op":"open", "name":name])
+      Pack.write(proc.out, [
+        "op":     "open",
+        "name":   name,
+        "speed":  config.speed,
+        "data":   config.data,
+        "stop":   config.stop,
+        "parity": config.parity,
+        "flow":   config.flow,
+      ])
       checkErr(Pack.read(proc.in))
 
       // setup streams
