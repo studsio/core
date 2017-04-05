@@ -6,6 +6,7 @@
 - Add Sys API
 - Prototype Gpio API
 - Prototype SPI API
+- Indicate release file size in AsmCmd
 
 #### Version 1.3 (29-Mar-2017)
 - Change versioning to use simpler `<major>.<minor>.<patch>` convention

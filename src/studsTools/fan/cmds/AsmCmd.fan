@@ -228,6 +228,8 @@ const class AsmCmd : Cmd
        fwup -c -f $fwupConf.osPath -o $rel.osPath")
 
     // indicate image filepath
-    info("  Release: $rel.osPath")
+    size := rel.size.toLocale("B")
+    info("  Release:")
+    info("    $rel.osPath [$size]")
   }
 }
