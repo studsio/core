@@ -27,10 +27,14 @@ class Spi
 
     // spawn fanspi process
     this.proc = Proc {
-      it.cmd=["/usr/bin/fanspi", name,
+      it.cmd=["/usr/bin/fanspi", "/dev/$name",
               "$config.mode", "$config.bits", "$config.speed", "$config.delay"]
     }
     this.proc.run.sinkErr
+
+    // status check to verify running
+    Pack.write(proc.out, ["op":"status"])
+    checkErr(Pack.read(proc.in))
   }
 
   ** Close this port.

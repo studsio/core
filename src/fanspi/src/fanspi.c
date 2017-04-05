@@ -45,6 +45,17 @@ struct spi_info
 //////////////////////////////////////////////////////////////////////////
 
 /*
+ * Send an ok pack response to stdout.
+ */
+static void send_ok()
+{
+  struct pack_map *res = pack_map_new();
+  pack_set_str(res, "status", "ok");
+  if (pack_write(stdout, res) < 0) log_debug("fanspi: send_ok failed");
+  pack_map_free(res);
+}
+
+/*
  * Send an ok pack response with a data buffer to stdout.
  */
 static void send_ok_data(uint8_t *buf, uint16_t len)
@@ -53,7 +64,7 @@ static void send_ok_data(uint8_t *buf, uint16_t len)
   pack_set_str(res, "status", "ok");
   pack_set_int(res, "len",    len);
   pack_set_buf(res, "data",   buf, len);
-  if (pack_write(stdout, res) < 0) log_debug("fanuart: send_ok_data failed");
+  if (pack_write(stdout, res) < 0) log_debug("fanspi: send_ok_data failed");
   pack_map_free(res);
 }
 
@@ -149,6 +160,19 @@ static int spi_transfer(struct spi_info *spi, const char *tx, char *rx, unsigned
 //////////////////////////////////////////////////////////////////////////
 
 /*
+ * Status check.
+ */
+static void on_status(struct spi_info *spi, struct pack_map *req)
+{
+  // debug
+  char *d = pack_debug(req);
+  log_debug("fanspi: on_status %s", d);
+  free(d);
+
+  send_ok();
+}
+
+/*
  * Peform SPI transfer.
  */
 static void on_transfer(struct spi_info *spi, struct pack_map *req)
@@ -186,6 +210,7 @@ static int on_proc_req(struct spi_info *spi, struct pack_map *req)
   char *op = pack_get_str(req, "op");
 
   if (strcmp(op, "transfer") == 0) { on_transfer(spi, req); return 0; }
+  if (strcmp(op, "status")   == 0) { on_status(spi, req); return 0; }
   if (strcmp(op, "exit")     == 0) { return -1; }
 
   log_debug("fanspi: unknown op '%s'", op);
@@ -201,16 +226,17 @@ int main(int argc, char *argv[])
   if (argc != 6)
     log_fatal("%s <device path> <SPI mode (0-3)> <bits/word (8)> <speed (1000000 Hz)> <delay (10 us)>", argv[0]);
 
-  const char *devpath = argv[2];
-  uint8_t mode   = (uint8_t)  strtoul(argv[3], 0, 0);
-  uint8_t bits   = (uint8_t)  strtoul(argv[4], 0, 0);
-  uint32_t speed = (uint32_t) strtoul(argv[5], 0, 0);
-  uint16_t delay = (uint16_t) strtoul(argv[6], 0, 0);
+  const char *devpath = argv[1];
+  uint8_t mode   = (uint8_t)  strtoul(argv[2], 0, 0);
+  uint8_t bits   = (uint8_t)  strtoul(argv[3], 0, 0);
+  uint32_t speed = (uint32_t) strtoul(argv[4], 0, 0);
+  uint16_t delay = (uint16_t) strtoul(argv[5], 0, 0);
 
   struct spi_info spi;
   spi_init(&spi, devpath, mode, bits, speed, delay);
 
   struct pack_buf *buf = pack_buf_new();
+  log_debug("fanspi: open %s mode=%d bits=%d speed=%d delay=%d", devpath, mode, bits, speed, delay);
 
   for (;;)
   {
