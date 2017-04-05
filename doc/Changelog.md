@@ -6,6 +6,7 @@
 - Add `studs::Sys` for `/etc/sys.props` access and reboot support
 - Working Uart.read/write support; fix to correctly configure `UartConfig` on open
 - Prototype `studs::Gpio`
+- Prototype `studs::I2C`
 - Prototype `studs::Spi`
 - Indicate release file size in AsmCmd
 

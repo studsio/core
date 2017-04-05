@@ -176,7 +176,7 @@ const class AsmCmd : Cmd
     (rootfs + `etc/sys.props`).writeProps(sysProps)
 
     // stage natives
-    ["fangpio", "fanspi", "fanuart"].each |name|
+    ["fangpio", "fani2c", "fanspi", "fanuart"].each |name|
     {
       bin := Pod.find("studsTools").file(`/bins/$sys.name/$name`)
       bin.copyTo(rootfs + `usr/bin/$name`)
