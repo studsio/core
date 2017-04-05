@@ -104,6 +104,7 @@ char* pack_debug(struct pack_map *map)
     int tlen = 1024;
     char temp[tlen+1];
     int i = 0;
+    int k = 0;
 
     if (off > 1) i += sprintf(temp, ", ");
     i += snprintf(&temp[i], (tlen-i), "%s:", p->name);
@@ -115,6 +116,10 @@ char* pack_debug(struct pack_map *map)
       case PACK_TYPE_STR:  i += snprintf(&temp[i], (tlen-i), "%s",   p->val.s); break;
       case PACK_TYPE_LIST: i += snprintf(&temp[i], (tlen-i), "TODO"); break;
       case PACK_TYPE_MAP:  i += snprintf(&temp[i], (tlen-i), "%s", pack_debug(p->val.m)); break;
+      case PACK_TYPE_BUF:
+        for (k=0; k<p->vlen; k++)
+          i += snprintf(&temp[i], (tlen-i), "%02x", p->val.d[k]);
+        break;
     }
 
     temp[i] = '\0';
