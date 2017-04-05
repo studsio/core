@@ -11,7 +11,8 @@ SPI interfaces.
 [close]:    ../api/studs/Spi.html#close
 
 Invoke [Spi.open][open] to open a SPI interface with a given
-[SpiConfig][config]:
+[SpiConfig][config]. Transfer and receive data using the [transfer][transfer]
+method:
 
     spi  := Spi.open("spidev1.0", SpiConfig {})
     data := Buf().writeI4(0x1234_abcd)
