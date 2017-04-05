@@ -2,11 +2,11 @@
 
 #### Version 1.4 (working)
 - New `inspect` on-device unit testing app: [BitBucket](https://bitbucket.org/studs/inspect)
-- Add `/etc/sys.props`
-- Add Sys API
-- Working Uart.read/write support
-- Prototype Gpio API
-- Prototype SPI API
+- Add `/etc/sys.props` available on device at runtime
+- Add `studs::Sys` for `/etc/sys.props` access and reboot support
+- Working Uart.read/write support; fix to correctly configure `UartConfig` on open
+- Prototype `studs::Gpio`
+- Prototype `studs::Spi`
 - Indicate release file size in AsmCmd
 
 #### Version 1.3 (29-Mar-2017)
