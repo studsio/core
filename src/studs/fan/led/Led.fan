@@ -9,6 +9,8 @@
 **
 ** Led manages LED state using '/sys/class/leds'.
 **
+** See [Led]`../../doc/Led.html` chapter for details.
+**
 class Led
 {
   ** Set the on/off state for given led.
