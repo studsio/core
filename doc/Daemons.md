@@ -1,10 +1,3 @@
 # Daemons
 
-TODO: talk about Daemon, DaemonMgr, and built daemons
-
-    // Start daemons
-    DaemonMgr {
-      it.daemons = [
-        Ntpd()
-      ]
-    }.start
+TODO: coming in `1.5` or `1.6`
