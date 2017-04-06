@@ -1,7 +1,7 @@
 # Gpio
 
 The [Gpio](../api/studs/Gpio.html) API provides high level access to GPIO pins
-through the Linux sysclass interface.
+through the Linux `/sys/class/gpio` interface.
 
 ## Basics
 
@@ -26,8 +26,8 @@ native process.
 [listen]: ../api/studs/Gpio.html#listen
 
 To monitor changes to a GPIO pin output, you can use [Gpio.listen][listen].
-This method will register an interrupt handler that triggers on the falling
-edge and efficiently poll for pin state changes:
+This method will register an interrupt handler that triggers on the rising,
+falling, or both edges and efficiently poll for pin state changes:
 
     g := Gpio.open(18, "out")
     i := 0

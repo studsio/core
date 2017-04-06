@@ -7,7 +7,10 @@
 //
 
 **
-** Gpio
+** Gpio provides high level access to GPIO pins through the Linux
+** '/sys/class/gpio' interface.
+**
+** See [Gpio]`../../doc/Gpio.html` chapter for details.
 **
 class Gpio
 {
