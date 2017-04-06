@@ -36,7 +36,7 @@ Next edit your `src/fan/Main.fan` to look like:
         DeviceTree.enable("BB-UART1")
 
         // open uart and read forever
-        uart := Uart().open("ttyS1", UartConfig {})
+        uart := Uart.open("ttyS1", UartConfig {})
         while (true)
         {
           try
@@ -69,7 +69,7 @@ Next we need to open the UART with the appropriate configuration options. The
 GPS module happens to use the default config (`9600-8n1`) so we can pass in the
 defaults:
 
-    uart := Uart().open("ttyS1", UartConfig {})
+    uart := Uart.open("ttyS1", UartConfig {})
 
 ### Read port
 

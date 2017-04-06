@@ -9,6 +9,8 @@
 **
 ** Uart models a UART port instance.
 **
+** See [Uart]`../../doc/Uart.html` chapter for details.
+**
 class Uart
 {
   ** List the available uart ports on this device.
@@ -21,33 +23,35 @@ class Uart
 
   ** Open the serial port 'name' with given config. Throws
   ** IOErr if port cannot be opened.
-  This open(Str name, UartConfig config)
+  static Uart open(Str name, UartConfig config)
   {
-    if (proc != null) throw IOErr("Uart already open")
-    try
-    {
-      // spawn fanuart process
-      this.proc = Proc { it.cmd=["/usr/bin/fanuart"] }
-      this.proc.run.sinkErr
-
-      // initiate open
-      Pack.write(proc.out, [
-        "op":     "open",
-        "name":   name,
-        "speed":  config.speed,
-        "data":   config.data,
-        "stop":   config.stop,
-        "parity": config.parity,
-        "flow":   config.flow,
-      ])
-      checkErr(Pack.read(proc.in))
-
-      // setup streams
-      _in  = UartInStream(this)
-      _out = UartOutStream(this)
-      return this
-    }
+    try { return make(name, config) }
     catch (Err err) { throw IOErr("Uart.open failed", err) }
+  }
+
+  ** Private ctor.
+  private new make(Str name, UartConfig config)
+  {
+    // spawn fanuart process
+    this.proc = Proc { it.cmd=["/usr/bin/fanuart"] }
+    this.proc.run.sinkErr
+
+    // initiate open
+    Pack.write(proc.out, [
+      "op":     "open",
+      "name":   name,
+      "speed":  config.speed,
+      "data":   config.data,
+      "stop":   config.stop,
+      "parity": config.parity,
+      "flow":   config.flow,
+    ])
+    checkErr(Pack.read(proc.in))
+
+    // setup streams
+    _in  = UartInStream(this)
+    _out = UartOutStream(this)
+    return this
   }
 
   ** Close this port.
