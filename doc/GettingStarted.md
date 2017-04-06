@@ -2,8 +2,6 @@
 
 ## Installation
 
-**NOTE: still under heavy development -- not ready for use yet!**
-
 First make sure you have Java 7 or later installed on your machine.  This is
 required for Fantom and for creating our embedded JRE images.
 
