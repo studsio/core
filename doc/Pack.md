@@ -6,11 +6,12 @@ Studs.
 
 ## Fantom Usage
 
-[fan_map]: http://fantom.org/doc/sys/Map
-[fan_buf]: http://fantom.org/doc/sys/Buf
+[fan_pack]: ../api/studs/Pack.html
+[fan_map]:  http://fantom.org/doc/sys/Map
+[fan_buf]:  http://fantom.org/doc/sys/Buf
 
-Pack encodes/decodes between Fantom [Map][fan_map] and [Buf][fan_buf] types.
-The supported primitive value types for Pack maps are:
+[Pack][fan_pack] encodes/decodes between Fantom [Map][fan_map] and
+[Buf][fan_buf] types. The supported primitive value types for Pack maps are:
 
   - `Bool`
   - `Int`

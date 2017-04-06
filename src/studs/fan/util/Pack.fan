@@ -9,6 +9,8 @@
 **
 ** Pack is a binary encoding for name-value pairs.
 **
+** See [Pack]`../../doc/Pack.html` chapter for details.
+**
 class Pack
 {
 
