@@ -35,13 +35,13 @@ class Build : BuildPod
       `fan/`,
       `fan/daemon/`,
       `fan/dt/`,
-      `fan/gpio/`,
-      `fan/i2c/`,
-      `fan/led/`,
+      `fan/io/gpio/`,
+      `fan/io/i2c/`,
+      `fan/io/led/`,
+      `fan/io/spi/`,
+      `fan/io/uart/`,
       `fan/net/`,
       `fan/ntp/`,
-      `fan/spi/`,
-      `fan/uart/`,
       `fan/util/`]
     docSrc = false
   }
