@@ -7,7 +7,10 @@
 //
 
 **
-** Spi
+** Spi allows you to communicate over serial SPI interfaces.
+**
+** See [Spi]`../../doc/Spi.html` chapter for details.
+**
 **
 class Spi
 {
