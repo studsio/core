@@ -7,7 +7,9 @@
 //
 
 **
-** I2C
+** I2C allows you to communicate over serial I2C interfaces.
+**
+** See [I2C]`../../doc/I2C.html` chapter for details.
 **
 class I2C
 {
