@@ -30,6 +30,8 @@ const class AsmCmd : Cmd
 
   override Int run()
   {
+    start := Duration.now
+
     // sanity check
     if (Env.cur isnot PathEnv) abort("Not a PathEnv")
 
@@ -52,6 +54,10 @@ const class AsmCmd : Cmd
 
     // clean up after ourselves
     //tempDelete
+
+    dur := Duration.now - start
+    loc := (dur.toMillis.toFloat / 1000f).toLocale("0.00")
+    info("ASM SUCCESS [${loc}sec]!")
     return 0
   }
 
