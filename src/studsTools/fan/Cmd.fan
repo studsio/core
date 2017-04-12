@@ -97,7 +97,7 @@ abstract const class Cmd
     Env.cur.exit(1)
   }
 
-  ** Convenience to display help for this command to `out`.
+  ** Convenience to display help for this command.
   Void showHelp()
   {
     Cmd.get("help")->showDetails(name)
