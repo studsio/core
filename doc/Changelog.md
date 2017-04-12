@@ -1,6 +1,6 @@
 # Changelog
 
-#### Version 1.4 (working)
+#### Version 1.4 (12-Apr-2017)
 - New `inspect` on-device unit testing app: [BitBucket](https://bitbucket.org/studs/inspect)
 - Add `/etc/sys.props` available on device at runtime
 - Add `studs::Sys` for `/etc/sys.props` access and reboot support
