@@ -15,7 +15,16 @@ interface.
 
 ## Wiring
 
-TODO
+Wiring diagram for connecting your BBB to the GPS breakout:
+
+![Wiring Diagram](uart-gps.png)
+
+BBB Pin  | GPS Breakout Pin
+---------|-----------------
+P9_1     | GND
+P9_7     | VIN
+P9_24    | RX
+P9_26    | TX
 
 ## Coding
 
