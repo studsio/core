@@ -22,7 +22,8 @@ class Build : BuildPod
       "proj.name":    "Studs",
       "proj.uri":     "http://studs.io/",
       "license.name": "Academic Free License 3.0",
-      "vcs.uri":      "https://bitbucket.org/studs/core/"]
+      "vcs.uri":      "https://bitbucket.org/studs/core/",
+      "repo.public":  "true"]
     depends = [
       "sys @{fan.depend}",
       "util @{fan.depend}",
