@@ -6,12 +6,41 @@ First make sure you have Java 7 or later installed on your machine.  This is
 required for Fantom and for creating our embedded JRE images.
 
 Next we need to install Fantom, Studs and several utilities we'll need to build
-our firmware.  The easiest method is to use [Homebrew](http://brew.sh) and
+our firmware.
+
+### macOS
+
+The easiest method for macOS is to use [Homebrew](http://brew.sh) and
 [fanr](http://fantom.org/doc/docFanr/Tool):
 
     $ brew update
     $ brew install fantom
     $ brew install fwup squashfs coreutils
+    $ fanr install -r http://eggbox.fantomfactory.org/fanr/ "studs,studsTools"
+
+### Linux
+
+[fanorg]:     http://fantom.org
+[linux-fan]:  http://fantom.org/doc/docTools/Setup#unix
+[linux-fwup]: https://github.com/fhunleth/fwup#installing
+
+Fantom is currently not available in most package managers, so you'll need to
+download and unzip onto your system.  Follow [Setup][linux-fan] instructions
+on [fantom.org][fanorg].  Note that Java is a pre-requisite for Fantom.
+
+Next install `fwup` using the instructions on the [Installation
+Page][linux-fwup].
+
+The ssh-askpass package is also required on Linux so `burn` command will be
+able to use sudo to gain the required permission to write directly to an SD
+card:
+
+    $ sudo apt-get install ssh-askpass
+
+Finally, install squashfs-tools using your distribution’s package manager along
+with the Studs fantom pods. For example:
+
+    $ sudo apt-get install squashfs-tools
     $ fanr install -r http://eggbox.fantomfactory.org/fanr/ "studs,studsTools"
 
 ## Create a Project

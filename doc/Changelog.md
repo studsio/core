@@ -5,6 +5,7 @@
 - Add `--clean` option for `AsmCmd` to delete `studs/systems/` and `studs/jres/` intermediate files
 - Add `studs.props` support for configuring which JRE compact profile to use
 - Make JRE profile default to `compact1` (saves 6MB off release size)
+- Update `GettingStarted` to include Linux installation instructions
 
 #### Version 1.4 (12-Apr-2017)
 - New `inspect` on-device unit testing app: [BitBucket](https://bitbucket.org/studs/inspect)
