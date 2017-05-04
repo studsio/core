@@ -1,23 +1,54 @@
 # Building
 
-TODO: `fan studs asm` detailed docs
+Most build and assembly configuration is specified in `studs.props`:
 
-## Targets
+    # Project meta-data
+    proj.name=myApp
+    proj.ver=1.0.0
 
-By default asm will assemble all targets defined in `studs.props`.  To
-assemble only a specific target(s) you can pass them on the command line:
+    # JRE compact profile for target: 1, 2 or 3
+    jre.profile=1
 
-    fan studs asm rpi3
+    # Uncomment to add target platform to build
+    target.bbb=true
+    #target.rpi3=true
 
-## Clean
+## Using `fan asm`
 
-To clean intermediate and cached system and JRE files, run `asm` with the
-`--clean` option:
+The `asm` command is used to assemble firmware bundles from your application:
 
-    $ fan studs asm --clean
+    fan studs asm [target]* [--clean]
 
-The next time `fan studs asm` is invoked, the systems will be re-downloaded and
-configured, and the JRE will be rebuilt.
+ - `[target*]` -- By default asm will assemble all targets defined in
+   `studs.props`. To assemble only a specific target(s) you can pass them on
+   the command line:
+
+        $ fan studs asm        # build all enabled targets
+        $ fan studs asm rpi3   # build only rpi3 target
+
+  - `--clean` -- This option deletes intermediate and cached System and JRE
+    files:
+
+        $ fan studs asm --clean
+
+    The next time `fan studs asm` is invoked, systems will be re-downloaded and
+    configured, and the JRE will be rebuilt.
+
+## JRE Compact Profiles
+
+[jre-profiles]: http://www.oracle.com/technetwork/java/embedded/resources/tech/compact-profiles-overview-2157132.html
+
+The `asm` command will generate any of the 3 compact profiles for the target
+embedded JRE. See [Compact Profiles Overview][jre-profiles] for details and
+comparison of each profile.
+
+Studs defaults to profile `1` to minimize the release file size. The profile
+may be changed in `studs.props`:
+
+    # JRE compact profile for target: 1, 2 or 3
+    jre.profile=1
+
+Remember to run `asm --clean` after making any changes to `jre.profile`.
 
 ## Rootfs Additions
 

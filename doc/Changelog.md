@@ -7,6 +7,7 @@
 - Make JRE profile default to `compact1` (saves 6MB off release size)
 - Update `GettingStarted` to include Linux installation instructions
 - Fix `AsmCmd` JRE setup to work on Linux
+- Beef up `Building.md` docs
 
 #### Version 1.4 (12-Apr-2017)
 - New `inspect` on-device unit testing app: [BitBucket](https://bitbucket.org/studs/inspect)

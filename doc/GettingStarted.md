@@ -116,6 +116,8 @@ the naming convention is `proj-version-target`:
         └── releases/
             └── myproj-1.0.0-bbb.fw
 
+See [Building](Building.html) for detailed documentation on the build process.
+
 ## Running your Project
 
 To run your freshly minted project we need to burn our firmware image onto a
