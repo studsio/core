@@ -155,9 +155,10 @@ const class AsmCmd : Cmd
     Proc.run("tar xf $tar.osPath -C $tempDir.osPath")
 
     // invoke jrecreate (requires Java 7+)
-    jdkDir := tempDir.listDirs.find |d| { d.name.startsWith("ejdk") }
+    javaHome := Env.cur.vars["java.home"]
+    jdkDir   := tempDir.listDirs.find |d| { d.name.startsWith("ejdk") }
     Proc.bash(
-      "export JAVA_HOME=\$(/usr/libexec/java_home)
+      "export JAVA_HOME=$javaHome
        ${jdkDir.osPath}/bin/jrecreate.sh --dest $jreDir.osPath --profile compact${jreProfile} -vm client")
   }
 
