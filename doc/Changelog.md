@@ -1,6 +1,6 @@
 # Changelog
 
-#### Version 1.5 (working)
+#### Version 1.5 (4-May-2017)
 - Add `repo.public` pod.meta for `studs,studsTools` for Eggbox
 - Add `--clean` option for `AsmCmd` to delete `studs/systems/` and `studs/jres/` intermediate files
 - Add `studs.props` support for configuring which JRE compact profile to use
