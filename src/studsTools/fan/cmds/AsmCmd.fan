@@ -129,6 +129,14 @@ const class AsmCmd : Cmd
     baseDir.create
     jreDir := baseDir + `$sys.jre/`
 
+    // determine JRE compact profile to use
+    jreProfStr := props["jre.profile"] ?: "1"
+    jreProfile := jreProfStr.toInt(10, false)
+    if (jreProfile == null || !(1..3).contains(jreProfile))
+      Proc.abort("invalid jre.profile '$jreProfStr'")
+
+    // TODO: check if profile has changed?
+
     // bail if already exists
     if (jreDir.exists) return
 
@@ -143,14 +151,14 @@ const class AsmCmd : Cmd
 
     // unpack
     tempClean
-    info("  Build ${jreDir.name} jre...")
+    info("  Build ${jreDir.name} jre [compact${jreProfile}]...")
     Proc.run("tar xf $tar.osPath -C $tempDir.osPath")
 
     // invoke jrecreate (requires Java 7+)
     jdkDir := tempDir.listDirs.find |d| { d.name.startsWith("ejdk") }
     Proc.bash(
       "export JAVA_HOME=\$(/usr/libexec/java_home)
-       ${jdkDir.osPath}/bin/jrecreate.sh --dest $jreDir.osPath --profile compact3 -vm client")
+       ${jdkDir.osPath}/bin/jrecreate.sh --dest $jreDir.osPath --profile compact${jreProfile} -vm client")
   }
 
   ** Assemble firmware image for target.

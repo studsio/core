@@ -3,6 +3,7 @@
 #### Version 1.5 (working)
 - Add `repo.public` pod.meta for `studs,studsTools` for Eggbox
 - Add `--clean` option for `AsmCmd` to delete `studs/systems/` and `studs/jres/` intermediate files
+- Add `studs.props` support for configuring which JRE compact profile to use
 
 #### Version 1.4 (12-Apr-2017)
 - New `inspect` on-device unit testing app: [BitBucket](https://bitbucket.org/studs/inspect)
