@@ -14,14 +14,16 @@ using util
 const class AsmCmd : Cmd
 {
   override const Str name := "asm"
-  override const Str sig  := "[target]*"
+  override const Str sig  := "[target]* [--clean]"
   override const Str helpShort := "Assemble project"
   override const Str? helpFull :=
     "By default the asm command will assemble a firmware image for each
-     target specifed in studs.props.  If target(s) are listed on the
+     target specified in studs.props.  If target(s) are listed on the
      command line, only these targets will be assembled.
 
-     [target]*  List of specific targets to assemble, or all if none specified"
+     [target]*  List of specific targets to assemble, or all if none specified
+
+     --clean    Delete intermediate system and JRE files"
 
   ** Temp working directory.
   const File tempDir := Env.cur.workDir + `studs/temp/`
@@ -38,22 +40,38 @@ const class AsmCmd : Cmd
     // make sure temp is clean
     tempClean
 
-    // check for cmdline system filter
-    System[] systems := args.isEmpty
-      ? props.systems
-      : args.map |n| { props.system(n) }
-
-    // build each target
-    systems.each |sys|
+    if (opts.contains("clean"))
     {
-      info("Assemble [$sys.name]")
-      installSystem(sys)
-      buildJre(sys)
-      assemble(sys)
+      // clean intermediate files
+      info("Clean")
+      dirs := File[,]
+      dirs.addAll((Env.cur.workDir + `studs/systems/`).listDirs)
+      dirs.addAll((Env.cur.workDir + `studs/jres/`).listDirs)
+      dirs.each |d|
+      {
+        info("  Delete $d.osPath")
+        d.delete
+      }
     }
+    else
+    {
+      // check for cmdline system filter
+      System[] systems := args.isEmpty
+        ? props.systems
+        : args.map |n| { props.system(n) }
 
-    // clean up after ourselves
-    //tempDelete
+      // build each target
+      systems.each |sys|
+      {
+        info("Assemble [$sys.name]")
+        installSystem(sys)
+        buildJre(sys)
+        assemble(sys)
+      }
+
+      // clean up after ourselves
+      //tempDelete
+    }
 
     dur := Duration.now - start
     loc := (dur.toMillis.toFloat / 1000f).toLocale("0.00")
@@ -148,8 +166,8 @@ const class AsmCmd : Cmd
     rootfs.create
 
     // release image name
-    proj := props.projMeta["proj.name"]; if (proj==null) abort("missing 'proj.meta' in studs.props")
-    ver  := props.projMeta["proj.ver"];  if (ver==null)  abort("missing 'proj.ver' in studs.props")
+    proj := props["proj.name"]; if (proj==null) abort("missing 'proj.meta' in studs.props")
+    ver  := props["proj.ver"];  if (ver==null)  abort("missing 'proj.ver' in studs.props")
     rel  := relDir + `${proj}-${ver}-${sys.name}.fw`
 
     // defaults

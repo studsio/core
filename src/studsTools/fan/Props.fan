@@ -26,13 +26,6 @@ const class Props
     this.file = f
     this.map  = f.readProps
 
-    // find proj-meata
-    projMeta := Str:Str[:]
-    map.each |val,key|
-    {
-      if (key.startsWith("proj.")) projMeta[key] = val
-    }
-
     // find systems
     systems := System[,]
     map.each |val,key|
@@ -59,13 +52,11 @@ const class Props
         }
       }
     }
-
-    this.projMeta = projMeta
     this.systems  = systems
   }
 
-  ** Project meta-data
-  const Str:Str projMeta
+  ** Get the value for given property name, or 'null' if name not found.
+  @Operator Str? get(Str name) { map[name] }
 
   ** List of configured systems for this project.
   const System[] systems

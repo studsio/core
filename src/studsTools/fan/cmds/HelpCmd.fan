@@ -13,7 +13,7 @@ const class HelpCmd : Cmd
 {
   override const Str name := "help"
   override const Str sig  := "[cmd]"
-  override const Str helpShort := "Show command help or comand list overview"
+  override const Str helpShort := "Show command help or command list overview"
   override const Str? helpFull :=
     "cmd  Show detailed help for 'cmd'"
 
@@ -35,7 +35,8 @@ const class HelpCmd : Cmd
     }
 
     info(
-      "studs $c.name $c.sig
+      "Usage:
+         fan studs $c.name $c.sig
 
        $c.helpShort")
 
