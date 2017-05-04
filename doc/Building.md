@@ -9,6 +9,16 @@ assemble only a specific target(s) you can pass them on the command line:
 
     fan studs asm rpi3
 
+## Clean
+
+To clean intermediate and cached system and JRE files, run `asm` with the
+`--clean` option:
+
+    $ fan studs asm --clean
+
+The next time `fan studs asm` is invoked, the systems will be re-downloaded and
+configured, and the JRE will be rebuilt.
+
 ## Rootfs Additions
 
 To add additional files into the root filesystem, create a folder named
