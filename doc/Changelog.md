@@ -2,6 +2,7 @@
 
 #### Version 1.6 (working)
 - Add `studs burn --upgrade` option to perform a `--task upgrade` during burn
+- Fix `faninit` to start java under `/app/fan` working directory
 
 #### Version 1.5 (4-May-2017)
 - Add `repo.public` pod.meta for `studs,studsTools` for Eggbox

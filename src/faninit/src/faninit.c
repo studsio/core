@@ -223,6 +223,7 @@ static void child()
   if (options.print_timing) warn("stop");
 
   // start jvm
+  chdir(FAN_HOME);
   execvp(exec_path, exec_argv);
 
   // execvpe is not supposed to return
