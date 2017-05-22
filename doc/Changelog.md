@@ -1,5 +1,8 @@
 # Changelog
 
+#### Version 1.6 (working)
+- Add `studs burn --upgrade` option to perform a `--task upgrade` during burn
+
 #### Version 1.5 (4-May-2017)
 - Add `repo.public` pod.meta for `studs,studsTools` for Eggbox
 - Add `--clean` option for `AsmCmd` to delete `studs/systems/` and `studs/jres/` intermediate files

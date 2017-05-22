@@ -14,8 +14,14 @@ using web
 const class BurnCmd : Cmd
 {
   override const Str name := "burn"
-  override const Str helpShort := "Burn firmware card images"
-  override const Str? helpFull := "TODO"
+  override const Str sig  := "[options]*"
+  override const Str helpShort := "Burn firmware image to an attached SDCard"
+  override const Str? helpFull :=
+    "By default, this command detects attached SDCards and then invokes
+     fwup to overwrite the contents of the selected SDCard with the new
+     image. Data on the SDCard will be lost, so be careful.
+
+      -u --upgrade  Upgrade the application without erasing data partition"
 
   override Int run()
   {
@@ -58,10 +64,12 @@ const class BurnCmd : Cmd
       dev = devs[sel-1].split(',').first
     }
 
-    info("Burning $rel.name to ${dev}...")
+    // check for upgrade
+    task := "complete"
+    if (opts.contains("u") || opts.contains("upgrade")) task = "upgrade"
 
     // burn it
-    task := "complete"
+    info("Burning $rel.name to ${dev}...")
     Proc.run("fwup -a -i $rel.osPath -t $task -d $dev", Env.cur.out)
     return 0
   }
