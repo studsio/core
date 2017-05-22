@@ -13,7 +13,7 @@ Most build and assembly configuration is specified in `studs.props`:
     target.bbb=true
     #target.rpi3=true
 
-## Using `fan asm`
+## Using `fan studs asm`
 
 The `asm` command is used to assemble firmware bundles from your application:
 
@@ -33,6 +33,22 @@ The `asm` command is used to assemble firmware bundles from your application:
 
     The next time `fan studs asm` is invoked, systems will be re-downloaded and
     configured, and the JRE will be rebuilt.
+
+## Using `fan studs burn`
+
+The `burn` command writes your firmware bundle onto a SDCard:
+
+    fan studs burn [options]*
+
+By default, this command detects attached SDCards and then invokes `fwup` to
+overwrite the contents of the selected SDCard with the new image. Data on the
+SDCard will be lost, so be careful.
+
+The `upgrade` option can be used to upgrade your application on an existing
+SDCard. In this case only the root application partition is effected -- any
+data partitions will not be touched.
+
+    fan studs burn --upgrade
 
 ## JRE Compact Profiles
 
