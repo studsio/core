@@ -6,11 +6,7 @@ TODO: coming in `1.5` or `1.6`
 
 TODO
 
-    DaemonMgr {
-      it.daemons = [
-        Networkd()
-      ]
-    }.start
+   Networkd().start
 
 ## Static IP Address
 

@@ -23,6 +23,36 @@ using concurrent
     "3.pool.ntp.org"
   ]
 
+  ** Get the Ntpd instance for this vm.  If an instance is
+  ** not found, throw Err if 'checked' otherwise return null.
+  static Ntpd? cur(Bool checked := true)
+  {
+    d := Actor.locals["d.ntpd"]
+    if (d == null && checked) throw Err("Ntpd instance not found")
+    return d
+  }
+
+  ** Block until ntpd acquires a valid time.  If 'timeout' is
+  ** 'null' this method blocks indefinietly.  Returns 'true'
+  ** time was acquired, or 'false' if timed out.
+  Bool sync(Duration? timeout := null)
+  {
+    // TODO: temp hack -- need to actually check ntpd output
+
+    s := Duration.nowTicks
+    t := timeout?.ticks ?: Int.maxVal
+    while (DateTime.now(null) != DateTime.defVal)
+    {
+      if (Duration.nowTicks - s >= t) return false
+      Actor.sleep(100ms)
+    }
+    return true
+  }
+
+//////////////////////////////////////////////////////////////////////////
+// Actor local
+//////////////////////////////////////////////////////////////////////////
+
   override Void onStart() { onPoll }
 
   override Void onStop()
