@@ -69,7 +69,7 @@ const class BurnCmd : Cmd
     if (opts.contains("u") || opts.contains("upgrade")) task = "upgrade"
 
     // burn it
-    info("Burning $rel.name to ${dev}...")
+    info("Burning $rel.name to ${dev} [$task]...")
     Proc.run("fwup -a -i $rel.osPath -t $task -d $dev", Env.cur.out)
     return 0
   }
