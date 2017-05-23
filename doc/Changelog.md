@@ -3,6 +3,10 @@
 #### Version 1.6 (working)
 - Add `studs burn --upgrade` option to perform a `--task upgrade` during burn
 - Fix `faninit` to start java under `/app/fan` working directory
+- Networkd: rename fields `ipaddr,netmask -> ip,mask`
+- Networkd: add `router` field for default route
+- Fix `Ntpd.servers` to be mutable
+- Add `Ntpd.sync` to block until time is acquired
 
 #### Version 1.5 (4-May-2017)
 - Add `repo.public` pod.meta for `studs,studsTools` for Eggbox
