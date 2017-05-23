@@ -15,14 +15,6 @@ using concurrent
 {
   new make() : super(5sec) {}
 
-  ** NTP server pool.
-  const Str[] servers := [
-    "0.pool.ntp.org",
-    "1.pool.ntp.org",
-    "2.pool.ntp.org",
-    "3.pool.ntp.org"
-  ]
-
   ** Get the Ntpd instance for this vm.  If an instance is
   ** not found, throw Err if 'checked' otherwise return null.
   static Ntpd? cur(Bool checked := true)
@@ -30,6 +22,13 @@ using concurrent
     d := Actor.locals["d.ntpd"]
     if (d == null && checked) throw Err("Ntpd instance not found")
     return d
+  }
+
+  ** The current NTP server pool.
+  Str[] servers
+  {
+    get { serversRef.val }
+    set { serversRef.val = it.toImmutable }
   }
 
   ** Block until ntpd acquires a valid time.  If 'timeout' is
@@ -41,13 +40,21 @@ using concurrent
 
     s := Duration.nowTicks
     t := timeout?.ticks ?: Int.maxVal
-    while (DateTime.now(null) != DateTime.defVal)
+    while (DateTime.now(null).year == 2000)
     {
       if (Duration.nowTicks - s >= t) return false
       Actor.sleep(100ms)
     }
     return true
   }
+
+  private const AtomicRef serversRef := AtomicRef(defServers)
+  private static const Str[] defServers := [
+    "0.pool.ntp.org",
+    "1.pool.ntp.org",
+    "2.pool.ntp.org",
+    "3.pool.ntp.org"
+  ]
 
 //////////////////////////////////////////////////////////////////////////
 // Actor local
@@ -88,7 +95,7 @@ using concurrent
       cmd.addAll(servers.map |s| { "-p$s" })
       log.debug(cmd.join(" "))
 
-      p = Proc { it.cmd=cmd }
+      p = Proc { it.cmd=cmd; it.redirectErr=true }
       p.run
       Actor.locals["p"] = p
       log.debug("ntpd process started")
