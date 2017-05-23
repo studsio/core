@@ -17,7 +17,7 @@ To block your application until a valid time has been acquired, first setup
 your network interface, then call [sync][sync] to wait:
 
     // start our networking and NTP daemons
-    Netword().start
+    Networkd().start
     Ntpd().start
 
     // setup network interface, and block until NTP acquires time
