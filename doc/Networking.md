@@ -13,9 +13,10 @@ TODO
 TODO
 
     Networkd.cur.setup([
-      "name":    "eth0",
-      "mode":    "static",
-      "ipaddr":  "192.168.1.150",
-      "netmask": "255.255.255.0",
-      "dns":     "8.8.8.8 8.8.4.4"
+      "name":   "eth0",
+      "mode":   "static",
+      "ip":     "192.168.1.150",
+      "mask":   "24",
+      "router": "192.168.1.1,
+      "dns":    "8.8.8.8 8.8.4.4"
     ])

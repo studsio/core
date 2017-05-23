@@ -53,15 +53,23 @@ const class Networkd : Daemon
 
     // TODO: figure how which command(s) to invoke
     // and verify correct options were passed in
-    name    := opts["name"]    ?: throw ArgErr("Missing 'name' opt")
-    ipaddr  := opts["ipaddr"]  ?: throw ArgErr("Missing 'ipaddr' opt")
-    netmask := opts["netmask"] ?: throw ArgErr("Missing 'ipaddr' opt")
+    name   := opts["name"]   ?: throw ArgErr("Missing 'name' opt")
+    ip     := opts["ip"]     ?: throw ArgErr("Missing 'ip' opt")
+    mask   := opts["mask"]   ?: throw ArgErr("Missing 'mask' opt")
 
     // TODO: for now just call into busybox
     up   := ["/sbin/ip", "link", "set", name, "up"]
-    set  := ["/sbin/ip", "addr", "add", "${ipaddr}/24", "dev", name]
+    set  := ["/sbin/ip", "addr", "add", "${ip}/${mask}", "dev", name]
     Proc { it.cmd=up  }.run.waitFor.okOrThrow
     Proc { it.cmd=set }.run.waitFor.okOrThrow
+
+    // Update default route
+    router := opts["router"]
+    if (router != null)
+    {
+      def := ["/sbin/ip", "route", "add", "default", "via", router, "dev", name]
+      Proc { it.cmd=def }.run.waitFor.okOrThrow
+    }
 
     // Update DNS
     Str? dns := opts["dns"] as Str
