@@ -65,6 +65,30 @@ static void send_err(char *msg)
 //////////////////////////////////////////////////////////////////////////
 
 /*
+ * Return list of available network interfaces.
+ */
+static void on_list(struct pack_map *req)
+{
+  // debug
+  char *d = pack_debug(req);
+  log_debug("fannet: on_list %s", d);
+  free(d);
+
+  struct if_nameindex *s = if_nameindex();
+  if (s == NULL) { send_err("if_nameindex failed"); return; }
+
+  struct pack_map *res = pack_map_new();
+  struct if_nameindex *i = s;
+  for (; !(i->if_index == 0 && i->if_name == NULL); i++)
+    pack_set_int(res, i->if_name, i->if_index);
+  if_freenameindex(s);
+
+  // write resp
+  if (pack_write(stdout, res) < 0) log_debug("fannet: on_list write failed");
+  pack_map_free(res);
+}
+
+/*
  * Return status information about an interface.
  */
 static void on_status(struct pack_map *req)
@@ -118,6 +142,7 @@ static int on_proc_req(struct pack_map *req)
   char *op = pack_get_str(req, "op");
 
   if (strcmp(op, "status") == 0) { on_status(req); return 0; }
+  if (strcmp(op, "list")   == 0) { on_list(req);   return 0; }
   if (strcmp(op, "exit")   == 0) { return -1; }
 
   log_debug("fannet: unknown op '%s'", op);

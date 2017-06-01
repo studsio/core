@@ -24,6 +24,14 @@ const class Networkd : Daemon
     return d
   }
 
+  ** List available network interfaces for this device. Blocks
+  ** until 'timeout' elapses waiting for results.  If 'timeout'
+  ** is 'null' blocks forever.
+  Str:Obj list(Str name, Duration? timeout := 10sec)
+  {
+    send(DaemonMsg { it.op="list" }).get(timeout)
+  }
+
   ** Get the status for given network interface. Blocks until
   ** 'timeout' elapses waiting for results.  If 'timeout' is
   ** 'null' blocks forever.
@@ -68,8 +76,29 @@ const class Networkd : Daemon
   @NoDoc override Obj? onMsg(DaemonMsg m)
   {
     if (m.op === "status") return onStatus(m.a)
+    if (m.op === "list")   return onList
     if (m.op === "setup")  return onSetup(m.a)
     throw ArgErr("Unsupported message op '$m.op'")
+  }
+
+  ** Service status msg.
+  private Obj? onStatus(Str name)
+  {
+    proc := getProc
+    Pack.write(proc.out, ["op":"status"])
+    res := Pack.read(proc.in)
+    checkErr(res)
+    return res
+  }
+
+  ** Service list msg.
+  private Obj? onList()
+  {
+    proc := getProc
+    Pack.write(proc.out, ["op":"list"])
+    res := Pack.read(proc.in)
+    checkErr(res)
+    return res
   }
 
   ** Service setup msg.
@@ -111,16 +140,6 @@ const class Networkd : Daemon
     }
 
     return null
-  }
-
-  ** Service status msg.
-  private Obj? onStatus(Str name)
-  {
-    proc := getProc
-    Pack.write(proc.out, ["op":"status"])
-    res := Pack.read(proc.in)
-    checkErr(res)
-    return res
   }
 
   ** Get our background native process. If 'start' is 'true' then
