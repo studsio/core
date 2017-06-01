@@ -24,6 +24,14 @@ const class Networkd : Daemon
     return d
   }
 
+  ** Get the status for given network interface. Blocks until
+  ** 'timeout' elapses waiting for results.  If 'timeout' is
+  ** 'null' blocks forever.
+  Str:Obj status(Str name, Duration? timeout := 10sec)
+  {
+    send(DaemonMsg { it.op="status"; it.a=name }).get(timeout)
+  }
+
   ** Configure a network interface.
   This setup(Str:Str opts)
   {
@@ -35,18 +43,36 @@ const class Networkd : Daemon
 // Actor local
 //////////////////////////////////////////////////////////////////////////
 
-  @NoDoc override Void onStart() {}
+  @NoDoc override Void onStart()
+  {
+    // touch to start process
+    getProc
+  }
 
-  @NoDoc override Void onStop() {}
+  @NoDoc override Void onStop()
+  {
+    // gracefully exit native if running
+    proc := getProc(false)
+    if (proc == null) return
+    try
+    {
+      Pack.write(proc.out, ["op":"exit"])
+      proc.waitFor
+      Actor.locals["p"] = null
+    }
+    catch (Err err) { throw IOErr("Networkd.stop failed", err) }
+  }
 
   @NoDoc override Void onPoll() {}
 
   @NoDoc override Obj? onMsg(DaemonMsg m)
   {
-    if (m.op === "setup") return onSetup(m.a)
+    if (m.op === "status") return onStatus(m.a)
+    if (m.op === "setup")  return onSetup(m.a)
     throw ArgErr("Unsupported message op '$m.op'")
   }
 
+  ** Service setup msg.
   private Obj? onSetup(Str:Str opts)
   {
     log.debug("setup: $opts")
@@ -85,5 +111,37 @@ const class Networkd : Daemon
     }
 
     return null
+  }
+
+  ** Service status msg.
+  private Obj? onStatus(Str name)
+  {
+    proc := getProc
+    Pack.write(proc.out, ["op":"status"])
+    res := Pack.read(proc.in)
+    checkErr(res)
+    return res
+  }
+
+  ** Get our background native process. If 'start' is 'true' then
+  ** start the process if it is not found or not currenlty running.
+  private Proc? getProc(Bool start := true)
+  {
+    proc := Actor.locals["p"] as Proc
+    if (proc == null || !proc.isRunning)
+    {
+      if (!start) return null
+      proc = Proc { it.cmd=["/usr/bin/fannet"] }
+      proc.run.sinkErr
+      Actor.locals["p"] = proc
+    }
+    return proc
+  }
+
+  ** Check pack message and throw Err if contains 'err' key.
+  private Void checkErr(Str:Obj pack)
+  {
+    if (pack["status"] == "err")
+      throw Err(pack["msg"] ?: "Unknown error")
   }
 }
