@@ -1,16 +1,35 @@
 # Networking
 
-TODO: coming in `1.5` or `1.6`
+[networkd]: ../api/studs/Networkd.html
 
-## Networkd
+Networking support in Studs is provided by the [Networkd][networkd] daemon.
 
-TODO
+## Basics
 
-   Networkd().start
+[cur]:    ../api/studs/Networkd.html#cur
+[list]:   ../api/studs/Networkd.html#list
+[status]: ../api/studs/Networkd.html#status
 
-## Static IP Address
+All methods operate on the `Networkd` singleton, accessed via [cur][cur]. First
+step is start the daemon:
 
-TODO
+    Networkd().start
+
+To list the available interfaces, use [list][list]:
+
+    Networkd.cur.list => ["eth0":0]
+
+To view status and statistics for a given interface, use [status][status]:
+
+    Networkd.cur.status("eth0") =>
+      ["name":"eth0", "up":true, "broadcast", ...]
+
+## Static IP
+
+[setup]: ../api/studs/Networkd.html#setup
+
+To configure a static IP address for an interface, pass the configuration data
+to [setup][setup], using `"mode":"static"`:
 
     Networkd.cur.setup([
       "name":   "eth0",
@@ -20,3 +39,7 @@ TODO
       "router": "192.168.1.1,
       "dns":    "8.8.8.8 8.8.4.4"
     ])
+
+## DHCP
+
+TODO
