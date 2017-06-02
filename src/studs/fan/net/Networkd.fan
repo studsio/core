@@ -85,7 +85,7 @@ const class Networkd : Daemon
   private Obj? onStatus(Str name)
   {
     proc := getProc
-    Pack.write(proc.out, ["op":"status"])
+    Pack.write(proc.out, ["op":"status", "name":name])
     res := Pack.read(proc.in)
     checkErr(res)
     return res

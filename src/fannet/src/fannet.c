@@ -105,31 +105,38 @@ static void on_status(struct pack_map *req)
   int h = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
   if (h < 0) { send_err("socket failed"); return; }
 
-  // read ifreq
   struct ifreq s;
   strncpy(s.ifr_name, name, sizeof(s.ifr_name));
-  int r = ioctl(h, SIOCGIFFLAGS, &s);
-  close(h);
-  if (r == -1) { send_err("ioctl failed"); return; }
 
-  // pack
   struct pack_map *res = pack_map_new();
-  pack_set_str(res,  "status",       "ok");
-  pack_set_str(res,  "name",         name);
-  pack_set_int(res,  "index",        s.ifr_ifindex);
-  pack_set_str(res,  "type",         s.ifr_hwaddr.sa_family == ARPHRD_ETHER ? "ethernet" : "other");
+  pack_set_str(res, "status", "ok");
+  pack_set_str(res, "name",   name);
+
+  // flags
+  if (ioctl(h, SIOCGIFFLAGS, &s) == -1) { send_err("ioctl flags failed"); goto STATUS_CLEANUP; }
   pack_set_bool(res, "up",           s.ifr_flags & IFF_UP);
   pack_set_bool(res, "broadcast",    s.ifr_flags & IFF_BROADCAST);
   pack_set_bool(res, "loopback",     s.ifr_flags & IFF_LOOPBACK);
   pack_set_bool(res, "pointtopoint", s.ifr_flags & IFF_POINTOPOINT);
   pack_set_bool(res, "running",      s.ifr_flags & IFF_RUNNING);
   pack_set_bool(res, "multicast",    s.ifr_flags & IFF_MULTICAST);
-  pack_set_bool(res, "lowerup",      s.ifr_flags & WORKAROUND_IFF_LOWER_UP);
-  pack_set_int(res,  "mtu",          s.ifr_mtu);
-  pack_set_buf(res,  "mac",          (uint8_t*)s.ifr_hwaddr.sa_data, 6);
+  // won't work with ioctl
+  // pack_set_bool(res, "lowerup",      s.ifr_flags & WORKAROUND_IFF_LOWER_UP);
+
+  // hwaddr
+  if (ioctl(h, SIOCGIFHWADDR, &s) == -1) { send_err("ioctl hwaddr failed"); goto STATUS_CLEANUP; }
+  pack_set_str(res, "type", s.ifr_hwaddr.sa_family == ARPHRD_ETHER ? "ethernet" : "other");
+  pack_set_buf(res, "mac",  (uint8_t*)s.ifr_hwaddr.sa_data, 6);
+
+  // TODO
+  // pack_set_int(res,  "index",        s.ifr_ifindex);
+  // pack_set_int(res,  "mtu",          s.ifr_mtu);
 
   // write resp
   if (pack_write(stdout, res) < 0) log_debug("fannet: on_status write failed");
+
+STATUS_CLEANUP:
+  close(h);
   pack_map_free(res);
 }
 
