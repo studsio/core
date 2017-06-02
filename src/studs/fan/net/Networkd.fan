@@ -105,7 +105,19 @@ const class Networkd : Daemon
   private Obj? onSetup(Str:Str opts)
   {
     log.debug("setup: $opts")
+    mode := opts["mode"]
+    switch (mode)
+    {
+      case "static": setupStatic(opts)
+      case "dhcp":   setupDhcp(opts)
+      default:       throw Err("Unknown mode '$mode'")
+    }
+    return null
+  }
 
+  ** Setup static IP assignment.
+  private Void setupStatic(Str:Obj opts)
+  {
     // TODO: figure how which command(s) to invoke
     // and verify correct options were passed in
     name   := opts["name"]   ?: throw ArgErr("Missing 'name' opt")
@@ -138,8 +150,12 @@ const class Networkd : Daemon
       }
       finally { out.close }
     }
+  }
 
-    return null
+  ** Setup dhcp IP assignment.
+  private Void setupDhcp(Str:Obj opts)
+  {
+    // TODO
   }
 
   ** Get our background native process. If 'start' is 'true' then
