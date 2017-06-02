@@ -105,6 +105,7 @@ class PackTest : Test
 
     test := Pack.decode(buf)
     verifyEq(map.size, test.size)
+    verifyEq(test.isImmutable, true)
 
     mk := map.keys.sort
     tk := test.keys.sort

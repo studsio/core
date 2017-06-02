@@ -72,6 +72,7 @@ class Pack
 
       case Buf#:
         b := (Buf)v
+        if (b.size > 0xffff) throw ArgErr("Buf size > 65536")
         buf.write(tcBuf).writeI2(b.size).writeBuf(b.seek(0))
 
       case Obj[]#:
@@ -115,7 +116,7 @@ class Pack
       map[name] = decodeVal(buf)
     }
 
-    return map
+    return map.toImmutable
   }
 
   private static Obj decodeVal(Buf buf)
@@ -135,7 +136,7 @@ class Pack
 
       case tcBuf:
         blen := buf.readU2
-        return buf.readBufFully(null, blen)
+        return buf.readBufFully(null, blen).toImmutable
 
       case tcList:
         list := Obj[,]
