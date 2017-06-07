@@ -45,6 +45,7 @@ class Build : BuildPod
       `fan/net/`,
       `fan/ntp/`,
       `fan/util/`]
+    javaDirs = [`java/`]
     docSrc = false
   }
 }

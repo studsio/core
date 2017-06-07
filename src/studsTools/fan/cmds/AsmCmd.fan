@@ -216,6 +216,10 @@ const class AsmCmd : Cmd
       Proc.run("chmod +x $rootfs.osPath/usr/bin/$name")
     }
 
+    // stage libfan
+    libfan := Pod.find("studsTools").file(`/bins/$sys.name/libfan.so`)
+    libfan.copyTo(rootfs + `usr/lib/libfan.so`)
+
     // stage app
     (rootfs + `app/fan/lib/fan/`).create
     (rootfs + `app/fan/lib/java/`).create
