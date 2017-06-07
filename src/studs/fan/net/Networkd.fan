@@ -43,7 +43,8 @@ const class Networkd : Daemon
   ** Configure a network interface.
   This setup(Str:Str opts)
   {
-    send(DaemonMsg { it.op="setup"; it.a=opts.toImmutable })
+    // get Future to collect any thrown Errs
+    send(DaemonMsg { it.op="setup"; it.a=opts.toImmutable }).get(1min)
     return this
   }
 
@@ -149,6 +150,7 @@ const class Networkd : Daemon
         out.flush.sync
       }
       finally { out.close }
+      LibFan.reloadResolvConf
     }
   }
 

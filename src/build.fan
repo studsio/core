@@ -23,6 +23,7 @@ class Build : BuildGroup
       `studs/build.fan`,
       `studsTools/build.fan`,
       `studsTest/build.fan`,
+      `libfan/build.fan`,
       `faninit/build.fan`,
       `fangpio/build.fan`,
       `fani2c/build.fan`,

@@ -7,6 +7,8 @@
 - Networkd: add `router` field for default route
 - Fix `Ntpd.servers` to be mutable
 - Add `Ntpd.sync` to block until time is acquired
+- Add `libfan` for Fantom-JNI library support
+- Networkd: fix to invoke `res_init` after updating `/etc/resolve.conf`
 
 #### Version 1.5 (4-May-2017)
 - Add `repo.public` pod.meta for `studs,studsTools` for Eggbox
