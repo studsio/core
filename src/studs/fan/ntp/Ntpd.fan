@@ -13,16 +13,21 @@ using concurrent
 **
 @NoDoc const class Ntpd : Daemon
 {
-  new make() : super(5sec) {}
+  @NoDoc new make() : super(5sec)
+  {
+    // allow only one instance per VM
+    if (curRef.compareAndSet(null, this)) throw Err("Ntpd already exists")
+  }
 
-  ** Get the Ntpd instance for this vm.  If an instance is
+  ** Get the Ntpd instance for this VM.  If an instance is
   ** not found, throw Err if 'checked' otherwise return null.
   static Ntpd? cur(Bool checked := true)
   {
-    d := Actor.locals["d.ntpd"]
-    if (d == null && checked) throw Err("Ntpd instance not found")
-    return d
+    if (curRef.val == null && checked) throw Err("Ntpd instance not found")
+    return curRef.val
   }
+
+  private static const AtomicRef curRef := AtomicRef(null)
 
   ** The current NTP server pool.
   Str[] servers

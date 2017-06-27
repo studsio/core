@@ -13,16 +13,21 @@ using concurrent
 **
 const class Networkd : Daemon
 {
-  @NoDoc new make() : super(5sec) {}
+  @NoDoc new make() : super(5sec)
+  {
+    // allow only one instance per VM
+    if (curRef.compareAndSet(null, this)) throw Err("Networkd already exists")
+  }
 
-  ** Get the Networkd instance for this vm.  If an instance is
-  ** not found, throw Err if 'checked' otherwise reutrn null.
+  ** Get the Networkd instance for this VM.  If an instance is
+  ** not found, throw Err if 'checked' otherwise return null.
   static Networkd? cur(Bool checked := true)
   {
-    d := Actor.locals["d.networkd"]
-    if (d == null && checked) throw Err("Networkd instance not found")
-    return d
+    if (curRef.val == null && checked) throw Err("Networkd instance not found")
+    return curRef.val
   }
+
+  private static const AtomicRef curRef := AtomicRef(null)
 
   ** List available network interfaces for this device. Blocks
   ** until 'timeout' elapses waiting for results.  If 'timeout'
