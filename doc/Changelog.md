@@ -10,12 +10,13 @@
 - Add `libfan` for Fantom-JNI library support
 - Networkd: fix to invoke `res_init` after updating `/etc/resolve.conf`
 - Fix `Daemon.cur` design to properly work across actors
+- Blacklist unnecessary pods during `AsmCmd` (shaves `1.76MB` off release fw size)
 
 #### Version 1.5 (4-May-2017)
 - Add `repo.public` pod.meta for `studs,studsTools` for Eggbox
 - Add `--clean` option for `AsmCmd` to delete `studs/systems/` and `studs/jres/` intermediate files
 - Add `studs.props` support for configuring which JRE compact profile to use
-- Make JRE profile default to `compact1` (saves 6MB off release size)
+- Make JRE profile default to `compact1` (shaves `6MB` off release fw size)
 - Update `GettingStarted` to include Linux installation instructions
 - Fix `AsmCmd` JRE setup to work on Linux
 - Beef up `Building.md` docs

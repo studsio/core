@@ -226,7 +226,12 @@ const class AsmCmd : Cmd
     (Env.cur.homeDir + `lib/java/sys.jar`).copyTo(rootfs + `app/fan/lib/java/sys.jar`)
     (Env.cur as PathEnv).path.each |path|
     {
-      pods := (path + `lib/fan/`).listFiles.findAll |f| { f.name != "studsTools" && f.ext == "pod" }
+      pods := (path + `lib/fan/`).listFiles.findAll |f|
+      {
+        if (f.ext != "pod") return false
+        if (podBlacklist.contains(f.basename)) return false
+        return true
+      }
       pods.each |p| { p.copyTo(rootfs + `app/fan/lib/fan/$p.name`) }
     }
 
@@ -269,4 +274,24 @@ const class AsmCmd : Cmd
     info("  Release:")
     info("    $rel.osPath [$size]")
   }
+
+  ** Blacklist of pods to remove from app staging.
+  static const Str[] podBlacklist := [
+    "studsTest",
+    "studsTools",
+    "docDomkit",
+    "docFanr",
+    "docIntro",
+    "docLang",
+    "docTools",
+    "icons",
+    "flux",
+    "fluxTest",
+    "syntax",
+    "testCompiler",
+    "testDomkit",
+    "testJava",
+    "testNative",
+    "testSys",
+  ]
 }
