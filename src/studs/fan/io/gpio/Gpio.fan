@@ -82,6 +82,11 @@ class Gpio
   ** a change occurs. This method will block listening until
   ** `close` is called.
   **
+  ** Note that after calling 'listen', you will receive an initial
+  ** callback with the state of the pin. This prevents the race
+  ** condition between getting the initial state of the pin and
+  ** turning on interrupts.
+  **
   Void listen(Str mode, |Int val| callback)
   {
     // check mode
