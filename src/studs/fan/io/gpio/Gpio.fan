@@ -89,7 +89,7 @@ class Gpio
       throw ArgErr("Invalid mode '$mode")
 
     // register interrupt
-    Pack.write(proc.out, ["op":"listen"])
+    Pack.write(proc.out, ["op":"listen", "mode":mode])
     checkErr(Pack.read(proc.in))
 
     // block until proc exists
@@ -97,7 +97,7 @@ class Gpio
     {
       res := Pack.read(proc.in)
       checkErr(res)
-      callback(res["val"])
+      callback(res["val"] == false ? 0 : 1)
     }
   }
 

@@ -11,6 +11,7 @@
 - Networkd: fix to invoke `res_init` after updating `/etc/resolve.conf`
 - Fix `Daemon.cur` design to properly work across actors
 - Blacklist unnecessary pods during `AsmCmd` (shaves `1.76MB` off release fw size)
+- Fix Gpio.listen to pass `mode` to fangpio
 
 #### Version 1.5 (4-May-2017)
 - Add `repo.public` pod.meta for `studs,studsTools` for Eggbox
