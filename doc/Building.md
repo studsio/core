@@ -83,6 +83,31 @@ default root filesystem for the respective system. If a file in
 `rootfs-additions` already exists in the base image, it will replace the base
 copy.
 
+## Pod Whitelist/Blacklist
+
+The `AsmCmd` will attempt to exclude certain pods that generally do not make
+sense to install in an embedded environment, in order to reduce the release
+firmware size.  The default blacklist is:
+
+    studsTest, studsTools, docDomkit, docFanr, docIntro, docLang,
+    docTools, icons, gfx, fwt, webfwt, flux, fluxTest, syntax, testCompiler,
+    testDomkit, testJava, testNative, testSys
+
+To add additional pods to the exclusion list, configure the `pod.blacklist` in
+your `studs.props`:
+
+    # Comma-separated list of pods to exclude from release fw image.
+    # This list is in addition to the default blacklist.
+    pod.blacklist=myPodA,myPodB
+
+To force a pod to always be included (such as a pod from the default
+blacklist), configure `pod.whitelist` in your `studs.props` file:
+
+    # Comma-separated list of pods to always include in release fw
+    # image. This list takes precedence over both the default and
+    # above blacklists.
+    pod.whitelist=gfx,fwt,myPod
+
 ## Profile Configuration
 
 If you build lots of projects, some configuration may become repetitive --

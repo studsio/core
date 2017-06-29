@@ -221,6 +221,8 @@ const class AsmCmd : Cmd
     libfan.copyTo(rootfs + `usr/lib/libfan.so`)
 
     // stage app
+    podWhitelist := props["pod.whitelist"]?.split(',') ?: Str#.emptyList
+    podBlacklist := props["pod.blacklist"]?.split(',') ?: Str#.emptyList
     (rootfs + `app/fan/lib/fan/`).create
     (rootfs + `app/fan/lib/java/`).create
     (Env.cur.homeDir + `lib/java/sys.jar`).copyTo(rootfs + `app/fan/lib/java/sys.jar`)
@@ -229,6 +231,8 @@ const class AsmCmd : Cmd
       pods := (path + `lib/fan/`).listFiles.findAll |f|
       {
         if (f.ext != "pod") return false
+        if (podWhitelist.contains(f.basename)) return true
+        if (podBlacklist.contains(f.basename)) return false
         if (podDefBlacklist.contains(f.basename)) return false
         return true
       }

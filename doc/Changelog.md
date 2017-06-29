@@ -10,7 +10,8 @@
 - Add `libfan` for Fantom-JNI library support
 - Networkd: fix to invoke `res_init` after updating `/etc/resolve.conf`
 - Fix `Daemon.cur` design to properly work across actors
-- Blacklist unnecessary pods during `AsmCmd` (shaves `1.76MB` off release fw size)
+- Blacklist unnecessary pods during `AsmCmd` (shaves `2.88MB` off release fw size)
+- Add support for `pod.blacklist` and `pod.whitelist` in `studs.props`
 - Fix Gpio.listen to pass `mode` to fangpio
 
 #### Version 1.5 (4-May-2017)

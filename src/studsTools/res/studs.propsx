@@ -10,3 +10,12 @@ jre.profile=1
 # Uncomment to add target platform to build
 target.bbb=true
 #target.rpi3=true
+
+# Comma-separated list of pods to exclude from release fw image.
+# This list is in addition to the default blacklist.
+#pod.blacklist=myPodA,myPodB
+
+# Comma-separated list of pods to always include in release fw
+# image. This list takes precedence over both the default and
+# above blacklists.
+#pod.whitelist=myPodA,myPodB
