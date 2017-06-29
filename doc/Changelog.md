@@ -13,6 +13,7 @@
 - Blacklist unnecessary pods during `AsmCmd` (shaves `2.88MB` off release fw size)
 - Add support for `pod.blacklist` and `pod.whitelist` in `studs.props`
 - Fix Gpio.listen to pass `mode` to fangpio
+- Add `Sys.shutdown` method
 
 #### Version 1.5 (4-May-2017)
 - Add `repo.public` pod.meta for `studs,studsTools` for Eggbox

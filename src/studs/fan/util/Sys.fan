@@ -35,5 +35,11 @@ class Sys
     Proc { it.cmd=["/sbin/reboot"] }.run.waitFor.okOrThrow
   }
 
+  ** Shutdown this device.
+  static Void shutdown()
+  {
+    Proc { it.cmd=["/sbin/poweroff"] }.run.waitFor.okOrThrow
+  }
+
   private static const AtomicRef propsRef := AtomicRef(null)
 }
