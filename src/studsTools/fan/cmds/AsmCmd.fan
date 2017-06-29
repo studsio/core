@@ -229,7 +229,7 @@ const class AsmCmd : Cmd
       pods := (path + `lib/fan/`).listFiles.findAll |f|
       {
         if (f.ext != "pod") return false
-        if (podBlacklist.contains(f.basename)) return false
+        if (podDefBlacklist.contains(f.basename)) return false
         return true
       }
       pods.each |p| { p.copyTo(rootfs + `app/fan/lib/fan/$p.name`) }
@@ -276,7 +276,7 @@ const class AsmCmd : Cmd
   }
 
   ** Blacklist of pods to remove from app staging.
-  static const Str[] podBlacklist := [
+  static const Str[] podDefBlacklist := [
     "studsTest",
     "studsTools",
     "docDomkit",
@@ -285,6 +285,9 @@ const class AsmCmd : Cmd
     "docLang",
     "docTools",
     "icons",
+    "gfx",
+    "fwt",
+    "webfwt",
     "flux",
     "fluxTest",
     "syntax",
