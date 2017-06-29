@@ -16,7 +16,7 @@ using concurrent
   @NoDoc new make() : super(5sec)
   {
     // allow only one instance per VM
-    if (curRef.compareAndSet(null, this)) throw Err("Ntpd already exists")
+    if (!curRef.compareAndSet(null, this)) throw Err("Ntpd already exists")
   }
 
   ** Get the Ntpd instance for this VM.  If an instance is

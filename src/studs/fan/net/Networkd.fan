@@ -16,7 +16,7 @@ const class Networkd : Daemon
   @NoDoc new make() : super(5sec)
   {
     // allow only one instance per VM
-    if (curRef.compareAndSet(null, this)) throw Err("Networkd already exists")
+    if (!curRef.compareAndSet(null, this)) throw Err("Networkd already exists")
   }
 
   ** Get the Networkd instance for this VM.  If an instance is
