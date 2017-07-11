@@ -81,11 +81,18 @@ using concurrent
   {
     Proc? p := Actor.locals["p"]
 
-    // drain process stdout and check if running
     if (p != null)
     {
+      // drain process stdout
       Str? out
-      while ((out = p.in.readLine) != null) log.debug(out)
+      while (p.in.avail > 0)
+      {
+        out = p.in.readLine
+        // TODO: parse output
+        log.debug(out)
+      }
+
+      // check if still running
       if (!p.isRunning)
       {
         log.debug("ntpd process terminated with exit code $p.exitCode")
