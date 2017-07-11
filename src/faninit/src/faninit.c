@@ -195,6 +195,15 @@ static void child()
   const char *fan_main = get_prop(props, "main", NULL);
   if (fan_main == NULL) fatal("main prop not defined");
 
+  // configure max heap size
+  char jvm_xmx_arg[64];
+  const char *jvm_xmx = get_prop(props, "jvm.xmx", NULL);
+  if (jvm_xmx != NULL)
+  {
+    sprintf(jvm_xmx_arg, "-Xmx%s", jvm_xmx);
+    exec_argv[arg++] = jvm_xmx_arg;
+  }
+
   exec_argv[arg++] = "-cp";
   exec_argv[arg++] = sys_jar_path;
   exec_argv[arg++] = "fanx.tools.Fan";

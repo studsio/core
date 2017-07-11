@@ -35,7 +35,7 @@
 // PATH_MAX wasn't in the musl include files, so rather
 // than pulling an arbitrary number in from linux/limits.h,
 // just define to something that should be trivially safe
-// for erlinit use.
+// for faninit use.
 #define FANINIT_PATH_MAX 1024
 
 struct prop {

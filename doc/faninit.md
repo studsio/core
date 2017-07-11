@@ -18,6 +18,9 @@ are:
     #   http://fantom.org/doc/docTools/Fan#pods
     main=<pod>[::<type>[.<method>]]
 
+    # Configure the maximum heap size for JVM using -Xmx option
+    jvm.xmx=384m
+
     # Enable debug logging
     debug=true
 

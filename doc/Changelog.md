@@ -14,6 +14,7 @@
 - Add support for `pod.blacklist` and `pod.whitelist` in `studs.props`
 - Fix Gpio.listen to pass `mode` to fangpio
 - Add `Sys.shutdown` method
+- Add support for configuring JVM heap size with `jvm.xmx` in `faninit.props`
 
 #### Version 1.5 (4-May-2017)
 - Add `repo.public` pod.meta for `studs,studsTools` for Eggbox
