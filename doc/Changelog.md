@@ -13,6 +13,7 @@
 - Blacklist unnecessary pods during `AsmCmd` (shaves `2.88MB` off release fw size)
 - Add support for `pod.blacklist` and `pod.whitelist` in `studs.props`
 - Fix Gpio.listen to pass `mode` to fangpio
+- Add Gpio.listen `timeout` argument
 - Add `Sys.shutdown` method
 - Add support for configuring JVM heap size with `jvm.xmx` in `faninit.props`
 

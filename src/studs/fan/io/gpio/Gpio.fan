@@ -6,6 +6,8 @@
 //   30 Mar 2017  Andy Frank  Creation
 //
 
+using concurrent
+
 **
 ** Gpio provides high level access to GPIO pins through the Linux
 ** '/sys/class/gpio' interface.
@@ -82,12 +84,17 @@ class Gpio
   ** a change occurs. This method will block listening until
   ** `close` is called.
   **
+  ** If 'timeout' is non-null, then 'callback' will be invoked
+  ** at every duration of 'timeout' regardless of whether a state
+  ** change occurred.  If 'timeout' is null, this method blocks
+  ** until a state change is detected.
+  **
   ** Note that after calling 'listen', you will receive an initial
   ** callback with the state of the pin. This prevents the race
   ** condition between getting the initial state of the pin and
   ** turning on interrupts.
   **
-  Void listen(Str mode, |Int val| callback)
+  Void listen(Str mode, Duration? timeout, |Int val| callback)
   {
     // check mode
     if (mode != "rising" && mode != "falling" && mode != "both")
@@ -100,6 +107,20 @@ class Gpio
     // block until proc exists
     while (proc != null)
     {
+      if (timeout != null)
+      {
+        trigger := Duration.nowTicks + timeout.ticks
+        while (proc.in.avail == 0)
+        {
+          if (Duration.nowTicks >= trigger)
+          {
+            Pack.write(proc.out, ["op":"read"])
+            break
+          }
+          Actor.sleep(10ms)
+        }
+      }
+
       res := Pack.read(proc.in)
       checkErr(res)
       callback(res["val"] == false ? 0 : 1)

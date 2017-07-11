@@ -29,13 +29,21 @@ To monitor changes to a GPIO pin output, you can use [Gpio.listen][listen].
 This method will register an interrupt handler that triggers on the rising,
 falling, or both edges and efficiently poll for pin state changes:
 
-    g := Gpio.open(18, "out")
+    g := Gpio.open(18, "in")
     i := 0
 
-    g.listen("falling") |val|
+    g.listen("falling", null) |val|
     {
       echo("Pin is now $val")
       if (++i == 5) g.close
     }
 
     echo("Pin was read 5 times")
+
+To receive a callback after a period of time has elpased (regardless if pin
+state has changed), pass in a duration to [Gpio.listen][listen]:
+
+    g.listen("rising", 5sec) |val|
+    {
+      ...
+    }
