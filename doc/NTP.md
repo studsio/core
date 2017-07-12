@@ -16,12 +16,12 @@ begin in the background:
 To block your application until a valid time has been acquired, first setup
 your network interface, then call [sync][sync] to wait:
 
-    // start our networking and NTP daemons
+    // start and setup network
     Networkd().start
-    Ntpd().start
+    Networkd.cur.setup(["name":"eth0", "mode":"dhcp"])
 
     // setup network interface, and block until NTP acquires time
-    Networkd.cur.setup(["name":"eth0", "mode":"dhcp"])
+    Ntpd().start
     Ntpd.cur.sync
 
     echo("Time is $DateTime.now")
