@@ -1,6 +1,6 @@
 # Changelog
 
-#### Version 1.6 (working)
+#### Version 1.6 (21-Jul-2017)
 - Add `studs burn --upgrade` option to perform a `--task upgrade` during burn
 - Fix `faninit` to start java under `/app/fan` working directory
 - Networkd: rename fields `ipaddr,netmask -> ip,mask`
