@@ -9,11 +9,14 @@
 using concurrent
 
 **
-** Ntpd
+** The Ntpd daemon provides support for synchronizing wall clock
+** time using the NTP protocol.
 **
-@NoDoc const class Ntpd : Daemon
+** See [NTP]`../../doc/NTP.html` chapter for details.
+**
+const class Ntpd : Daemon
 {
-  @NoDoc new make() : super(5sec)
+  new make() : super(5sec)
   {
     // allow only one instance per VM
     if (!curRef.compareAndSet(null, this)) throw Err("Ntpd already exists")
@@ -65,9 +68,9 @@ using concurrent
 // Actor local
 //////////////////////////////////////////////////////////////////////////
 
-  override Void onStart() { onPoll }
+  @NoDoc override Void onStart() { onPoll }
 
-  override Void onStop()
+  @NoDoc override Void onStop()
   {
     Proc? p := Actor.locals["p"]
     if (p == null || !p.isRunning) return
@@ -77,7 +80,7 @@ using concurrent
     log.debug("ntpd process stopped")
   }
 
-  override Void onPoll()
+  @NoDoc override Void onPoll()
   {
     Proc? p := Actor.locals["p"]
 

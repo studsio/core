@@ -9,7 +9,9 @@
 using concurrent
 
 **
-** Networkd
+** Networking support in Studs is provided by the Networkd daemon.
+**
+** See [Networking]`../../doc/Networking.html` chapter for details.
 **
 const class Networkd : Daemon
 {
