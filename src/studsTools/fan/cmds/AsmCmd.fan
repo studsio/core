@@ -117,8 +117,8 @@ const class AsmCmd : Cmd
     info("  Install $sys.name system...")
     Proc.run("tar xvf $tar.osPath -C $baseDir.osPath")
 
-    // cleanup
-    tar.delete
+    // cleanup (if downloaded)
+    if (sys.uri.scheme == "http" || sys.uri.scheme == "https") tar.delete
   }
 
   ** Build compact JRE for target.
