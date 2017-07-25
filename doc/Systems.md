@@ -105,7 +105,7 @@ On Linux, first install required dependencies:
 
     $ sudo apt-get update
     $ sudo apt-get install git g++ libssl-dev libncurses5-dev \
-      bc m4 make unzip cmake
+      bc m4 make unzip cmake python
 
 Once you have setup Linux and download system sources, setup your build
 configuration for the intended target:
