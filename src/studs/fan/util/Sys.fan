@@ -29,6 +29,27 @@ class Sys
     return propsRef.val
   }
 
+  ** Get U-Boot environment variables.
+  @NoDoc static Str:Str ubootEnv()
+  {
+    if (ubenvRef.val == null)
+    {
+      m := Str:Str[:]
+      p := Proc { it.cmd=["/usr/sbin/fw_printenv"] }
+      p.run.waitFor.okOrThrow.in.readAllStr.splitLines.each |line|
+      {
+        i := line.index("=")
+        if (i == null) return
+        n := line[0..<i]
+        v := line[i+1..-1]
+        m[n] = v
+      }
+      ubenvRef.val = m.toImmutable
+    }
+
+    return ubenvRef.val
+  }
+
   ** Reboot this device.
   static Void reboot()
   {
@@ -42,4 +63,5 @@ class Sys
   }
 
   private static const AtomicRef propsRef := AtomicRef(null)
+  private static const AtomicRef ubenvRef := AtomicRef(null)
 }
