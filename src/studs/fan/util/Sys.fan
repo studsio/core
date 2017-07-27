@@ -81,6 +81,56 @@ class Sys
   private static const AtomicRef fwPropsRef  := AtomicRef(null)
 
 //////////////////////////////////////////////////////////////////////////
+// Filesystem
+//////////////////////////////////////////////////////////////////////////
+
+  ** Return true it the writable data parition is mounted.
+  ** See `mountData`.
+  static Bool isDataMounted()
+  {
+    dev := fwActiveProps["nerves_fw_application_part0_devpath"]
+    out := Proc { it.cmd=["mount"] }.run.waitFor.okOrThrow.in.readAllStr
+    return out.splitLines.any |s| { s.startsWith("${dev} on /data") }
+  }
+
+  ** Mount the writable data partition for this device under the '/data'
+  ** directory.  If the partition fails to mount and 'reformat=true', then
+  ** the partition is automatically reformatted, and mount attempted again.
+  ** Throws 'IOErr' if data partition could not be mounted.  If partition
+  ** is already mounted, this method does nothing.
+  static Void mountData(Bool reformat := true)
+  {
+    // read fwprops to find partition info
+    fs  := fwActiveProps["nerves_fw_application_part0_fstype"]
+    dev := fwActiveProps["nerves_fw_application_part0_devpath"]
+
+    // bail if already mounted
+    if (isDataMounted) return
+
+    umountCmd := ["/bin/umount", "/data"]
+    mountCmd  := ["/bin/mount", "-t", fs, dev, "/data"]
+    mkfsCmd   := ["/sbin/mkfs.${fs}", "-F", dev]
+
+    // first attempt
+    Proc { it.cmd=umountCmd }.run.waitFor
+    Proc { it.cmd=mountCmd }.run.waitFor
+    if (isDataMounted) return
+
+    if (reformat)
+    {
+      // format
+      Proc { it.cmd=umountCmd }.run.waitFor
+      Proc { it.cmd=mkfsCmd }.run.waitFor
+
+      // second attempt
+      Proc { it.cmd=mountCmd }.run.waitFor
+      if (isDataMounted) return
+    }
+
+    throw IOErr("Data partition could not be mounted")
+  }
+
+//////////////////////////////////////////////////////////////////////////
 // Reboot/shutdown
 //////////////////////////////////////////////////////////////////////////
 
