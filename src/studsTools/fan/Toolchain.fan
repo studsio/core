@@ -116,6 +116,7 @@ const class Toolchain
   ** Map of toolchains to system targets.
   internal static const Str:Toolchain toolchains := [
     "bbb":  Toolchain("arm-unknown-linux-gnueabihf-darwin-x86_64", "0.6.1"),
+    "rpi0": Toolchain("arm-unknown-linux-gnueabihf-darwin-x86_64", "0.6.1"),
     "rpi3": Toolchain("arm-unknown-linux-gnueabihf-darwin-x86_64", "0.6.1"),
   ]
 
