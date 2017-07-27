@@ -1,6 +1,13 @@
 # Changelog
 
 #### Version 1.7 (working)
+[bbb-1.1]:  https://bitbucket.org/studs/system-bbb/src/5b4cb47b5be10df3998c972481731ad556c30cbd/changelog.md
+[rpi3-1.1]: https://bitbucket.org/studs/system-rpi3/src/1617a146f8c74c8e14aaef6c989d2595494bcb23/changelog.md
+
+* Update systems to `1.1` - see BitBucket for details:
+    - [bbb changelog][bbb-1.1]
+    - [rpi3 changelog][rpi3-1.1]
+    - Initial support for `rpi0`
 * Fix AsmCmd to not delete local system source tarballs
 * Fix BurnCmd to prompt when multiple releases found
 * Add support for reading fwup firmware props with `Sys.fwActiveProps` and `Sys.fwAllProps`

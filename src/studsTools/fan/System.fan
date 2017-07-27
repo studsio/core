@@ -48,9 +48,8 @@ const class System
 
   ** Default system versions.
   private static const Str:Version defVer := [
-    "bbb":  Version("1.0.0"),
-// TODO
-"rpi0": Version("1.0.0"),
-    "rpi3": Version("1.0.0"),
+    "bbb":  Version("1.1"),
+    "rpi0": Version("1.1"),
+    "rpi3": Version("1.1"),
   ]
 }
