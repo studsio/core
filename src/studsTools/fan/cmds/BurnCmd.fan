@@ -31,9 +31,20 @@ const class BurnCmd : Cmd
     // bail if no releases found
     if (rels.isEmpty) abort("burn: no releases found")
 
-    // TODO FIXIT: prompt to select?
-    rel := rels.first
-    // TODO: prompt to select which image...
+    // prompt for release selection
+    File? rel
+    if (rels.size == 1) rel = rels.first
+    else
+    {
+      echo("Available releases:")
+      rels.each |f,i|
+      {
+        size := f.size.toLocale("B")
+        echo(" [${i+1}] $f.name\t($size)")
+      }
+      sel := promptChoice("Which release do you want to burn?", 1..rels.size)
+      rel = rels[sel-1]
+    }
 
     // attempt to find card devices
     out := Buf()
