@@ -3,7 +3,7 @@
 #### Version 1.7 (working)
 - Fix AsmCmd to not delete local system source tarballs
 - Fix BurnCmd to prompt when multiple releases found
-- Add support for reading U-boot env with `Sys.ubootEnv`
+- Add support for reading fwup firmware props with `Sys.fwActiveProps` and `Sys.fwAllProps`
 
 #### Version 1.6 (21-Jul-2017)
 - Add `studs burn --upgrade` option to perform a `--task upgrade` during burn

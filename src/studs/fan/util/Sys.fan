@@ -13,6 +13,11 @@ using concurrent
 **
 class Sys
 {
+
+//////////////////////////////////////////////////////////////////////////
+// Props
+//////////////////////////////////////////////////////////////////////////
+
   **
   ** Get 'etc/sys.props' system properites, which includes:
   **  - 'proj.name'
@@ -29,10 +34,31 @@ class Sys
     return propsRef.val
   }
 
-  ** Get U-Boot environment variables.
-  @NoDoc static Str:Str ubootEnv()
+  ** Get firmware properties for the active firmware slot.
+  @NoDoc static Str:Str fwActiveProps()
   {
-    if (ubenvRef.val == null)
+    if (fwActiveRef.val == null)
+    {
+      map    := Str:Str[:]
+      active := fwProps["nerves_fw_active"]
+      fwProps.each |v,n|
+      {
+        if (n.startsWith("${active}."))
+        {
+          an := n["${active}.".size..-1]
+          map[an] = v
+        }
+      }
+      fwActiveRef.val = map.toImmutable
+    }
+
+    return fwActiveRef.val
+  }
+
+  ** Get all firmware properties regardless of active firmware slot.
+  @NoDoc static Str:Str fwProps()
+  {
+    if (fwPropsRef.val == null)
     {
       m := Str:Str[:]
       p := Proc { it.cmd=["/usr/sbin/fw_printenv"] }
@@ -44,11 +70,19 @@ class Sys
         v := line[i+1..-1]
         m[n] = v
       }
-      ubenvRef.val = m.toImmutable
+      fwPropsRef.val = m.toImmutable
     }
 
-    return ubenvRef.val
+    return fwPropsRef.val
   }
+
+  private static const AtomicRef propsRef    := AtomicRef(null)
+  private static const AtomicRef fwActiveRef := AtomicRef(null)
+  private static const AtomicRef fwPropsRef  := AtomicRef(null)
+
+//////////////////////////////////////////////////////////////////////////
+// Reboot/shutdown
+//////////////////////////////////////////////////////////////////////////
 
   ** Reboot this device.
   static Void reboot()
@@ -61,7 +95,4 @@ class Sys
   {
     Proc { it.cmd=["/sbin/poweroff"] }.run.waitFor.okOrThrow
   }
-
-  private static const AtomicRef propsRef := AtomicRef(null)
-  private static const AtomicRef ubenvRef := AtomicRef(null)
 }
