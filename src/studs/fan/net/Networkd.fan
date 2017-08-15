@@ -150,10 +150,12 @@ const class Networkd : Daemon
     killDhcp
 
     // TODO: for now just call into busybox
-    up   := ["/sbin/ip", "link", "set", name, "up"]
-    set  := ["/sbin/ip", "addr", "add", "${ip}/${mask}", "dev", name]
-    Proc { it.cmd=up  }.run.waitFor.okOrThrow
-    Proc { it.cmd=set }.run.waitFor.okOrThrow
+    up    := ["/sbin/ip", "link", "set", name, "up"]
+    flush := ["/sbin/ip", "addr", "flush", "dev", name]
+    set   := ["/sbin/ip", "addr", "add", "${ip}/${mask}", "dev", name]
+    Proc { it.cmd=up    }.run.waitFor.okOrThrow
+    Proc { it.cmd=flush }.run.waitFor.okOrThrow
+    Proc { it.cmd=set   }.run.waitFor.okOrThrow
 
     // Update default route
     router := opts["router"]

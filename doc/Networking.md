@@ -42,4 +42,7 @@ to [setup][setup], using `"mode":"static"`:
 
 ## DHCP
 
-TODO
+To configure an interface for automatic IP address assigment using DHCP,
+use [setup][setup] with `"mode":"dhcp"`:
+
+    Networkd.cur.setup(["name":"eth0", "mode":"dhcp"])
