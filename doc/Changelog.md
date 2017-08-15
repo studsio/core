@@ -10,7 +10,7 @@
     - Initial support for `rpi0`
 * Fix AsmCmd to not delete local system source tarballs
 * Fix BurnCmd to prompt when multiple releases found
-* Add support for reading fwup firmware props with `Sys.fwActiveProps` and `Sys.fwAllProps`
+* Add support for reading fwup firmware props with `Sys.fwActiveProps` and `Sys.fwProps`
 * Rework `/data` mount to use `Sys.mountData` and support auto-reformatting if partition
   could not be mounted.  The `fs.mount` option in `faninit.props` is no longer used.
 
