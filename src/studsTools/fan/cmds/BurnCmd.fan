@@ -37,10 +37,11 @@ const class BurnCmd : Cmd
     else
     {
       echo("Available releases:")
+      w := rels.map |f| { f.name.size }.max
       rels.each |f,i|
       {
         size := f.size.toLocale("B")
-        echo(" [${i+1}] $f.name\t($size)")
+        echo(" [${i+1}] " + f.name.padr(w) + "  ($size)")
       }
       sel := promptChoice("Which release do you want to burn?", 1..rels.size)
       rel = rels[sel-1]
