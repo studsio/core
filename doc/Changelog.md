@@ -1,8 +1,8 @@
 # Changelog
 
-#### Version 1.7 (working)
-[bbb-1.1]:  https://bitbucket.org/studs/system-bbb/src/5b4cb47b5be10df3998c972481731ad556c30cbd/changelog.md
-[rpi3-1.1]: https://bitbucket.org/studs/system-rpi3/src/1617a146f8c74c8e14aaef6c989d2595494bcb23/changelog.md
+#### Version 1.7 (15-Aug-2017)
+[bbb-1.1]:  https://bitbucket.org/studs/system-bbb/src/068f8e086a82a41975d3392b5a361df8747aa84d/changelog.md
+[rpi3-1.1]: https://bitbucket.org/studs/system-rpi3/src/9db864004a9a0431f56016b39725abdb55095c0b/changelog.md
 
 * Update systems to `1.1` - see BitBucket for details:
     - [bbb changelog][bbb-1.1]
@@ -10,9 +10,9 @@
     - Initial support for `rpi0`
 * Fix AsmCmd to not delete local system source tarballs
 * Fix BurnCmd to prompt when multiple releases found
-* Fix Networkd to flush addr before assinging a static IP address
-* Add support for reading fwup firmware props with `Sys.fwActiveProps` and `Sys.fwProps`
+* Fix Networkd to flush addr before assigning a static IP address
 * Add basic DHCP support
+* Add support for reading fwup firmware props with `Sys.fwActiveProps` and `Sys.fwProps`
 * Rework `/data` mount to use `Sys.mountData` and support auto-reformatting if partition
   could not be mounted.  The `fs.mount` option in `faninit.props` is no longer used.
 * Update serial console tutorial to include rpi3
