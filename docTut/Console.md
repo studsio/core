@@ -37,7 +37,14 @@ connected.
 
 ### rpi3
 
-On the Raspberry Pi 3, UART `ttyS0` is accessed via the GND, RXD, and TXD
+By default, the rpi3 will use HDMI for the console. To override and use `ttyS0`
+you need to modify your `faninit.props` (make sure to run `fan studs asm`
+after):
+
+    # Override the controlling terminal (ttyAMA0, tty1, etc.)
+    tty.console=ttyS0
+
+Then the cable can be connected to UART `ttyS0` via the GND, RXD, and TXD
 header pins:
 
 ![Wiring Diagram](console-rpi3.png)
