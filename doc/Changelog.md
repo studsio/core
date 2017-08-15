@@ -13,6 +13,7 @@
 * Add support for reading fwup firmware props with `Sys.fwActiveProps` and `Sys.fwProps`
 * Rework `/data` mount to use `Sys.mountData` and support auto-reformatting if partition
   could not be mounted.  The `fs.mount` option in `faninit.props` is no longer used.
+* Update serial console tutorial to include rpi3
 
 #### Version 1.6 (21-Jul-2017)
 * Add `studs burn --upgrade` option to perform a `--task upgrade` during burn
