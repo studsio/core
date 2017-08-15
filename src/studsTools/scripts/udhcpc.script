@@ -1,0 +1,42 @@
+#!/bin/sh
+
+# simple temp udhcpc script
+
+[ -z "$1" ] && echo "Error: should be called from udhcpc" && exit 1
+
+RESOLV_CONF="/tmp/resolv.conf"
+MASK="24"  # TODO...
+
+case "$1" in
+  deconfig)
+    # deconfigure
+    echo "$1: $interface"
+    /sbin/ip link set $interface up
+    /sbin/ip addr flush dev $interface
+    ;;
+
+  renew|bound)
+    #/sbin/ifconfig $interface $ip $BROADCAST $NETMASK
+    echo "$1: $interface $ip"
+    /sbin/ip addr add $ip/$MASK dev $interface
+
+    # update routes
+    if [ -n "$router" ] ; then
+      echo "deleting routers"
+      /sbin/ip route del 0/0
+
+      for i in $router ; do
+        /sbin/ip route add default via $i dev $interface
+      done
+    fi
+
+    # update dns
+    echo "" > $RESOLV_CONF
+    for i in $dns ; do
+      echo adding dns $i
+      echo "nameserver $i # $interface" >> $RESOLV_CONF
+    done
+    ;;
+esac
+
+exit 0

@@ -79,7 +79,21 @@ const class Networkd : Daemon
     catch (Err err) { throw IOErr("Networkd.stop failed", err) }
   }
 
-  @NoDoc override Void onPoll() {}
+  @NoDoc override Void onPoll()
+  {
+    // check dhcp
+    p := Actor.locals["dp"] as Proc
+    if (p == null) return
+
+    // drain stdout
+    while (p.in.avail  > 0)
+    {
+      // TODO
+      out := p.in.readLine
+      if (out.contains("adding dns")) LibFan.reloadResolvConf
+      log.debug(out)
+    }
+  }
 
   @NoDoc override Obj? onMsg(DaemonMsg m)
   {
@@ -132,6 +146,9 @@ const class Networkd : Daemon
     ip     := opts["ip"]     ?: throw ArgErr("Missing 'ip' opt")
     mask   := opts["mask"]   ?: throw ArgErr("Missing 'mask' opt")
 
+    // make sure dhcp is not running
+    killDhcp
+
     // TODO: for now just call into busybox
     up   := ["/sbin/ip", "link", "set", name, "up"]
     set  := ["/sbin/ip", "addr", "add", "${ip}/${mask}", "dev", name]
@@ -164,7 +181,31 @@ const class Networkd : Daemon
   ** Setup dhcp IP assignment.
   private Void setupDhcp(Str:Obj opts)
   {
-    // TODO
+    name := opts["name"] ?: throw ArgErr("Missing 'name' opt")
+
+    // stop existing dhcp daemon if running
+    killDhcp
+
+    // assemble process args
+    dhcp := ["udhcpc",
+      "--interface", name,
+      "--foreground",
+      "--script", "/usr/bin/udhcpc.script"
+    ]
+
+    // start daemon
+    p := Proc { it.cmd=dhcp; it.redirectErr=true }.run
+    Actor.locals["dp"] = p
+  }
+
+  ** Kill udhcp process if running.
+  private Void killDhcp()
+  {
+    p := Actor.locals["dp"] as Proc
+    if (p == null) return
+    if (!p.isRunning) return
+    p.kill.waitFor
+    Actor.locals.remove("dp")
   }
 
   ** Get our background native process. If 'start' is 'true' then

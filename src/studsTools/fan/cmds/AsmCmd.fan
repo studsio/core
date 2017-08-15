@@ -208,6 +208,14 @@ const class AsmCmd : Cmd
     }
     (rootfs + `etc/sys.props`).writeProps(sysProps)
 
+    // stage scripts
+    ["udhcpc.script"].each |name|
+    {
+      script := Pod.find("studsTools").file(`/scripts/$name`)
+      script.copyTo(rootfs + `usr/bin/$name`)
+      Proc.run("chmod +x $rootfs.osPath/usr/bin/$name")
+    }
+
     // stage natives
     ["fangpio", "fani2c", "fannet", "fanspi", "fanuart"].each |name|
     {
