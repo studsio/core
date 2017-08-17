@@ -19,7 +19,7 @@ class Build : BuildPod
     //   "org.uri":      "http://myorg.org/",
     //   "proj.name":    "My Project",
     //   "proj.uri":     "http://myproj.org/",
-    //   "license.name": "Academic Free License 3.0",
+    //   "license.name": "Apache License 2.0",
     //   "vcs.name":     "Mercurial",
     //   "vcs.uri":      "https://bitbucket.org/myorg/myproj"
     //   "vcs.uri":      "https://bitbucket.org/myproj"

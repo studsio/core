@@ -1,7 +1,7 @@
 #! /usr/bin/env fan
 //
 // Copyright (c) 2016, Andy Frank
-// Licensed under the Academic Free License version 3.0
+// Licensed under the Apache License version 2.0
 //
 // History:
 //   21 Aug 2016  Andy Frank  Creation
@@ -21,7 +21,7 @@ class Build : BuildPod
     meta    = [
       "proj.name":    "Studs",
       "proj.uri":     "http://studs.io/",
-      "license.name": "Academic Free License 3.0",
+      "license.name": "Apache License 2.0",
       "vcs.uri":      "https://bitbucket.org/studs/core/",
       "repo.public":  "true",
       "repo.tags":    "studs"]

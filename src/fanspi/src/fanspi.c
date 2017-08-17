@@ -1,6 +1,6 @@
 /*
 // Copyright (c) 2017, Andy Frank
-// Licensed under the Academic Free License version 3.0
+// Licensed under the Apache License version 2.0
 //
 // History:
 //    3 Apr 2017  Andy Frank  Creation
