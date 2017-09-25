@@ -26,6 +26,13 @@ const class Props
     this.file = f
     this.map  = f.readProps
 
+    // print warnings for props no longer used
+    retired.each |r|
+    {
+      if (map.containsKey(r))
+        Env.cur.err.printLine("# [studs.props] '$r' prop no longer used")
+    }
+
     // find systems
     systems := System[,]
     map.each |val,key|
@@ -69,6 +76,8 @@ const class Props
     if (sys == null && checked) throw Err("System not found '$name'")
     return sys
   }
+
+  private static const Str:Str retired := [:].setList([,])
 
   private const File file
   private const Str:Str map

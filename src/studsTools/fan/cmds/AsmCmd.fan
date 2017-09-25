@@ -196,6 +196,11 @@ const class AsmCmd : Cmd
     // faninit.props
     initProps := Env.cur.workDir + `faninit.props`
     initProps.copyTo(rootfs + `etc/faninit.props`)
+    initProps.readProps.keys.each |n|
+    {
+      if (faninitRetired.containsKey(n))
+        info("  # [faninit.props] '$n' prop not longer used")
+    }
 
     // sys.props
     sysProps := Str:Str[:] {
@@ -286,6 +291,11 @@ const class AsmCmd : Cmd
     info("  Release:")
     info("    $rel.osPath [$size]")
   }
+
+  ** List of retired faninit prop names
+  static const Str:Str faninitRetired := [:].setList([
+    "fs.mount",
+  ])
 
   ** Blacklist of pods to remove from app staging.
   static const Str[] podDefBlacklist := [

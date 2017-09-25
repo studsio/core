@@ -2,6 +2,7 @@
 
 #### Version 1.8 (working)
 * Change licence to Apache License 2.0
+* Add `Cmd` warnings for retired `studs.props` and `faninit.props` properties
 
 #### Version 1.7 (15-Aug-2017)
 [bbb-1.1]:  https://bitbucket.org/studs/system-bbb/src/068f8e086a82a41975d3392b5a361df8747aa84d/changelog.md
