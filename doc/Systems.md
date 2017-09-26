@@ -56,7 +56,6 @@ Afterwards your `studs` directory should look like this:
 ### macOS Vagrant Setup
 
 [vf]: https://bitbucket.org/studs/system/src/tip/Vagrantfile
-[hg]: https://www.mercurial-scm.org/downloads
 
 The simplest way to build on macOS is to use the supplied [Vagrantfile][vf],
 which will allow you to host and edit the source on your Mac, and build on a
@@ -76,7 +75,7 @@ Linux VM. To get started with Vagrant:
    4. Provision your VM -- this will take a few minutes while it downloads and
       configures your new image:
 
-        $ cd system/vagrant
+        $ cd system
         $ vagrant up
 
    5. When provisioning is complete, log into your VM:
