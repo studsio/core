@@ -130,7 +130,7 @@ Change to your output directory and run `make`:
     $ cd output-bbb
     $ make
 
-This will take a while (25-30min). Once complete, the next step is to package
+This will take a while (15-20min). Once complete, the next step is to package
 your system by running:
 
     $ make system
