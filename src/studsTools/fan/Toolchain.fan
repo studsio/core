@@ -16,11 +16,12 @@ const class Toolchain
   ** Construct a new toolchain with name and version.
   new make(Str name, Str ver)
   {
-    this.name = name
+    this.name    = name
     this.version = Version(ver)
-    // TODO: bbb/rpi3 version is not consisent with URI...
-    this.dir = Env.cur.workDir + `toolchains/nerves-${name}-v0.6.0/` //${version}/`
-    this.gcc = dir + `bin/` + (name.split('-')[0..3].join("-") + "-gcc").toUri
+    this.host    = Env.cur.os == "macosx" ? "darwin-x86_64" : "linux-x86_64"
+    this.qname   = "nerves_toolchain_${name}-${version}.${host}"
+    this.dir = Env.cur.workDir + `toolchains/$qname/`
+    this.gcc = dir + ("bin/" + name.replace("_", "-") + "-gcc").toUri
   }
 
   ** Compile with toolchains to target systems
@@ -57,8 +58,7 @@ const class Toolchain
   {
     // download
     echo("  InstallToolchain [$name]")
-    uri := ("https://github.com/nerves-project/nerves-toolchain/releases/download/" +
-            "v${version}/nerves-${name}-v${version}.tar.xz").toUri
+    uri := `https://github.com/nerves-project/toolchains/releases/download/v${version}/${qname}.tar.xz`
     tar := Env.cur.workDir + `$uri.name`
     download("    Downloading", uri, tar)
 
@@ -115,13 +115,15 @@ const class Toolchain
 
   ** Map of toolchains to system targets.
   internal static const Str:Toolchain toolchains := [
-    "bbb":  Toolchain("arm-unknown-linux-gnueabihf-darwin-x86_64", "0.6.1"),
-    "rpi0": Toolchain("arm-unknown-linux-gnueabihf-darwin-x86_64", "0.6.1"),
-    "rpi3": Toolchain("arm-unknown-linux-gnueabihf-darwin-x86_64", "0.6.1"),
+    "bbb":  Toolchain("arm_unknown_linux_gnueabihf", "0.11.0"),
+    "rpi3": Toolchain("arm_unknown_linux_gnueabihf", "0.11.0"),
+    "rpi0": Toolchain("armv6_rpi_linux_gnueabi",     "0.11.0"),
   ]
 
   const Str name
   const Version version
+  const Str host
+  const Str qname
   const File dir
   const File gcc
 }

@@ -140,6 +140,9 @@ const class AsmCmd : Cmd
     // bail if already exists
     if (jreDir.exists) return
 
+// TODO: we need to check for latest version...  but does that go
+// away once we starting building our own JRE with OpenJDK 9?
+
     // find source tar image - first check local dir, and if not
     // found try to find the profile dir if one is defined
     find := |File dir->File?| {
