@@ -1,6 +1,8 @@
 # Changelog
 
-#### Version 1.8 (working)
+#### Version 1.9 (working)
+
+#### Version 1.8 (29-Nov-2017)
 * Change licence to Apache License 2.0
 * Official support for `rpi0`
 * Update systems to `1.2`
