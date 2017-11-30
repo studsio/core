@@ -73,6 +73,7 @@ or add additional targets by commenting/uncommenting them:
     # Uncomment to add target platform to build
     target.bbb=true
     #target.rpi3=true
+    #target.rpi0=true
 
 ## Install Embedded JRE
 
