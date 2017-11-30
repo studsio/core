@@ -23,8 +23,8 @@ The `asm` command is used to assemble firmware bundles from your application:
    `studs.props`. To assemble only a specific target(s) you can pass them on
    the command line:
 
-        $ fan studs asm        # build all enabled targets
-        $ fan studs asm rpi3   # build only rpi3 target
+       $ fan studs asm        # build all enabled targets
+       $ fan studs asm rpi3   # build only rpi3 target
 
   - `--clean` -- This option deletes intermediate and cached System and JRE
     files:

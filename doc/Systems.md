@@ -68,19 +68,19 @@ Linux VM. To get started with Vagrant:
   3. Modify the defaults in `system/Vagrantfile` for memory/cores to
      match your host:
 
-        # Change here for more or less memory/cores
-        VM_MEMORY=8192
-        VM_CORES=4
+         # Change here for more or less memory/cores
+         VM_MEMORY=8192
+         VM_CORES=4
 
    4. Provision your VM -- this will take a few minutes while it downloads and
       configures your new image:
 
-        $ cd system
-        $ vagrant up
+          $ cd system
+          $ vagrant up
 
    5. When provisioning is complete, log into your VM:
 
-        $ vagrant ssh
+          $ vagrant ssh
 
 Your host `studs` source directory will automatically be shared when you boot
 your Vagrant VM. It will be mounted under `~/studs` on Linux:
