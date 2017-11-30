@@ -9,16 +9,18 @@ improves portability for applications.
 
 ## Supported Systems
 
-[hg-bbb]:  https://https://bitbucket.org/studs/system-bbb
-[hg-rpi3]: https://https://bitbucket.org/studs/system-rpi3
+[hg-bbb]:  https://bitbucket.org/studs/system-bbb
+[hg-rpi3]: https://bitbucket.org/studs/system-rpi3
+[hg-rpi0]: https://bitbucket.org/studs/system-rpi0
 [vagrant]: https://www.vagrantup.com
 
 Studs includes several pre-built systems as part of the open source project:
 
-Name | Platform         | Repo
------|------------------|----------------
-bbb  | BeagleBone Black | [Repo][hg-bbb]
-rpi3 | Raspberry Pi 3   | [Repo][hg-rpi3]
+Name | Platform          | Repo
+-----|-------------------|----------------
+bbb  | BeagleBone Black  | [Repo][hg-bbb]
+rpi3 | Raspberry Pi 3    | [Repo][hg-rpi3]
+rpi0 | Raspberry Pi Zero | [Repo][hg-rpi0]
 
 ## Building a System
 
