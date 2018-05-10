@@ -1,0 +1,10 @@
+.DS_Store
+src/common/test/test
+src/common/test/test.tmp
+
+fan.props
+lib/
+src/studsTools/bins/
+test/
+temp/
+toolchains/
