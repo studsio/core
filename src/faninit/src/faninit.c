@@ -11,8 +11,6 @@
 
 #include "faninit.h"
 
-#define _GNU_SOURCE // for asprintf
-
 #include <dirent.h>
 #include <errno.h>
 #include <signal.h>

@@ -19,7 +19,7 @@ class Build : BuildScript
   Void compile()
   {
     ver  := config("buildVersion")   // TODO: just inject this automatically?
-    opts := ["-Wall", "-Wextra", "-O2", "-s", "-DPROGRAM_VERSION=$ver"]
+    opts := ["-Wall", "-Wextra", "-O2", "-s", "-D_GNU_SOURCE", "-DPROGRAM_VERSION=$ver"]
     Method m := Method.find("studsTools::Toolchain.compile")
     m.callOn(null, ["faninit", scriptDir + `src/`, [,], opts])
   }
