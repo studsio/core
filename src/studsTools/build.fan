@@ -39,4 +39,20 @@ class Build : BuildPod
                `scripts/`]
     docSrc = true
   }
+
+  @Target { help = "Compile to pod file and associated natives" }
+  override Void compile()
+  {
+    // stub out empty bins/ directory if needed
+    stubDir(scriptDir + `bins/bbb/`)
+    stubDir(scriptDir + `bins/rpi0/`)
+    stubDir(scriptDir + `bins/rpi3/`)
+
+    super.compile
+  }
+
+  private Void stubDir(File f)
+  {
+    if (!f.exists) f.create
+  }
 }
