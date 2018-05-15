@@ -174,7 +174,7 @@ const class AsmCmd : Cmd
     relDir := Env.cur.workDir + `studs/releases/`
     relDir.create
     tempClean
-    rootfs := tempDir + `rootfs-additions/`
+    rootfs := tempDir + `rootfs_overlay/`
     rootfs.create
 
     // release image name
@@ -267,8 +267,8 @@ const class AsmCmd : Cmd
     tzAlias.copyTo(rootfs + `app/fan/etc/sys/$tzAlias.name`)
     tzJs.copyTo(rootfs + `app/fan/etc/sys/$tzJs.name`)
 
-    // copy user rootfs-additions
-    userRootfs := Env.cur.workDir + `src/rootfs-additions/${sys.name}/`
+    // copy user rootfs_overlay
+    userRootfs := Env.cur.workDir + `src/rootfs_overlay/${sys.name}/`
     if (userRootfs.exists) Proc.run("cp -Rf $userRootfs.osPath/ $rootfs.osPath")
 
     // stage data
@@ -280,7 +280,7 @@ const class AsmCmd : Cmd
       "$sysDir.osPath/scripts/merge-squashfs " +
       "$sysDir.osPath/images/rootfs.squashfs " +
       "$tempDir.osPath/combined.squashfs " +
-      "$tempDir.osPath/rootfs-additions")
+      "$tempDir.osPath/rootfs_overlay")
 
     // assemble image
     info("  Assemble firmware image...")

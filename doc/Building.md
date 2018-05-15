@@ -66,22 +66,21 @@ may be changed in `studs.props`:
 
 Remember to run `asm --clean` after making any changes to `jre.profile`.
 
-## Rootfs Additions
+## Rootfs Overlay
 
 To add additional files into the root filesystem, create a folder named
-`rootfs-additions` under the `src` directory, with a subdirectory for each
-system target:
+`rootfs_overlay` under the `src` directory, with a subdirectory for each system
+target:
 
     myproj/
      └─ src/
-         └─ rootfs-additions/
+         └─ rootfs_overlay/
              ├─ bbb/
              └─ rpi3/
 
-Any files under the `rootfs-additions/xxx/` will be directly added to the
-default root filesystem for the respective system. If a file in
-`rootfs-additions` already exists in the base image, it will replace the base
-copy.
+Any files under the `rootfs_overlay/xxx/` will be directly added to the default
+root filesystem for the respective system. If a file in `rootfs_overlay`
+already exists in the base image, it will replace the base copy.
 
 ## Pod Whitelist/Blacklist
 
