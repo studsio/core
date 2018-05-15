@@ -14,12 +14,13 @@ using web
 const class Toolchain
 {
   ** Construct a new toolchain with name and version.
-  new make(Str name, Str ver)
+  new make(Str name, Str ver, Str githash)
   {
     this.name    = name
     this.version = Version(ver)
-    this.host    = Env.cur.os == "macosx" ? "darwin-x86_64" : "linux-x86_64"
-    this.qname   = "nerves_toolchain_${name}-${version}.${host}"
+    this.githash = githash
+    this.host    = Env.cur.os == "macosx" ? "darwin_x86_64" : "linux_x86_64"
+    this.qname   = "nerves_toolchain_${name}-${host}-${version}-${githash}"
     this.dir = Env.cur.workDir + `toolchains/$qname/`
     this.gcc = dir + ("bin/" + name.replace("_", "-") + "-gcc").toUri
   }
@@ -70,6 +71,9 @@ const class Toolchain
     proc.out = null
     if (proc.run.join != 0) abort("tar failed")
 
+    // rename target dir
+    (dir + `${qname}.tar.xz/`).rename(qname)
+
     // cleanup
     tar.delete
   }
@@ -115,13 +119,14 @@ const class Toolchain
 
   ** Map of toolchains to system targets.
   internal static const Str:Toolchain toolchains := [
-    "bbb":  Toolchain("arm_unknown_linux_gnueabihf", "0.11.0"),
-    "rpi3": Toolchain("arm_unknown_linux_gnueabihf", "0.11.0"),
-    "rpi0": Toolchain("armv6_rpi_linux_gnueabi",     "0.11.0"),
+    "bbb":  Toolchain("arm_unknown_linux_gnueabihf", "1.0.0", "400FC9B"),
+    "rpi3": Toolchain("arm_unknown_linux_gnueabihf", "1.0.0", "400FC9B"),
+    "rpi0": Toolchain("armv6_rpi_linux_gnueabi",     "1.0.0", "D5EC22E"),
   ]
 
   const Str name
   const Version version
+  const Str githash
   const Str host
   const Str qname
   const File dir

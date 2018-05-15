@@ -2,6 +2,7 @@
 
 #### Version 1.9 (working)
 * Rename `rootfs-additions` -> `rootfs_overlay`
+* Update toolchains to `1.0.0`
 
 #### Version 1.8 (29-Nov-2017)
 * Change licence to Apache License 2.0
