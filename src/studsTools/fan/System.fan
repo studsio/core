@@ -26,6 +26,8 @@ const class System
   {
     this.name = name
     this.version = defVer[name]
+    // TODO: host on BitBucket one or two more round till we
+    //       decide where; how to host binaries on GitHub
     this.uri = `https://bitbucket.org/studs/core/downloads/studs-system-${name}-${version}.tar.gz`
     // TODO FIXIT
     this.jre = name == "rpi0"
@@ -50,8 +52,8 @@ const class System
 
   ** Default system versions.
   private static const Str:Version defVer := [
-    "bbb":  Version("1.2"),
-    "rpi3": Version("1.2"),
-    "rpi0": Version("1.2"),
+    "bbb":  Version("1.3"),
+    "rpi3": Version("1.3"),
+    "rpi0": Version("1.3"),
   ]
 }
