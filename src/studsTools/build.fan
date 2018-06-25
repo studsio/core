@@ -33,7 +33,7 @@ class Build : BuildPod
       "studs @{buildVersion}"]
     srcDirs = [`fan/`, `fan/cmds/`]
     resDirs = [`res/`,
-               `bins/bbb/`,
+               `bins/bb/`,
                `bins/rpi0/`,
                `bins/rpi3/`,
                `scripts/`]
@@ -44,7 +44,7 @@ class Build : BuildPod
   override Void compile()
   {
     // stub out empty bins/ directory if needed
-    stubDir(scriptDir + `bins/bbb/`)
+    stubDir(scriptDir + `bins/bb/`)
     stubDir(scriptDir + `bins/rpi0/`)
     stubDir(scriptDir + `bins/rpi3/`)
 

@@ -9,18 +9,18 @@ improves portability for applications.
 
 ## Supported Systems
 
-[hg-bbb]:  https://bitbucket.org/studs/system-bbb
-[hg-rpi3]: https://bitbucket.org/studs/system-rpi3
-[hg-rpi0]: https://bitbucket.org/studs/system-rpi0
-[vagrant]: https://www.vagrantup.com
+[git-bb]:   https://github.com/studsio/system-bb
+[git-rpi3]: https://github.com/studsio/system-rpi3
+[git-rpi0]: https://github.com/studsio/system-rpi0
+[vagrant]:  https://www.vagrantup.com
 
 Studs includes several pre-built systems as part of the open source project:
 
 Name | Platform          | Repo
 -----|-------------------|----------------
-bbb  | BeagleBone Black  | [Repo][hg-bbb]
-rpi3 | Raspberry Pi 3    | [Repo][hg-rpi3]
-rpi0 | Raspberry Pi Zero | [Repo][hg-rpi0]
+bb   | BeagleBone        | [Repo][git-bb]
+rpi3 | Raspberry Pi 3    | [Repo][git-rpi3]
+rpi0 | Raspberry Pi Zero | [Repo][git-rpi0]
 
 ## Building a System
 
@@ -34,30 +34,22 @@ section will cover how to create your own systems.
 First step is to setup our build directory and pull the system sources we will
 be using. This step should be done on the host system (not in your VM).
 
-Grab `hg` if needed:
-
-    # macOS
-    $ brew install mercurial
-
-    # Debian/Ubuntu
-    $ sudo apt-get install mercurial
-
-Next pull the `base` and `bbb` system sources under a root `studs` directory:
+Pull the `base` and `bb` system sources under a root `studs` directory:
 
     $ mkdir studs
     $ cd studs
-    $ hg clone ssh://hg@bitbucket.org/studs/system
-    $ hg clone ssh://hg@bitbucket.org/studs/system-bbb
+    $ git clone git@github.com:studsio/system.git
+    $ git clone git@github.com:studsio/system-bb.git
 
 Afterwards your `studs` directory should look like this:
 
     studs
     ├── system
-    └── system-bbb
+    └── system-bb
 
 ### macOS Vagrant Setup
 
-[vf]: https://bitbucket.org/studs/system/src/tip/Vagrantfile
+[vf]: https://github.com/studsio/system/blob/master/Vagrantfile
 
 The simplest way to build on macOS is to use the supplied [Vagrantfile][vf],
 which will allow you to host and edit the source on your Mac, and build on a
@@ -88,7 +80,7 @@ Your host `studs` source directory will automatically be shared when you boot
 your Vagrant VM. It will be mounted under `~/studs` on Linux:
 
     vagrant@jessie:~$ ls ~/studs
-    system  system-bbb
+    system  system-bb
 
 Quick-start to using Vagrant:
 
@@ -111,7 +103,7 @@ On Linux, first install required dependencies:
 Once you have setup Linux and download system sources, setup your build
 configuration for the intended target:
 
-    $ system/setup.sh bbb
+    $ system/setup.sh bb
 
 The `setup.sh` script will:
 
@@ -124,12 +116,12 @@ Change to your output directory and run `make`:
     # macOS Vagrant -- we need to store our output directory outside of the
     # shared folder under Vagrant, since VirtualBox does not support creating
     # hardlinks in shared folders -- which Buildroot requires
-    $ cd /home/vagrant/output-bbb/
+    $ cd /home/vagrant/output-bb/
     $ make
 
     # Under native Linux the output direcotry will be created as a peer to
     # the system source directories
-    $ cd output-bbb
+    $ cd output-bb
     $ make
 
 This will take a while (15-20min). Once complete, the next step is to package
@@ -139,7 +131,7 @@ your system by running:
 
 This will create a new tarball under the target `releases` directory:
 
-    system-bbb/releases/studs-system-bbb-1.0.0.tar.gz
+    system-bb/releases/studs-system-bb-1.0.0.tar.gz
 
 
 

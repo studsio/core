@@ -1,4 +1,4 @@
-# Connecting PC to bbb/rpi3 serial console
+# Connecting PC to bb/rpi3 serial console
 
 How to connect your PC to the serial console on the BeagleBone Black or
 Raspberry Pi 3. The serial console will allow you to view stdout as well as
@@ -9,7 +9,7 @@ access the Linux shell.
 A 3.3V FTDI cable is needed to access the output. These cables are available
 from:
 
-**bbb -- 6pin FTDI cable:**
+**bb -- 6pin FTDI cable:**
 
  * [Adafruit](https://www.adafruit.com/products/70)
  * [Sparkfun](https://www.sparkfun.com/products/9717)
@@ -21,10 +21,10 @@ from:
 
 ## Connecting to Device
 
-The console is configured to output to `ttyS0` by default on both the bbb and
+The console is configured to output to `ttyS0` by default on both the bb and
 rpi3.
 
-### bbb
+### bb
 
 UART `ttyS0` is accessible by the 6 pin header labeled J1 on the Beaglebone
 Black. Pin 1 on the cable is the black wire and connects to pin 1 on the board,

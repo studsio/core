@@ -21,9 +21,9 @@ const class DeviceTree
     // TODO: this is not thread-safe -- fixup with proper actor!!!
     //
 
-    // only supported on bbb
+    // only supported on bb
     sysname := Sys.props["system.name"]
-    if (sysname != "bbb") throw Err("not yet supported on '$sysname'")
+    if (sysname != "bb") throw Err("not yet supported on '$sysname'")
 
     // TEMP: check if already enabled
     Str:Bool map := (mapRef.val as Str:Bool ?: Str:Bool[:]).rw

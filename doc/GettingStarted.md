@@ -65,13 +65,13 @@ to keep our application pods separate from our master Fantom lib:
         └── releases/        # compiled firmware images put here
 
 `studs.props` contains the configuration for your firmware, including the
-targets you wish to build for. The default target is `bbb`, but you may change
+targets you wish to build for. The default target is `bb`, but you may change
 or add additional targets by commenting/uncommenting them:
 
     # studs.props
 
     # Uncomment to add target platform to build
-    target.bbb=true
+    target.bb=true
     #target.rpi3=true
     #target.rpi0=true
 
@@ -116,7 +116,7 @@ the naming convention is `proj-version-target`:
     myproj/
     └── studs/
         └── releases/
-            └── myproj-1.0.0-bbb.fw
+            └── myproj-1.0.0-bb.fw
 
 See [Building](Building.html) for detailed documentation on the build process.
 

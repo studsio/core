@@ -33,7 +33,7 @@ specify how long to leave the LED `on` and `off`:
 
 [trigger]: ../api/studs/Led.html#trigger
 
-A trigger is a kernel based source of LED events. Examples for the `bbb` are
+A trigger is a kernel based source of LED events. Examples for the `bb` are
 `heartbeat`, `mmc0`, `cpu0`.  Consult your platform for available triggers and
 see the [Linux documentation][linux] for low level details.
 

@@ -8,7 +8,7 @@ proj.ver=1.0.0
 jre.profile=1
 
 # Uncomment to add target platform to build
-target.bbb=true
+target.bb=true
 #target.rpi3=true
 #target.rpi0=true
 

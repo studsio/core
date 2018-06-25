@@ -10,7 +10,7 @@ Most build and assembly configuration is specified in `studs.props`:
     jre.profile=1
 
     # Uncomment to add target platform to build
-    target.bbb=true
+    target.bb=true
     #target.rpi3=true
 
 ## Using `fan studs asm`
@@ -75,7 +75,7 @@ target:
     myproj/
      └─ src/
          └─ rootfs_overlay/
-             ├─ bbb/
+             ├─ bb/
              └─ rpi3/
 
 Any files under the `rootfs_overlay/xxx/` will be directly added to the default
