@@ -1,6 +1,8 @@
 # Changelog
 
-#### Version 1.9 (working)
+#### Version 1.10 (working)
+
+#### Version 1.9 (26-Jun-2018)
 * Rename `rootfs-additions` -> `rootfs_overlay`
 * Update toolchains to `1.0.0`
 * Convert `system-bbb` -> `system-bb` to reflect broader board support
