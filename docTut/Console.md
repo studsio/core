@@ -21,10 +21,9 @@ from:
 
 ## Connecting to Device
 
-The console is configured to output to `ttyS0` by default on both the bb and
-rpi3.
-
 ### bb
+
+The console is configured to output to `ttyS0` by default on the `bb`.
 
 UART `ttyS0` is accessible by the 6 pin header labeled J1 on the Beaglebone
 Black. Pin 1 on the cable is the black wire and connects to pin 1 on the board,
@@ -37,14 +36,14 @@ connected.
 
 ### rpi3
 
-By default, the rpi3 will use HDMI for the console. To override and use `ttyS0`
-you need to modify your `faninit.props` (make sure to run `fan studs asm`
-after):
+By default, the rpi3 will use HDMI for the console. To override and use
+`ttyAMA0` you need to modify your `faninit.props` (make sure to run `fan studs
+asm` after):
 
     # Override the controlling terminal (ttyAMA0, tty1, etc.)
-    tty.console=ttyS0
+    tty.console=ttyAMA0
 
-Then the cable can be connected to UART `ttyS0` via the GND, RXD, and TXD
+Then the cable can be connected to UART `ttyAMA0` via the GND, RXD, and TXD
 header pins:
 
 ![Wiring Diagram](console-rpi3.png)
