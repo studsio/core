@@ -85,7 +85,7 @@ Download the appropriate embedded JDK for your target platform:
 
 Target            | eJDK
 ------------------|-------------------------------------------------------------
-BeagleBone Black  | [ejdk-8u###-linux-armv6-vfp-hflt.tar.gz](http://www.oracle.com/technetwork/java/embedded/embedded-se/downloads/javase-embedded-downloads-2209751.html)
+BeagleBone        | [ejdk-8u###-linux-armv6-vfp-hflt.tar.gz](http://www.oracle.com/technetwork/java/embedded/embedded-se/downloads/javase-embedded-downloads-2209751.html)
 Raspberry Pi 3    | [ejdk-8u###-linux-armv6-vfp-hflt.tar.gz](http://www.oracle.com/technetwork/java/embedded/embedded-se/downloads/javase-embedded-downloads-2209751.html)
 Raspberry Pi Zero | [ejdk-8u###-linux-arm-sflt.tar.gz](http://www.oracle.com/technetwork/java/embedded/embedded-se/downloads/javase-embedded-downloads-2209751.html)
 

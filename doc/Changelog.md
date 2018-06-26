@@ -1,6 +1,8 @@
 # Changelog
 
 #### Version 1.10 (working)
+* Update AsmCmd support to display system version in output
+* Update AsmCmd to download system images from GitHub
 
 #### Version 1.9 (26-Jun-2018)
 * Rename `rootfs-additions` -> `rootfs_overlay`

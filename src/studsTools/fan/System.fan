@@ -26,9 +26,7 @@ const class System
   {
     this.name = name
     this.version = defVer[name]
-    // TODO: host on BitBucket one or two more round till we
-    //       decide where; how to host binaries on GitHub
-    this.uri = `https://bitbucket.org/studs/core/downloads/studs-system-${name}-${version}.tar.gz`
+    this.uri = `https://github.com/studsio/system-${name}/releases/download/${version}/studs-system-${name}-${version}.tar.gz`
     // TODO FIXIT
     this.jre = name == "rpi0"
       ? "linux-arm-sflt"
