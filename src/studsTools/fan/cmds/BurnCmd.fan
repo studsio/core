@@ -28,6 +28,9 @@ const class BurnCmd : Cmd
     relDir := Env.cur.workDir + `studs/releases/`
     rels   := relDir.listFiles.findAll |f| { f.ext == "fw" }
 
+    // sort by filename
+    rels.sort |a,b| { a.name <=> b.name }
+
     // bail if no releases found
     if (rels.isEmpty) abort("burn: no releases found")
 
