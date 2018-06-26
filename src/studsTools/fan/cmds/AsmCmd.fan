@@ -63,7 +63,7 @@ const class AsmCmd : Cmd
       // build each target
       systems.each |sys|
       {
-        info("Assemble [$sys.name]")
+        info("Assemble [$sys]")
         installSystem(sys)
         buildJre(sys)
         assemble(sys)
@@ -104,7 +104,7 @@ const class AsmCmd : Cmd
     if (sys.uri.scheme == "http" || sys.uri.scheme == "https")
     {
       // download tar
-      Proc.download("  Downloading $sys.name system", sys.uri, tar)
+      Proc.download("  Downloading $sys system", sys.uri, tar)
     }
     else
     {
@@ -114,7 +114,7 @@ const class AsmCmd : Cmd
     }
 
     // untar
-    info("  Install $sys.name system...")
+    info("  Install $sys system...")
     Proc.run("tar xvf $tar.osPath -C $baseDir.osPath")
 
     // cleanup (if downloaded)
