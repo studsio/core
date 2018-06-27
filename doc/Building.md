@@ -88,9 +88,10 @@ The `AsmCmd` will attempt to exclude certain pods that generally do not make
 sense to install in an embedded environment, in order to reduce the release
 firmware size.  The default blacklist is:
 
-    studsTest, studsTools, docDomkit, docFanr, docIntro, docLang,
-    docTools, icons, gfx, fwt, webfwt, flux, fluxTest, syntax, testCompiler,
-    testDomkit, testJava, testNative, testSys
+    studsTest, studsTools, build, compiler, compilerDoc, compilerJava,
+    compilerJs, docDomkit, docFanr, docIntro, docLang, docTools, icons,
+    gfx, fwt, webfwt, flux, fluxTest, syntax, email, fandoc, fanr, fansh,
+    obix, sql, testCompiler, testDomkit, testJava, testNative, testSys
 
 To add additional pods to the exclusion list, configure the `pod.blacklist` in
 your `studs.props`:

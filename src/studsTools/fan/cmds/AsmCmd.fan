@@ -304,19 +304,30 @@ const class AsmCmd : Cmd
   static const Str[] podDefBlacklist := [
     "studsTest",
     "studsTools",
-    "docDomkit",
+    "build",          // build tools
+    "compiler",
+    "compilerDoc",
+    "compilerJava",
+    "compilerJs",
+    "docDomkit",      // docs
     "docFanr",
     "docIntro",
     "docLang",
     "docTools",
-    "icons",
+    "icons",          // fwt and flux
     "gfx",
     "fwt",
     "webfwt",
     "flux",
     "fluxTest",
     "syntax",
-    "testCompiler",
+    "email",          // misc
+    "fandoc",
+    "fanr",
+    "fansh",
+    "obix",
+    "sql",
+    "testCompiler",   // unit tests
     "testDomkit",
     "testJava",
     "testNative",

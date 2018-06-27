@@ -4,6 +4,10 @@
 * Update AsmCmd support to display system version in output
 * Update AsmCmd to download system images from GitHub
 * Fix BurnCmd to sort release filenames
+* Update default pod blacklist to be stricter:
+   - Saves 1.37MB bytes off release fw size
+   - Added to blacklist: `build`, `compiler`, `compilerDoc`, `compilerJava`,
+     `compilerJs`, `email`, `fandoc`, `fanr`, `fansh`, `obix`, `sql`
 
 #### Version 1.9 (26-Jun-2018)
 * Rename `rootfs-additions` -> `rootfs_overlay`
