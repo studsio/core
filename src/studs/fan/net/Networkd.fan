@@ -34,7 +34,7 @@ const class Networkd : Daemon
   ** List available network interfaces for this device. Blocks
   ** until 'timeout' elapses waiting for results.  If 'timeout'
   ** is 'null' blocks forever.
-  Str:Obj list(Str name, Duration? timeout := 10sec)
+  Str:Obj list(Duration? timeout := 10sec)
   {
     send(DaemonMsg { it.op="list" }).get(timeout)
   }
@@ -194,6 +194,13 @@ const class Networkd : Daemon
       "--foreground",
       "--script", "/usr/bin/udhcpc.script"
     ]
+
+    // TODO: for now just call into busybox
+    // make sure device is up and addr is flushed
+    up    := ["/sbin/ip", "link", "set", name, "up"]
+    flush := ["/sbin/ip", "addr", "flush", "dev", name]
+    Proc { it.cmd=up    }.run.waitFor.okOrThrow
+    Proc { it.cmd=flush }.run.waitFor.okOrThrow
 
     // start daemon
     p := Proc { it.cmd=dhcp; it.redirectErr=true }.run
