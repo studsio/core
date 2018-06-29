@@ -137,12 +137,14 @@ class Sys
   ** Reboot this device.
   static Void reboot()
   {
+    // TODO: fix this to signal to faninit?
     Proc { it.cmd=["/sbin/reboot"] }.run.waitFor.okOrThrow
   }
 
   ** Shutdown this device.
   static Void shutdown()
   {
+    // TODO: fix this to signal to faninit?
     Proc { it.cmd=["/sbin/poweroff"] }.run.waitFor.okOrThrow
   }
 }
