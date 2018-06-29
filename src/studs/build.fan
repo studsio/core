@@ -37,6 +37,7 @@ class Build : BuildPod
       `fan/`,
       `fan/daemon/`,
       `fan/dt/`,
+      `fan/http/`,
       `fan/io/gpio/`,
       `fan/io/i2c/`,
       `fan/io/led/`,
