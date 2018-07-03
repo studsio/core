@@ -10,6 +10,55 @@ using concurrent
 using web
 using wisp
 
+**************************************************************************
+** HttpdConfig
+**************************************************************************
+
+**
+** Configuration settings for `Httpd` daemon.
+**
+const class HttpConfig
+{
+  ** It-block constructor.
+  new make(|This|? f := null)
+  {
+    if (f != null) f(this)
+
+    // sanity checks
+    if (!otaUpdateStageDir.isDir) throw ArgErr("otaUpdateStageDir missing trailing slash")
+  }
+
+  ** HTTP port to listen for requests.
+  // TODO: force to only allow TLS
+  const Int port := 80
+
+  **
+  ** URI to publish for updating firmware over-the-air, or
+  ** 'null' to disable OTA firmware updates.
+  **
+  ** See [Updating Firmware]`../../doc/UpdatingFirmware.html`
+  ** chapter for details on how firwmare is updated.
+  **
+  const Uri? otaUpdateUri := `/update-fw`
+
+  ** Directory to temporarily stage firmware before applying.
+  ** The downloaded image will automatically be deleted after
+  ** the update completes (or fails).
+  const File otaUpdateStageDir := File(`/data/update-fw-stage/`)
+
+  ** Root WebMod used to service requests.
+  // TODO: what is behvior when this is not specified?
+  //       ie: just want OTA but nothing else?
+  const WebMod? root
+
+  ** Max number of threads to use for concurrent web request processing.
+  @NoDoc const Int maxThreads := 25
+}
+
+**************************************************************************
+** Httpd
+**************************************************************************
+
 **
 ** Http server support in Studs is provided by the Httpd daemon.
 **
@@ -17,10 +66,9 @@ using wisp
 **
 const class Httpd : Daemon
 {
-  @NoDoc new make() : super(null)
+  @NoDoc new make(HttpConfig config := HttpConfig()) : super(null)
   {
-    // allow only one instance per VM
-    if (!curRef.compareAndSet(null, this)) throw Err("Httpd already exists")
+    this.config = config
   }
 
   ** Get the Httpd instance for this VM.  If an instance is
@@ -33,24 +81,8 @@ const class Httpd : Daemon
 
   private static const AtomicRef curRef := AtomicRef(null)
 
-  ** HTTP port to listen for requests.
-  // TODO: force to only allow TLS
-  const Int port := 80
-
-  ** URI to publish for updating firmware over-the-air, or
-  ** 'null' to disable OTA firmware updates.
-  const Uri? otaUpdateUri := `/update-fw`
-
-  ** Directory to temporarily stage firmware before applying.
-  ** The downloaded image will automatically be deleted after
-  ** the update completes (or fails).
-  const File otaUpdateStageDir := File(`/data/update-fw-stage/`)
-
-  ** Root WebMod used to servce requests.
-  const WebMod? root
-
-  ** Max number of threads to use for concurrent web request processing.
-  @NoDoc const Int maxThreads := 25
+  ** HTTP server configuration.
+  const HttpConfig config
 
 //////////////////////////////////////////////////////////////////////////
 // Actor local
@@ -60,8 +92,8 @@ const class Httpd : Daemon
   {
     wisp := WispService
     {
-      it.httpPort = this.port  // TODO: https only
-      it.maxThreads = this.maxThreads
+      it.httpPort = this.config.port  // TODO: https only
+      it.maxThreads = this.config.maxThreads
       it.root = HttpMod(this)
     }
 

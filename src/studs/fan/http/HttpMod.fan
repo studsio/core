@@ -27,14 +27,14 @@ internal const class HttpMod : WebMod
     try
     {
       // first check for OTA
-      if (req.uri == httpd.otaUpdateUri) return onOta
+      if (req.uri == httpd.config.otaUpdateUri) return onOta
 
       // next check if root is configured
-      if (httpd.root == null) return onNoRoot
+      if (httpd.config.root == null) return onNoRoot
 
       // delegate to root
-      req.mod = httpd.root
-      httpd.root.onService
+      req.mod = httpd.config.root
+      httpd.config.root.onService
     }
     catch (Err err) { onErr(err) }
   }
@@ -42,20 +42,27 @@ internal const class HttpMod : WebMod
   ** Handle an OTA firmware upgrade request.
   private Void onOta()
   {
+    // only POST is allowed
+    if (req.method != "POST") return res.sendErr(405)
+
+    // TODO: verify content type
+    // "Content-Type: application/x-firmware"
+
+    // TODO: check certs/keys/something yadda yadda
+
+    // pipe to stage file
+    fw  := httpd.config.otaUpdateStageDir + `update-${DateTime.nowTicks}.fw`
+    out := fw.out
+    try req.in.pipe(out)
+    finally out.sync.close
+
+    // send empty 200 response to terminate request
     res.statusCode = 200
     res.headers["Content-Type"] = "text/html; charset=UTF-8"
+    res.out.printLine("").flush
 
-    out := res.out
-    out.docType
-    out.html
-    out.head
-      .title.esc("OTA Update").titleEnd
-      .headEnd
-    out.body
-      .h1.esc("OTA Update").h1End
-      .p.esc("Coming soon :)").pEnd
-      .bodyEnd
-    out.htmlEnd
+    // apply firmware
+    Sys.updateFirmware(fw)
   }
 
   ** Handle an error condition during a request.
