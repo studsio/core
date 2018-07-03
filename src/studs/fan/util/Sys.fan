@@ -131,6 +131,24 @@ class Sys
   }
 
 //////////////////////////////////////////////////////////////////////////
+// Firmware
+//////////////////////////////////////////////////////////////////////////
+
+  **
+  ** Update the firmware running on this device with the image
+  ** contained in the given 'fw' file.  This  method implicity
+  ** reboots device if update is successful.
+  **
+  ** See [Updating Firmware]`../../doc/UpdatingFirmware.html`
+  ** chapter for details on how firwmare is updated.
+  **
+  static Void updateFirmware(File fw)
+  {
+    // TODO
+    echo("TODO: Sys.updateFirmware: $fw")
+  }
+
+//////////////////////////////////////////////////////////////////////////
 // Reboot/shutdown
 //////////////////////////////////////////////////////////////////////////
 
