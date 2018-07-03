@@ -110,24 +110,26 @@ class Sys
     umountCmd := ["/bin/umount", "/data"]
     mountCmd  := ["/bin/mount", "-t", fs, dev, "/data"]
     mkfsCmd   := ["/sbin/mkfs.${fs}", "-F", dev]
+    mountMsg  := "/data partition mounted as rw"
 
     // first attempt
     Proc { it.cmd=umountCmd }.run.waitFor
     Proc { it.cmd=mountCmd }.run.waitFor
-    if (isDataMounted) return
+    if (isDataMounted) { log.debug(mountMsg); return }
 
     if (reformat)
     {
       // format
+      log.debug("Formatting /data partition...")
       Proc { it.cmd=umountCmd }.run.waitFor
       Proc { it.cmd=mkfsCmd }.run.waitFor
 
       // second attempt
       Proc { it.cmd=mountCmd }.run.waitFor
-      if (isDataMounted) return
+      if (isDataMounted) { log.debug(mountMsg); return }
     }
 
-    throw IOErr("Data partition could not be mounted")
+    throw IOErr("/data partition could not be mounted")
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -165,4 +167,11 @@ class Sys
     // TODO: fix this to signal to faninit?
     Proc { it.cmd=["/sbin/poweroff"] }.run.waitFor.okOrThrow
   }
+
+//////////////////////////////////////////////////////////////////////////
+// Log
+//////////////////////////////////////////////////////////////////////////
+
+  ** Internal sys log instance.
+  private static const Log log := Log("sys", false) { it.level=LogLevel.debug }
 }
