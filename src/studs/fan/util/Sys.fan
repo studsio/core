@@ -93,11 +93,13 @@ class Sys
     return out.splitLines.any |s| { s.startsWith("${dev} on /data") }
   }
 
+  **
   ** Mount the writable data partition for this device under the '/data'
   ** directory.  If the partition fails to mount and 'reformat=true', then
   ** the partition is automatically reformatted, and mount attempted again.
   ** Throws 'IOErr' if data partition could not be mounted.  If partition
   ** is already mounted, this method does nothing.
+  **
   static Void mountData(Bool reformat := true)
   {
     // read fwprops to find partition info
@@ -109,8 +111,8 @@ class Sys
 
     umountCmd := ["/bin/umount", "/data"]
     mountCmd  := ["/bin/mount", "-t", fs, dev, "/data"]
-    mkfsCmd   := ["/sbin/mkfs.${fs}", "-F", dev]
-    mountMsg  := "/data partition mounted as rw"
+    mkfsCmd   := ["/sbin/mkfs.${fs}", "-U", dataPartUuid, "-F", dev]
+    mountMsg  := "Data partition mounted as rw"
 
     // first attempt
     Proc { it.cmd=umountCmd }.run.waitFor
@@ -120,7 +122,7 @@ class Sys
     if (reformat)
     {
       // format
-      log.debug("Formatting /data partition...")
+      log.debug("Formatting data partition...")
       Proc { it.cmd=umountCmd }.run.waitFor
       Proc { it.cmd=mkfsCmd }.run.waitFor
 
@@ -129,8 +131,22 @@ class Sys
       if (isDataMounted) { log.debug(mountMsg); return }
     }
 
-    throw IOErr("/data partition could not be mounted")
+    throw IOErr("Data partition could not be mounted")
   }
+
+  **
+  ** Use a fixed UUID for data partition. This has two purposes:
+  **
+  **   1. mkfs.ext4 calls generate_uuid which calls getrandom(). That
+  **      call can block indefinitely until the urandom pool has been
+  **      initialized. This will delay startup for a long time if the
+  **      data partition needs to be reformated. (mkfs.ext4 has two
+  **      calls to getrandom() so this only fixes one of them.)
+  **
+  **   2. Applications that would prefer to look up a partition by
+  **      UUID can do so.
+  **
+  private static const Str dataPartUuid := "3041e38d-615b-48d4-affb-a7787b5c4c39"
 
 //////////////////////////////////////////////////////////////////////////
 // Firmware
