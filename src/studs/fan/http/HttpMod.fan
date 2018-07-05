@@ -42,19 +42,24 @@ internal const class HttpMod : WebMod
   ** Handle an OTA firmware upgrade request.
   private Void onOta()
   {
-    // only POST is allowed
+    // verify POST method
     if (req.method != "POST") return res.sendErr(405)
 
-    // TODO: verify content type
-    // "Content-Type: application/x-firmware"
+    // verify content type
+    ct := req.headers["Content-Type"]
+    if (ct != "application/x-firmware") throw IOErr("Invalid Content-Type: '$ct'")
 
     // TODO: check certs/keys/something yadda yadda
+
+    // verify stageDir exists and that /data partition is mounted
+    try { httpd.config.otaUpdateStageDir.create }
+    catch (Err err) { throw IOErr("otaUpdateStageDir could not be created; See Sys.mountData", err) }
 
     // pipe to stage file
     fw  := httpd.config.otaUpdateStageDir + `update-${DateTime.nowTicks}.fw`
     out := fw.out
-    try req.in.pipe(out)
-    finally out.sync.close
+    try { req.in.pipe(out) }
+    finally { out.sync.close }
 
     // send empty 200 response to terminate request
     res.statusCode = 200
