@@ -162,8 +162,28 @@ class Sys
   **
   static Void updateFirmware(File fw)
   {
-    // TODO
-    echo("TODO: Sys.updateFirmware: $fw")
+    try
+    {
+      // TODO: make this thread-safe
+
+      log.debug("Updating firmware...")
+
+      dev  := "/dev/mmcblk0"
+      task := "upgrade"
+      fwup := ["/usr/bin/fwup", "-aFU", "-d", dev, "-t", task, "-i", fw.osPath]
+      // TODO: need to sink our stdout here so we can parse our progress
+      //       updates and error/ok return codes; see Networkd.dhcp sink
+      //Proc { it.cmd=fwup }.run.waitFor.okOrThrow
+      Process { it.command=fwup }.run.join
+
+      // reboot to pick up new firmware
+      log.debug("Updating firmware complete")
+      Sys.reboot
+    }
+    catch (Err err)
+    {
+      throw IOErr("Update firmware failed", err)
+    }
   }
 
 //////////////////////////////////////////////////////////////////////////
@@ -174,6 +194,7 @@ class Sys
   static Void reboot()
   {
     // TODO: fix this to signal to faninit?
+    log.debug("Rebooting device...")
     Proc { it.cmd=["/sbin/reboot"] }.run.waitFor.okOrThrow
   }
 
@@ -181,6 +202,7 @@ class Sys
   static Void shutdown()
   {
     // TODO: fix this to signal to faninit?
+    log.debug("Shutting down device...")
     Proc { it.cmd=["/sbin/poweroff"] }.run.waitFor.okOrThrow
   }
 

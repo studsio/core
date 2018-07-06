@@ -42,8 +42,8 @@ internal const class HttpMod : WebMod
   ** Handle an OTA firmware upgrade request.
   private Void onOta()
   {
-    // verify POST method
-    if (req.method != "POST") return res.sendErr(405)
+    // verify PUT method
+    if (req.method != "PUT") return res.sendErr(405)
 
     // verify content type
     ct := req.headers["Content-Type"]
@@ -55,16 +55,20 @@ internal const class HttpMod : WebMod
     try { httpd.config.otaUpdateStageDir.create }
     catch (Err err) { throw IOErr("otaUpdateStageDir could not be created; See Sys.mountData", err) }
 
+    // TODO: fix to stream WebReq directly to `fwup` Proc instance
+
     // pipe to stage file
     fw  := httpd.config.otaUpdateStageDir + `update-${DateTime.nowTicks}.fw`
     out := fw.out
     try { req.in.pipe(out) }
     finally { out.sync.close }
 
-    // send empty 200 response to terminate request
+    // send 200 response and close to terminate request
     res.statusCode = 200
     res.headers["Content-Type"] = "text/html; charset=UTF-8"
-    res.out.printLine("").flush
+    res.out
+      .printLine("Firmware upload successful. Now installing and rebooting device to apply.")
+      .flush.close
 
     // apply firmware
     Sys.updateFirmware(fw)
