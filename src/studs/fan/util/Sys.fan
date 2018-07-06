@@ -174,7 +174,8 @@ class Sys
       // TODO: need to sink our stdout here so we can parse our progress
       //       updates and error/ok return codes; see Networkd.dhcp sink
       //Proc { it.cmd=fwup }.run.waitFor.okOrThrow
-      Process { it.command=fwup }.run.join
+      ret  := Process { it.command=fwup }.run.join
+      if (ret != 0) throw Err("fwup non-zero exit code")
 
       // reboot to pick up new firmware
       log.debug("Updating firmware complete")

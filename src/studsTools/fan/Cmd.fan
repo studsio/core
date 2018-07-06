@@ -102,4 +102,35 @@ abstract const class Cmd
   {
     Cmd.get("help")->showDetails(name)
   }
+
+  ** Prompt to select a current release. Returns selected release fw file.
+  @NoDoc File? promptRelease()
+  {
+    relDir := Env.cur.workDir + `studs/releases/`
+    rels   := relDir.listFiles.findAll |f| { f.ext == "fw" }
+
+    // sort by filename
+    rels.sort |a,b| { a.name <=> b.name }
+
+    // bail if no releases found
+    if (rels.isEmpty) abort("no releases found")
+
+    // prompt for release selection
+    File? rel
+    if (rels.size == 1) rel = rels.first
+    else
+    {
+      echo("Available releases:")
+      w := rels.map |f| { f.name.size }.max
+      rels.each |f,i|
+      {
+        size := f.size.toLocale("B")
+        echo(" [${i+1}] " + f.name.padr(w) + "  ($size)")
+      }
+      sel := promptChoice("Which release do you want to burn?", 1..rels.size)
+      rel = rels[sel-1]
+    }
+
+    return rel
+  }
 }
