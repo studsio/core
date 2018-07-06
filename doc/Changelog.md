@@ -2,8 +2,11 @@
 
 #### Version 1.10 (working)
 * Add new Httpd daemon for web server support
-* Add OTA firmware update support
-* Update AsmCmd support to display system version in output
+* Add OTA firmware update support in Httpd
+* Add `Sys.updateFirmware` method
+* Add `PushCmd` to simplify pushing firmware from CLI
+* Update `Sys` to log events (mount partition, updateFirmware, reboot, etc)
+* Update AsmCmd to display system version in output
 * Update AsmCmd to download system images from GitHub
 * Update default pod blacklist to be stricter:
    - Saves 1.37MB bytes off release fw size
@@ -16,6 +19,7 @@
 * Rename `rootfs-additions` -> `rootfs_overlay`
 * Update toolchains to `1.0.0`
 * Convert `system-bbb` -> `system-bb` to reflect broader board support
+* Update systems to `1.3`
 
 #### Version 1.8 (29-Nov-2017)
 * Change licence to Apache License 2.0
