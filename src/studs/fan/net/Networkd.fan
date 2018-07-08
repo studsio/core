@@ -86,7 +86,7 @@ const class Networkd : Daemon
     if (p == null) return
 
     // drain stdout
-    while (p.in.avail  > 0)
+    while (p.in.avail > 0)
     {
       // TODO
       out := p.in.readLine

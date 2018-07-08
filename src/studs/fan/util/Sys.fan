@@ -157,35 +157,53 @@ class Sys
   ** contained in the given 'fw' file.  This  method implicity
   ** reboots device if update is successful.
   **
+  ** Use the optional 'onProgress' callback to recieve update
+  ** progress, where 'prog' will be a number betwwen 0..100
+  ** indicating the percentage complete.
+  **
   ** See [Updating Firmware]`../../doc/UpdatingFirmware.html`
   ** chapter for details on how firwmare is updated.
   **
-  static Void updateFirmware(File fw)
+  static Void updateFirmware(File fw, |Int prog|? onProgress := null)
   {
     try
     {
-      // TODO: make this thread-safe
+      // verify and set lock
+      if (!updateLock.compareAndSet(false, true)) throw Err("Update already in progress")
 
+      // spawn `fwup` process and block reading output
       log.debug("Updating firmware...")
-
       dev  := "/dev/mmcblk0"
       task := "upgrade"
       fwup := ["/usr/bin/fwup", "-aFU", "-d", dev, "-t", task, "-i", fw.osPath]
-      // TODO: need to sink our stdout here so we can parse our progress
-      //       updates and error/ok return codes; see Networkd.dhcp sink
-      //Proc { it.cmd=fwup }.run.waitFor.okOrThrow
-      ret  := Process { it.command=fwup }.run.join
-      if (ret != 0) throw Err("fwup non-zero exit code")
+      proc := Proc { it.cmd=fwup }.run
+      while (true)
+      {
+        // read next frame
+        len  := proc.in.readU4
+        type := proc.in.readChars(2)
+        data := proc.in.readBufFully(null, len-2)
+
+        // process frame
+        switch (type)
+        {
+          case "OK": break
+          case "ER": throw Err("Error $data.readU2: $data.readAllStr")
+          case "WN": log.debug("Warn $data.readU2: $data.readAllStr")
+          case "PR": onProgress?.call(data.readU2)
+          default:   log.debug("Unknown frame type '$type'")
+        }
+      }
 
       // reboot to pick up new firmware
       log.debug("Updating firmware complete")
       Sys.reboot
     }
-    catch (Err err)
-    {
-      throw IOErr("Update firmware failed", err)
-    }
+    catch (Err err) { throw IOErr("Update firmware failed", err) }
+    finally { updateLock.val = false }
   }
+
+  private static const AtomicBool updateLock := AtomicBool(false)
 
 //////////////////////////////////////////////////////////////////////////
 // Reboot/shutdown
