@@ -154,17 +154,18 @@ class Sys
 
   **
   ** Update the firmware running on this device with the image
-  ** contained in the given 'fw' file.  This  method implicity
-  ** reboots device if update is successful.
+  ** streamed from the InStream 'in'.  This method does *not*
+  ** reboot device. A reboot must be issued for update to take
+  ** effect.
   **
   ** Use the optional 'onProgress' callback to recieve update
-  ** progress, where 'prog' will be a number betwwen 0..100
+  ** progress, where 'prog' will be a number between 0..100
   ** indicating the percentage complete.
   **
   ** See [Updating Firmware]`../../doc/UpdatingFirmware.html`
   ** chapter for details on how firwmare is updated.
   **
-  static Void updateFirmware(File fw, |Int prog|? onProgress := null)
+  static Void updateFirmware(InStream in, |Int prog|? onProgress := null)
   {
     try
     {
@@ -173,13 +174,40 @@ class Sys
 
       // spawn `fwup` process and block reading output
       log.debug("Updating firmware...")
-      dev  := "/dev/mmcblk0"
-      task := "upgrade"
-      fwup := ["/usr/bin/fwup", "-aFU", "-d", dev, "-t", task, "-i", fw.osPath]
-      proc := Proc { it.cmd=fwup }.run
+      buf   := Buf(4096)
+      dev   := "/dev/mmcblk0"
+      task  := "upgrade"
+      fwup  := ["/usr/bin/fwup", "-aFU", "-d", dev, "-t", task, "-i", "-"]
+      proc  := Proc { it.cmd=fwup }.run
+      ticks := Duration.nowTicks
+      timeout := 120sec.ticks
+
       while (true)
       {
+        // check timeout
+        if (Duration.nowTicks-ticks > timeout) throw IOErr("Update timed out")
+
+        // process input
+        r := in.readBuf(buf.clear, buf.capacity)
+        if (r == null)
+        {
+          // write empty frame to indicate complete
+          ticks = Duration.nowTicks
+          proc.out.writeI4(0)
+        }
+        else if (r > 0)
+        {
+          // stream next frame
+          ticks = Duration.nowTicks
+          proc.out.writeI4(r)
+          proc.out.writeBuf(buf.flip, r)
+        }
+
+        // skip output if none avail
+        if (proc.in.avail == 0) continue
+
         // read next frame
+        ticks = Duration.nowTicks
         len  := proc.in.readU4
         type := proc.in.readChars(2)
         data := proc.in.readBufFully(null, len-2)
@@ -195,9 +223,8 @@ class Sys
         }
       }
 
-      // reboot to pick up new firmware
-      log.debug("Updating firmware complete")
-      Sys.reboot
+      // log update is complete
+      log.debug("Updating firmware complete. Reboot to take effect.")
     }
     catch (Err err) { throw IOErr("Update firmware failed", err) }
     finally { updateLock.val = false }
@@ -212,6 +239,10 @@ class Sys
   ** Reboot this device.
   static Void reboot()
   {
+    // TODO: see this from time-to-time; seems like a no-op if we move
+    //       to faninit signal design
+    // sys::IOErr: Proc terminated abnormally with exit code 143
+
     // TODO: fix this to signal to faninit?
     log.debug("Rebooting device...")
     Proc { it.cmd=["/sbin/reboot"] }.run.waitFor.okOrThrow

@@ -23,9 +23,6 @@ const class HttpConfig
   new make(|This|? f := null)
   {
     if (f != null) f(this)
-
-    // sanity checks
-    if (!otaUpdateStageDir.isDir) throw ArgErr("otaUpdateStageDir missing trailing slash")
   }
 
   ** HTTP port to listen for requests.
@@ -40,11 +37,6 @@ const class HttpConfig
   ** chapter for details on how firwmare is updated.
   **
   const Uri? otaUpdateUri := `/update-fw`
-
-  ** Directory to temporarily stage firmware before applying.
-  ** The downloaded image will automatically be deleted after
-  ** the update completes (or fails).
-  const File otaUpdateStageDir := File(`/data/update-fw-stage/`)
 
   ** Root WebMod used to service requests.
   // TODO: what is behvior when this is not specified?

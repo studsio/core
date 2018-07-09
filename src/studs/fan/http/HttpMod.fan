@@ -24,11 +24,11 @@ internal const class HttpMod : WebMod
   ** Service request.
   override Void onService()
   {
+    // first check for OTA
+    if (req.uri == httpd.config.otaUpdateUri) return onOta
+
     try
     {
-      // first check for OTA
-      if (req.uri == httpd.config.otaUpdateUri) return onOta
-
       // next check if root is configured
       if (httpd.config.root == null) return onNoRoot
 
@@ -42,36 +42,46 @@ internal const class HttpMod : WebMod
   ** Handle an OTA firmware upgrade request.
   private Void onOta()
   {
-    // verify PUT method
-    if (req.method != "PUT") return res.sendErr(405)
+    // TODO: improve how we handle errors during the request stream
+    //       so we can return a meaningful response to client
 
-    // verify content type
-    ct := req.headers["Content-Type"]
-    if (ct != "application/x-firmware") throw IOErr("Invalid Content-Type: '$ct'")
+    // stream update to alternate root partition
+    try
+    {
+      // verify PUT method
+      if (req.method != "PUT") throw IOErr("Invalid method '$req.method'. Use PUT")
 
-    // TODO: check certs/keys/something yadda yadda
+      // verify content type
+      ct := req.headers["Content-Type"]
+      if (ct != "application/x-firmware") throw IOErr("Invalid Content-Type: '$ct'")
 
-    // verify stageDir exists and that /data partition is mounted
-    try { httpd.config.otaUpdateStageDir.create }
-    catch (Err err) { throw IOErr("otaUpdateStageDir could not be created; See Sys.mountData", err) }
+      // TODO: check certs/keys/something yadda yadda
 
-    // TODO: fix to stream WebReq directly to `fwup` Proc instance
+      // install firmware
+      Sys.updateFirmware(req.in)
+    }
+    catch (Err err)
+    {
+      // log error with stack trace locally
+      httpd.log.debug("Firmware update failed", err)
 
-    // pipe to stage file
-    fw  := httpd.config.otaUpdateStageDir + `update-${DateTime.nowTicks}.fw`
-    out := fw.out
-    try { req.in.pipe(out) }
-    finally { out.sync.close }
+      // send machine readable err response; never send stack
+      res.statusCode = 500
+      res.headers["Content-Type"] = "text/plain; charset=UTF-8"
+      res.out.printLine(err.msg).flush.close
+
+      return
+    }
 
     // send 200 response and close to terminate request
     res.statusCode = 200
-    res.headers["Content-Type"] = "text/html; charset=UTF-8"
+    res.headers["Content-Type"] = "text/plain; charset=UTF-8"
     res.out
-      .printLine("Firmware upload successful. Now installing and rebooting device to apply.")
+      .printLine("Firmware upload successful. Now rebooting device to apply.")
       .flush.close
 
-    // apply firmware
-    Sys.updateFirmware(fw)
+    // reboot device to apply
+    Sys.reboot
   }
 
   ** Handle an error condition during a request.
@@ -103,6 +113,9 @@ internal const class HttpMod : WebMod
     }
 
     // TODO: fix to toggle stack traces on/off upstream
+    //       or maybe just be safe and _never_ send traces
+    //       ^ need solid network log debugging to make this work
+
     // send HTML response
     out := res.out
     out.docType
