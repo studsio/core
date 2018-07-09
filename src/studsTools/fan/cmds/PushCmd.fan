@@ -14,10 +14,16 @@ using web
 const class PushCmd : Cmd
 {
   override const Str name := "push"
-  override const Str sig  := "<ipaddr> [options]*"
+  override const Str sig  := "<ipaddr> [uri]"
   override const Str helpShort := "Upload firmware images over HTTP"
   override const Str? helpFull :=
-    "<ipaddr>  IP address of target device (ex: 192.168.1.100)"
+    "<ipaddr>  IP address of target device (ex: 192.168.1.100).
+               Port 80 is used by default.  To specify a different port,
+               append the number: 192.168.1.100:3000
+
+     [uri]     Optionally specify the URI endpoint for upload.
+               Default value is: /update-fw"
+
 
   // TODO [-u --url]    manually specify target URL
   // TODO [-i --image]  manually select image file
@@ -26,6 +32,7 @@ const class PushCmd : Cmd
   {
     // validate input
     ipaddr := args.getSafe(0)
+    uri    := args.getSafe(1)?.toUri ?: `/update-fw`
     if (ipaddr == null) abort("missing arg: ipaddr")
 
     // prompt for release image
@@ -35,7 +42,7 @@ const class PushCmd : Cmd
     {
       // upload file
       info("Pushing $rel.name to ${ipaddr}...")
-      c := WebClient(`http://${ipaddr}/update-fw`)
+      c := WebClient(`http://${ipaddr}${uri}`)
       c.reqMethod = "PUT"
       c.reqHeaders["Content-Type"] = "application/x-firmware"
       c.reqHeaders["Content-Length"] = rel.size.toStr

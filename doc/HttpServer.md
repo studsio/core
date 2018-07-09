@@ -56,7 +56,6 @@ Example using `curl`:
 [otaUri]:   ../api/studs/HttpConfig.html#otaUpdateUri
 [updateFw]: ../api/studs/Sys.html#updateFirmware
 
-
 To completely disable OTA firmware updates, configure [otaUpdateUri][otaUri]
 to `null`:
 
