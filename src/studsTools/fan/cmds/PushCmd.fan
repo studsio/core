@@ -52,7 +52,7 @@ const class PushCmd : Cmd
 
       // verify response
       c.readRes
-      if (c.resCode != 200) throw Err("Device upload failed with $c.resCode")
+      if (c.resCode != 200) throw Err(c.resStr)
       echo("$c.resStr")
       c.close
     }
