@@ -177,7 +177,7 @@ class Sys
       buf   := Buf(4096)
       dev   := "/dev/mmcblk0"
       task  := "upgrade"
-      fwup  := ["/usr/bin/fwup", "-aFU", "-d", dev, "-t", task, "-i", "-"]
+      fwup  := ["/usr/bin/fwup", "-p", "/etc/fw-key.pub", "-aFU", "-d", dev, "-t", task, "-i", "-"]
       proc  := Proc { it.cmd=fwup }.run
       ticks := Duration.nowTicks
       timeout := 120sec.ticks

@@ -93,7 +93,8 @@ abstract const class Cmd
   Void abort(Str msg)
   {
     err(msg)
-    showHelp
+// TODO?
+//    showHelp
     Env.cur.exit(1)
   }
 

@@ -21,21 +21,41 @@ const class AsmCmd : Cmd
      target specified in studs.props.  If target(s) are listed on the
      command line, only these targets will be assembled.
 
-     [target]*  List of specific targets to assemble, or all if none specified
+     [target]*   List of specific targets to assemble, or all if none specified
 
-     --clean    Delete intermediate system and JRE files"
+     --clean     Delete intermediate system and JRE files
+     --gen-keys  Generate firmware signing keys (fw-key.pub and fw-key.priv)"
 
   ** Temp working directory.
   const File tempDir := Env.cur.workDir + `studs/temp/`
   private Void tempClean() { tempDelete; tempDir.create }
   private Void tempDelete() { Proc.run("rm -rf $tempDir.osPath") }
 
+  ** Firmware signing key files.
+  private File pubKey()  { Env.cur.workDir + `fw-key.pub` }
+  private File privKey() { Env.cur.workDir + `fw-key.priv` }
+
   override Int run()
   {
-    start := Duration.now
+    start   := Duration.now
 
     // sanity check
     if (Env.cur isnot PathEnv) abort("Not a PathEnv")
+
+    // check for --gen-keys
+    if (opts.contains("gen-keys"))
+    {
+      // challenge
+      if (pubKey.exists || privKey.exists)
+      {
+        if (!promptYesNo("Key pair already exists. Regenerate and overwrite? [yN] ", "n"))
+          abort("cancelled")
+      }
+
+      // regenerate
+      genKeys
+      return 0
+    }
 
     // make sure temp is clean
     tempClean
@@ -60,6 +80,9 @@ const class AsmCmd : Cmd
         ? props.systems
         : args.map |n| { props.system(n) }
 
+      // generate keys if not found
+      if (!pubKey.exists || !privKey.exists) genKeys
+
       // build each target
       systems.each |sys|
       {
@@ -77,6 +100,23 @@ const class AsmCmd : Cmd
     loc := (dur.toMillis.toFloat / 1000f).toLocale("0.00")
     info("ASM SUCCESS [${loc}sec]!")
     return 0
+  }
+
+  ** Generate firmware signing keys.
+  Void genKeys()
+  {
+    baseDir := Env.cur.workDir
+
+    // start fresh
+    pubKey.delete
+    privKey.delete
+
+    // gen keys
+    info("Generate firmware signing keys...")
+    Proc.bash("cd $baseDir.osPath; fwup --gen-keys")
+    Proc.run("mv $baseDir.osPath/fwup-key.pub $pubKey.osPath")
+    Proc.run("mv $baseDir.osPath/fwup-key.priv $privKey.osPath")
+    info("Keep your private key in a safe location!")
   }
 
   ** Download and install the system configuration for target.
@@ -180,7 +220,8 @@ const class AsmCmd : Cmd
     // release image name
     proj := props["proj.name"]; if (proj==null) abort("missing 'proj.meta' in studs.props")
     ver  := props["proj.ver"];  if (ver==null)  abort("missing 'proj.ver' in studs.props")
-    rel  := relDir + `${proj}-${ver}-${sys.name}.fw`
+    urel := relDir + `${proj}-${ver}-${sys.name}._fw`
+    srel := relDir + `${proj}-${ver}-${sys.name}.fw`
 
     // defaults
     fwupConf := sysDir + `images/fwup.conf`
@@ -215,6 +256,9 @@ const class AsmCmd : Cmd
       it.set("system.version", sys.version.toStr)
     }
     (rootfs + `etc/sys.props`).writeProps(sysProps)
+
+    // fw-key.pub
+    pubKey.copyTo(rootfs + `etc/fw-key.pub`)
 
     // stage scripts
     ["udhcpc.script"].each |name|
@@ -287,12 +331,17 @@ const class AsmCmd : Cmd
     Proc.bash(
       "export NERVES_SYSTEM=$sysDir.osPath
        export ROOTFS=$tempDir.osPath/combined.squashfs
-       fwup -c -f $fwupConf.osPath -o $rel.osPath")
+       fwup -c -f $fwupConf.osPath -o $urel.osPath")
+
+    // sign release image
+    info("  Signing firmware image...")
+    Proc.run("fwup -S -s $privKey.osPath -i $urel.osPath -o $srel.osPath")
+    Proc.run("rm $urel.osPath")
 
     // indicate image filepath
-    size := rel.size.toLocale("B")
+    size := srel.size.toLocale("B")
     info("  Release:")
-    info("    $rel.osPath [$size]")
+    info("    $srel.osPath [$size]")
   }
 
   ** List of retired faninit prop names
