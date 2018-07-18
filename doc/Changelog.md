@@ -1,10 +1,12 @@
 # Changelog
 
 #### Version 1.10 (working)
-* Add new Httpd daemon for web server support
-* Add OTA firmware update support in Httpd
-* Add `Sys.updateFirmware` method
-* Add `PushCmd` to simplify pushing firmware from CLI
+* New end-to-end firmware signing support
+   - All firmware is now required to be signed
+* New new Httpd daemon for web server support
+* New OTA firmware update support in Httpd
+* New `Sys.updateFirmware` method
+* New `PushCmd` to simplify pushing firmware from CLI
 * Update `Sys` to log events (mount partition, updateFirmware, reboot, etc)
 * Update AsmCmd to display system version in output
 * Update AsmCmd to download system images from GitHub
