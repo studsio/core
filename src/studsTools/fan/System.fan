@@ -17,8 +17,10 @@ const class System
   new make(|This| f)
   {
     f(this)
-    // TODO?
-    this.jre = "linux-armv6-vfp-hflt"
+    // TODO FIXIT
+    this.jre = name == "rpi0"
+      ? "linux-arm-sflt"
+      : "linux-armv6-vfp-hflt"
   }
 
   ** Make default System.
@@ -50,8 +52,8 @@ const class System
 
   ** Default system versions.
   private static const Str:Version defVer := [
-    "bb":   Version("1.3"),
-    "rpi3": Version("1.3"),
-    "rpi0": Version("1.3"),
+    "bb":   Version("1.4"),
+    "rpi3": Version("1.4"),
+    "rpi0": Version("1.4"),
   ]
 }
