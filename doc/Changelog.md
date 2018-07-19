@@ -14,6 +14,7 @@
    - Saves 1.37MB bytes off release fw size
    - Added to blacklist: `build`, `compiler`, `compilerDoc`, `compilerJava`,
      `compilerJs`, `email`, `fandoc`, `fanr`, `fansh`, `obix`, `sql`
+* Update systems to 1.4
 * Fix BurnCmd to sort release filenames
 * Fix Networkd.list argument bug
 
