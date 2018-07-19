@@ -127,6 +127,13 @@ const class Networkd : Daemon
   private Obj? onSetup(Str:Str opts)
   {
     log.debug("setup: $opts")
+
+    // TODO: this should not be hard-coded like this; we need to
+    // define this in the respective system and load agnostically
+    // check if we need to load any kernel modules
+    if (Sys.props["system.name"] == "rpi3")
+      Proc { it.cmd=["modprobe","smsc95xx"] }.run.waitFor.okOrThrow
+
     mode := opts["mode"]
     switch (mode)
     {
