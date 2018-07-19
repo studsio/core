@@ -51,6 +51,10 @@ Example using `curl`:
     curl -T my-firmware.fw -H "Content-Type: application/x-firmware" \
          http://192.168.1.100/update-fw
 
+Devices are implicitly rebooted after an OTA firmware update has been received
+to apply. See [Disabling Updates](#disabling-updates) for how to customize this
+behavior.
+
 ### Disabling Updates
 
 [otaUri]:   ../api/studs/HttpConfig.html#otaUpdateUri
