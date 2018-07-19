@@ -1,6 +1,8 @@
 # Changelog
 
-#### Version 1.10 (working)
+#### Version 1.11 (working)
+
+#### Version 1.10 (19-Jul-2018)
 * New end-to-end firmware signing support
    - All firmware is now required to be signed
 * New new Httpd daemon for web server support
