@@ -75,12 +75,21 @@ target:
     myproj/
      └─ src/
          └─ rootfs_overlay/
-             ├─ bb/
-             └─ rpi3/
 
-Any files under the `rootfs_overlay/xxx/` will be directly added to the default
+Any files under the `rootfs_overlay/` will be directly added to the default
 root filesystem for the respective system. If a file in `rootfs_overlay`
 already exists in the base image, it will replace the base copy.
+
+To customize the root filesystem on a per system basis add a system name suffix
+to the rootfs directory:
+
+    myproj/
+     └─ src/
+         ├─ rootfs_overlay/       # all systems get this overlay
+         └─ rootfs_overlay_bb/    # only `bb` targets get this overlay
+
+The common `rootfs_overlay` is always copied first. If a matching system
+specific overlay is found, it will be copied overtop of both base copies.
 
 ## Pod Whitelist/Blacklist
 

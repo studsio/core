@@ -312,8 +312,10 @@ const class AsmCmd : Cmd
     tzJs.copyTo(rootfs + `app/fan/etc/sys/$tzJs.name`)
 
     // copy user rootfs_overlay
-    userRootfs := Env.cur.workDir + `src/rootfs_overlay/${sys.name}/`
-    if (userRootfs.exists) Proc.run("cp -Rf $userRootfs.osPath/ $rootfs.osPath")
+    userRootfsBase := Env.cur.workDir + `src/rootfs_overlay/`
+    userRootfsSys  := Env.cur.workDir + `src/rootfs_overlay_${sys.name}/`
+    if (userRootfsBase.exists) Proc.run("cp -Rf $userRootfsBase.osPath/ $rootfs.osPath")
+    if (userRootfsSys.exists)  Proc.run("cp -Rf $userRootfsSys.osPath/ $rootfs.osPath")
 
     // stage data
     (rootfs + `data/`).create

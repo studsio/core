@@ -1,6 +1,7 @@
 # Changelog
 
 #### Version 1.11 (working)
+* Update AsmCmd behavior to use common `rootfs_overlay` and `rootfs_overlay_{sys.name}`
 
 #### Version 1.10 (19-Jul-2018)
 * New end-to-end firmware signing support
