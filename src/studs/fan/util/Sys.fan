@@ -187,17 +187,17 @@ class Sys
         // check timeout
         if (Duration.nowTicks-ticks > timeout) throw IOErr("Update timed out")
 
-        // process input
+        // process input (next chunk of firwmare fw file)
         r := in.readBuf(buf.clear, buf.capacity)
         if (r == null)
         {
-          // write empty frame to indicate complete
+          // write empty frame to indicate complete (to fwup)
           ticks = Duration.nowTicks
           proc.out.writeI4(0)
         }
         else if (r > 0)
         {
-          // stream next frame
+          // stream next frame (to fwup)
           ticks = Duration.nowTicks
           proc.out.writeI4(r)
           proc.out.writeBuf(buf.flip, r)
@@ -206,13 +206,13 @@ class Sys
         // skip output if none avail
         if (proc.in.avail == 0) continue
 
-        // read next frame
+        // read next response frame (from fwup)
         ticks = Duration.nowTicks
         len  := proc.in.readU4
         type := proc.in.readChars(2)
         data := proc.in.readBufFully(null, len-2)
 
-        // process frame
+        // process response frame (from fwup)
         switch (type)
         {
           case "OK": break
