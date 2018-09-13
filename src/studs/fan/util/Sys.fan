@@ -193,7 +193,13 @@ class Sys
         {
           // write empty frame to indicate complete (to fwup)
           ticks = Duration.nowTicks
-          proc.out.writeI4(0)
+
+          // appears that in some cases the process can exit before this
+          // operation completes (?); the firmware update is otherwise
+          // successful; so to avoid spurious errors trap if our EOF
+          // fails and allow Sys process to continue
+          try { proc.out.writeI4(0) }
+          catch (IOErr ioerr) { break }
         }
         else if (r > 0)
         {
