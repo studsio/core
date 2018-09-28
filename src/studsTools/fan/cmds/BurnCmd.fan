@@ -26,7 +26,7 @@ const class BurnCmd : Cmd
   override Int run()
   {
     // prompt for release image
-    rel := promptRelease
+    rel := promptRelease("burn")
 
     // attempt to find card devices
     out := Buf()

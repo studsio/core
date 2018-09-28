@@ -105,7 +105,7 @@ abstract const class Cmd
   }
 
   ** Prompt to select a current release. Returns selected release fw file.
-  @NoDoc File? promptRelease()
+  @NoDoc File? promptRelease(Str action)
   {
     relDir := Env.cur.workDir + `studs/releases/`
     rels   := relDir.listFiles.findAll |f| { f.ext == "fw" }
@@ -128,7 +128,7 @@ abstract const class Cmd
         size := f.size.toLocale("B")
         echo(" [${i+1}] " + f.name.padr(w) + "  ($size)")
       }
-      sel := promptChoice("Which release do you want to burn?", 1..rels.size)
+      sel := promptChoice("Which release do you want to ${action}?", 1..rels.size)
       rel = rels[sel-1]
     }
 

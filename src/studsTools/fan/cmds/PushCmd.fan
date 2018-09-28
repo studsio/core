@@ -36,7 +36,7 @@ const class PushCmd : Cmd
     if (ipaddr == null) abort("missing arg: ipaddr")
 
     // prompt for release image
-    rel := promptRelease
+    rel := promptRelease("push")
 
     try
     {
