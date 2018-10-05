@@ -263,9 +263,10 @@ class Sys
   }
 
 //////////////////////////////////////////////////////////////////////////
-// Log
+// Logging
 //////////////////////////////////////////////////////////////////////////
 
-  ** Internal sys log instance.
-  private static const Log log := Log("sys", false) { it.level=LogLevel.debug }
+  ** SysLog instance for this device.
+  static SysLog log() { logRef.val }
+  private static const AtomicRef logRef := AtomicRef(SysLog())
 }
