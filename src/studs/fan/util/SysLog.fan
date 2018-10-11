@@ -79,7 +79,7 @@ const class SysLog
       case "append":
         ring.add(msg.a)
         // TODO: yikes!
-        if (ring.size > capacity) ring = ring[1..-1]
+        if (ring.size > capacity) Actor.locals["r"] = ring = ring[1..-1]
         return null
 
       default: return null
