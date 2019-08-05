@@ -30,18 +30,18 @@ const class Toolchain
   {
     echo("compile [$binName]")
     ver := Toolchain#.pod.version
-    Toolchain.toolchains.each |tc, target|
+    Toolchain.toolchains.each |tc|
     {
       // check if we need to install toolchain
       if (!tc.dir.exists) tc.install
 
       // make sure studTools target dir exists
-      binDir := Env.cur.workDir + `src/studsTools/bins/$target/`
+      binDir := Env.cur.workDir + `src/studsTools/bins/${tc.name}/`
       binDir.create
       dest := binDir + `$binName`
 
       // compile
-      echo("  Compile [$binName-$target]")
+      echo("  Compile [${tc.name}]")
       opts := ccOpts.addAll(["-o", "$dest.osPath"])
       src  := srcDir.listFiles.map |f| { "src/$f.name" }
       xsrc.each |f| { src.add(f.osPath) }
@@ -117,11 +117,10 @@ const class Toolchain
     Env.cur.exit(1)
   }
 
-  ** Map of toolchains to system targets.
-  internal static const Str:Toolchain toolchains := [
-    "bb":   Toolchain("arm_unknown_linux_gnueabihf", "1.0.0", "400FC9B"),
-    "rpi3": Toolchain("arm_unknown_linux_gnueabihf", "1.0.0", "400FC9B"),
-    "rpi0": Toolchain("armv6_rpi_linux_gnueabi",     "1.0.0", "D5EC22E"),
+  ** List of supported toolchains.
+  internal static const Toolchain[] toolchains := [
+    Toolchain("arm_unknown_linux_gnueabihf", "1.0.0", "400FC9B"),
+    Toolchain("armv6_rpi_linux_gnueabi",     "1.0.0", "D5EC22E"),
   ]
 
   const Str name

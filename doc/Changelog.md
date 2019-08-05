@@ -4,6 +4,11 @@
 * Update AsmCmd behavior to use common `rootfs_overlay` and `rootfs_overlay_{sys.name}`
 * Fix for `Sys.updateFirmware` to ignore EOF errors
 * New `SysLog` ring buffer for system wide syslog available via `Sys.log`
+* Update Toolchains to compile/store by arch instead of sys.name
+    - This removes duplicated binaries in `studsTools` when arch is the
+      same (ie. `bb` and `rpi3` both use `arm_unknown_linux_gnueabihf`)
+    - This makes it easier to support custom systems since in most cases
+      it uses an existing toolchain architecture with preexisting binaries
 
 #### Version 1.10 (19-Jul-2018)
 * New end-to-end firmware signing support

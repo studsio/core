@@ -17,7 +17,10 @@ const class System
   new make(|This| f)
   {
     f(this)
-    // TODO FIXIT
+    // TODO FIXIT: this stuff needs to get pulled from system meta
+    this.toolchain = name == "rpi0"
+      ? "armv6_rpi_linux_gnueabi"
+      : "arm_unknown_linux_gnueabihf"
     this.jre = name == "rpi0"
       ? "linux-arm-sflt"
       : "linux-armv6-vfp-hflt"
@@ -29,7 +32,10 @@ const class System
     this.name = name
     this.version = defVer[name]
     this.uri = `https://github.com/studsio/system-${name}/releases/download/${version}/studs-system-${name}-${version}.tar.gz`
-    // TODO FIXIT
+    // TODO FIXIT: this stuff needs to get pulled from system meta
+    this.toolchain = name == "rpi0"
+      ? "armv6_rpi_linux_gnueabi"
+      : "arm_unknown_linux_gnueabihf"
     this.jre = name == "rpi0"
       ? "linux-arm-sflt"
       : "linux-armv6-vfp-hflt"
@@ -40,6 +46,9 @@ const class System
 
   ** Vesion of system.
   const Version version
+
+  ** Toolchain name for system.
+  const Str toolchain
 
   ** URI to fetch system image.
   const Uri uri

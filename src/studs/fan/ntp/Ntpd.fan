@@ -20,6 +20,9 @@ const class Ntpd : Daemon
   {
     // allow only one instance per VM
     if (!curRef.compareAndSet(null, this)) throw Err("Ntpd already exists")
+
+    // TODO: override pin to info
+    this.log.level = LogLevel.info
   }
 
   ** Get the Ntpd instance for this VM.  If an instance is

@@ -233,7 +233,7 @@ const class AsmCmd : Cmd
     Proc.run("mv $rootfs.osPath/app/${sys.jre} $rootfs.osPath/app/jre")
 
     // stage faninit
-    init := Pod.find("studsTools").file(`/bins/$sys.name/faninit`)
+    init := Pod.find("studsTools").file(`/bins/${sys.toolchain}/faninit`)
     init.copyTo(rootfs + `sbin/init`)
     Proc.run("chmod +x $rootfs.osPath/sbin/init")
 
@@ -271,13 +271,13 @@ const class AsmCmd : Cmd
     // stage natives
     ["fangpio", "fani2c", "fannet", "fanspi", "fanuart"].each |name|
     {
-      bin := Pod.find("studsTools").file(`/bins/$sys.name/$name`)
+      bin := Pod.find("studsTools").file(`/bins/${sys.toolchain}/$name`)
       bin.copyTo(rootfs + `usr/bin/$name`)
       Proc.run("chmod +x $rootfs.osPath/usr/bin/$name")
     }
 
     // stage libfan
-    libfan := Pod.find("studsTools").file(`/bins/$sys.name/libfan.so`)
+    libfan := Pod.find("studsTools").file(`/bins/${sys.toolchain}/libfan.so`)
     libfan.copyTo(rootfs + `usr/lib/libfan.so`)
 
     // stage app
