@@ -26,32 +26,38 @@ const class Toolchain
   }
 
   ** Compile with toolchains to target systems
-  static Void compile(Str binName, File srcDir, File[] xsrc, Str[] ccOpts)
+  static Void compile(Str binName, File srcDir, File[] xsrc, Str[] ccOpts, File? outDir := null)
   {
     echo("compile [$binName]")
     ver := Toolchain#.pod.version
     Toolchain.toolchains.each |tc|
     {
-      // check if we need to install toolchain
-      if (!tc.dir.exists) tc.install
-
-      // make sure studTools target dir exists
-      binDir := Env.cur.workDir + `src/studsTools/bins/${tc.name}/`
-      binDir.create
-      dest := binDir + `$binName`
-
-      // compile
-      echo("  Compile [${tc.name}]")
-      opts := ccOpts.addAll(["-o", "$dest.osPath"])
-      src  := srcDir.listFiles.map |f| { "src/$f.name" }
-      xsrc.each |f| { src.add(f.osPath) }
-      proc := Process([tc.gcc.osPath].addAll(opts).addAll(src))
-      proc.dir = srcDir.parent
-      if (proc.run.join != 0) abort("gcc failed")
-
-      // indicate dest dir
-      echo("    Write [$dest.osPath]")
+      tc._compile(binName, srcDir, xsrc, ccOpts, outDir)
     }
+  }
+
+  // TODO FIXIT
+  @NoDoc Void _compile(Str binName, File srcDir, File[] xsrc, Str[] ccOpts, File? outDir := null)
+  {
+    // check if we need to install toolchain
+    if (!dir.exists) install
+
+    // make sure studTools target dir exists
+    binDir := outDir ?: Env.cur.workDir + `src/studsTools/bins/${name}/`
+    binDir.create
+    dest := binDir + `$binName`
+
+    // compile
+    echo("  Compile [${name}]")
+    opts := ccOpts.addAll(["-o", "$dest.osPath"])
+    src  := srcDir.listFiles.map |f| { "src/$f.name" }
+    xsrc.each |f| { src.add(f.osPath) }
+    proc := Process([gcc.osPath].addAll(opts).addAll(src))
+    proc.dir = srcDir.parent
+    if (proc.run.join != 0) abort("gcc failed")
+
+    // indicate dest dir
+    echo("    Write [$dest.osPath]")
   }
 
   ** Install toolchain to host.
