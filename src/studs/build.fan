@@ -43,6 +43,7 @@ class Build : BuildPod
       `fan/io/led/`,
       `fan/io/spi/`,
       `fan/io/uart/`,
+      `fan/key/`,
       `fan/net/`,
       `fan/ntp/`,
       `fan/util/`]
