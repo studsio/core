@@ -6,30 +6,57 @@
 //   11 Nov 2019  Andy Frank  Creation
 //
 
+using web
 using studs
 
 class KeyTest : Test
 {
+  File? cacert
+  File? cakey
+  File? cert
+  File? key
+
   Void testKeyStore()
   {
-    // create ca
-    createCA("ca", tempDir, ["subj":"/CN=Test CA"])
-    cacert := tempDir + `ca.pem`
-    cakey  := tempDir + `ca.key`
-
-    // create cert signed by ca
-    createCert("cert", tempDir, cacert, cakey, ["subj":"/CN=Test Cert"])
-    cert := tempDir + `cert.pem`
-    key  := tempDir + `cert.key`
-
-    // create keystore
-    ks := KeyUtil.keyStore(cert, key)
+    genKeys
+    ks := KeyUtil.keyStore(cert.readAllBuf, key.readAllBuf)
     verifyNotNull(ks)
+  }
+
+  Void testClientTls()
+  {
+    // verify no cert fails
+    verifyErr(IOErr#) { WebClient(`https://client.badssl.com`).getStr }
+
+// TODO: awaiting upstream fantom patch :)
+/*
+    // now check with cert
+    bc := typeof.pod.file(`/res/badssl.com-client.pem`).readAllBuf
+    bk := typeof.pod.file(`/res/badssl.com-client.key`).readAllBuf
+    ks := KeyUtil.keyStore(bc, bk)
+    wc := WebClient(`https://client.badssl.com`)
+    wc.tlsContext = KeyUtil.tlsContext(ks)
+    wc.getStr
+*/
   }
 
 //////////////////////////////////////////////////////////////////////////
 // Utils
 //////////////////////////////////////////////////////////////////////////
+
+  ** Generate a CA cert and singed device cert.
+  private Void genKeys()
+  {
+    // create ca
+    createCA("ca", tempDir, ["subj":"/CN=Test CA"])
+    this.cacert = tempDir + `ca.pem`
+    this.cakey  = tempDir + `ca.key`
+
+    // create cert signed by ca
+    createCert("cert", tempDir, cacert, cakey, ["subj":"/CN=Test Cert"])
+    this.cert = tempDir + `cert.pem`
+    this.key  = tempDir + `cert.key`
+  }
 
   ** Create a new CA keypair
   private Void createCA(Str name, File outDir, Str:Str opts := [:])

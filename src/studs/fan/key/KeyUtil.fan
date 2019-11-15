@@ -12,5 +12,8 @@
 const class KeyUtil
 {
   ** Return a 'java.security.KeyStore' instance for the given key pair.
-  static native Obj keyStore(File cert, File key)
+  static native Obj keyStore(Buf cert, Buf key)
+
+  ** Create a 'javax.net.ssl.SSLContext' instance using given keystore.
+  static native Obj tlsContext(Obj keystore)
 }

@@ -33,6 +33,7 @@ class Build : BuildPod
       "wisp @{fan.depend}",
       "studs @{buildVersion}"]
     srcDirs = [`test/`]
+    resDirs = [`res/`]
     docSrc = false
   }
 }

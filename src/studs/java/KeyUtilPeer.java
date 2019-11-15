@@ -8,13 +8,14 @@
 
 package fan.studs;
 
-import fan.sys.File;
+import fan.sys.Buf;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.charset.*;
 import java.security.*;
 import java.security.cert.*;
 import java.security.spec.*;
+import javax.net.ssl.*;
 import javax.xml.bind.*;
 
 import static fan.studs.EncodingUtils.base64Decode;
@@ -26,11 +27,11 @@ public class KeyUtilPeer
 // Peer Impl
 //////////////////////////////////////////////////////////////////////////
 
-  public static Object keyStore(File certFile, File keyFile)
+  public static Object keyStore(Buf certBuf, Buf keyBuf)
     throws Exception
   {
-    X509Certificate cert = loadCert(certFile);
-    PrivateKey key = loadKey(keyFile.osPath());
+    X509Certificate cert = loadCert(certBuf.bytes());
+    PrivateKey key = loadKey(keyBuf.bytes());
 
     KeyStore ks = KeyStore.getInstance("JKS");
     ks.load(null, null);
@@ -38,15 +39,26 @@ public class KeyUtilPeer
     return ks;
   }
 
+  public static Object tlsContext(Object keystore)
+    throws Exception
+  {
+    KeyStore ks = (KeyStore)keystore;
+
+    KeyManagerFactory km = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+    km.init(ks, "".toCharArray());
+
+    SSLContext scx = SSLContext.getInstance("TLS");
+    scx.init(km.getKeyManagers(), null, null);
+    return scx;
+  }
+
 //////////////////////////////////////////////////////////////////////////
 // X509 Utils
 //////////////////////////////////////////////////////////////////////////
 
-  private static X509Certificate loadCert(File file)
+  private static X509Certificate loadCert(byte[] pemBytes)
     throws CertificateException, IOException
   {
-    byte[] pemBytes = Files.readAllBytes(Paths.get(file.osPath()));
-
     String data = new String(pemBytes);
     String[] tokens = data.split(X509_PEM_HEADER);
     tokens = tokens[1].split(X509_PEM_FOOTER);
@@ -70,10 +82,9 @@ public class KeyUtilPeer
    *   - PKCS#8 PEM (-----BEGIN PRIVATE KEY-----)
    *   - PKCS#8 DER (binary)
    */
-  private static PrivateKey loadKey(String keyFilePath)
+  private static PrivateKey loadKey(byte[] keyDataBytes)
     throws GeneralSecurityException, IOException
   {
-    byte[] keyDataBytes = Files.readAllBytes(Paths.get(keyFilePath));
     String keyDataString = new String(keyDataBytes, StandardCharsets.UTF_8);
 
     if (keyDataString.contains(PKCS_1_PEM_HEADER))
@@ -93,7 +104,7 @@ public class KeyUtilPeer
     }
 
     // We assume it's a PKCS#8 DER encoded binary file
-    return readPkcs8PrivateKey(Files.readAllBytes(Paths.get(keyFilePath)));
+    return readPkcs8PrivateKey(keyDataBytes);
   }
 
   private static PrivateKey readPkcs8PrivateKey(byte[] pkcs8Bytes)
