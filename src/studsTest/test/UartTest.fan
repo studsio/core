@@ -14,7 +14,7 @@ class UartTest : Test
   Void testConfig()
   {
     c := UartConfig {}
-    verifyConfig(c, 9600, 8, 1, "none", "none")
+    verifyConfig(c, 9600, 8, 1, "none", "none", "9600-8-1-none-none")
 
     c = UartConfig {
       it.speed  = 38400
@@ -23,16 +23,26 @@ class UartTest : Test
       it.parity = "odd"
       it.flow   = "hw"
     }
-    verifyConfig(c, 38400, 7, 2, "odd", "hw")
+    verifyConfig(c, 38400, 7, 2, "odd", "hw", "38400-7-2-odd-hw")
   }
 
-  private Void verifyConfig(UartConfig c, Int speed, Int data, Int stop, Str parity, Str flow)
+  private Void verifyConfig(UartConfig c, Int speed, Int data, Int stop, Str parity, Str flow, Str ser)
   {
+    // test fields
     verifyEq(c.speed,  speed)
     verifyEq(c.data,   data)
     verifyEq(c.stop,   stop)
     verifyEq(c.parity, parity)
     verifyEq(c.flow,   flow)
+
+    // test serialization
+    verifyEq(c.toStr, ser)
+    x := UartConfig.fromStr(ser)
+    verifyEq(x.speed,  c.speed)
+    verifyEq(x.data,   c.data)
+    verifyEq(x.stop,   c.stop)
+    verifyEq(x.parity, c.parity)
+    verifyEq(x.flow,   c.flow)
   }
 
   Void testStreamRead()

@@ -39,6 +39,33 @@ const class UartConfig
   ** Flow control mode: 'none', 'hw', or 'sw'
   const Str flow := "none"
 
+  ** Get string serialization for config instance.
+  override Str toStr()
+  {
+    "${speed}-${data}-${stop}-${parity}-${flow}"
+  }
+
+  ** Parse a UartConfig instance from Str. See `toStr`.
+  static new fromStr(Str s, Bool checked := true)
+  {
+    try
+    {
+      p := s.split('-')
+      return UartConfig {
+        it.speed  = p[0].toInt
+        it.data   = p[1].toInt
+        it.stop   = p[2].toInt
+        it.parity = p[3]
+        it.flow   = p[4]
+      }
+    }
+    catch (Err err)
+    {
+      if (!checked) return null
+      throw ParseErr("Invalid uart config string '${s}'")
+    }
+  }
+
   private static const Str[] paritys := ["none", "even", "odd"]
   private static const Str[] flows   := ["none", "hw", "sw"]
 }
