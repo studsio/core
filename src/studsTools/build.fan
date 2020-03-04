@@ -22,7 +22,7 @@ class Build : BuildPod
       "proj.name":    "Studs",
       "proj.uri":     "http://studs.io/",
       "license.name": "Apache License 2.0",
-      "vcs.uri":      "https://bitbucket.org/studs/core/",
+      "vcs.uri":      "https://github.com/studsio/core/",
       "repo.public":  "true",
       "repo.tags":    "studs"]
     depends = [

@@ -20,9 +20,9 @@ class Build : BuildPod
     //   "proj.name":    "My Project",
     //   "proj.uri":     "http://myproj.org/",
     //   "license.name": "Apache License 2.0",
-    //   "vcs.name":     "Mercurial",
-    //   "vcs.uri":      "https://bitbucket.org/myorg/myproj"
-    //   "vcs.uri":      "https://bitbucket.org/myproj"
+    //   "vcs.name":     "Git",
+    //   "vcs.uri":      "https://github.com/myorg/myproj"
+    //   "vcs.uri":      "https://github.com/myproj"
     // ]
     depends = ["sys 1.0", "util 1.0", "concurrent 1.0", "web 1.0", "studs 1.0+"]
     srcDirs = [`fan/`]
