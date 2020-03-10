@@ -6,33 +6,33 @@ Most build and assembly configuration is specified in `studs.props`:
     proj.name=myApp
     proj.ver=1.0.0
 
-    # JRE compact profile for target: 1, 2 or 3
-    jre.profile=1
-
-    # Uncomment to add target platform to build
-    target.bb=true
-    #target.rpi3=true
+    # Target platform to build
+    system.name=rpi3
 
 ## Using `fan studs asm`
 
 The `asm` command is used to assemble firmware bundles from your application:
 
-    fan studs asm [target]* [--clean]
+    fan studs asm [--clean] [--gen-keys]
 
- - `[target*]` -- By default asm will assemble all targets defined in
-   `studs.props`. To assemble only a specific target(s) you can pass them on
-   the command line:
+The `--clean` option deletes intermediate and cached System and JRE files. The
+next time `fan studs asm` is invoked, the system and JRE will be re-downloaded
+and configured.
 
-       $ fan studs asm        # build all enabled targets
-       $ fan studs asm rpi3   # build only rpi3 target
+    $ fan studs asm --clean
 
-  - `--clean` -- This option deletes intermediate and cached System and JRE
-    files:
+Firmware is always signed. The first time `fan studs asm` is invoked, a pair
+of public-private siging keys will be auto-generated (`fw-key.pub` and
+`fw-key.priv`).  In order to update firwmare in existing devices, you **must**
+use the same signing keys.  Take care to keep the `fw-key.priv` private key
+safe.
 
-        $ fan studs asm --clean
+If you ever need to regenerate keys, you can use the `--gen-keys` option. Be
+aware this will remove your existing keys.  Have a backup if you need the old
+keys!
 
-    The next time `fan studs asm` is invoked, systems will be re-downloaded and
-    configured, and the JRE will be rebuilt.
+    $ fan studs --gen-keys
+    Key pair already exists. Regenerate and overwrite? [yN
 
 ## Using `fan studs burn`
 
@@ -48,23 +48,7 @@ The `upgrade` option can be used to upgrade your application on an existing
 SDCard. In this case only the root application partition is effected -- any
 data partitions will not be touched.
 
-    fan studs burn --upgrade
-
-## JRE Compact Profiles
-
-[jre-profiles]: http://www.oracle.com/technetwork/java/embedded/resources/tech/compact-profiles-overview-2157132.html
-
-The `asm` command will generate any of the 3 compact profiles for the target
-embedded JRE. See [Compact Profiles Overview][jre-profiles] for details and
-comparison of each profile.
-
-Studs defaults to profile `1` to minimize the release file size. The profile
-may be changed in `studs.props`:
-
-    # JRE compact profile for target: 1, 2 or 3
-    jre.profile=1
-
-Remember to run `asm --clean` after making any changes to `jre.profile`.
+    $ fan studs burn --upgrade
 
 ## Rootfs Overlay
 
@@ -116,16 +100,3 @@ blacklist), configure `pod.whitelist` in your `studs.props` file:
     # image. This list takes precedence over both the default and
     # above blacklists.
     pod.whitelist=gfx,fwt,myPod
-
-## Profile Configuration
-
-If you build lots of projects, some configuration may become repetitive --
-particularly finding and copying the source JRE tarball into your project.
-
-To help streamline this process, you can create a `.studs` profile file in your
-home directory (`~/.studs`) to store project-wide configuration:
-
-    # By default, studs will look for the source JRE tarball under the
-    # local studs/jres/ directory. If one is not found, you may specify
-    # another directory to search here. Must end in a trailing slash.
-    jres.dir=/some/dir/

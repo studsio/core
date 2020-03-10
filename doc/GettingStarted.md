@@ -2,8 +2,8 @@
 
 ## Installation
 
-First make sure you have Java 7 or later installed on your machine.  This is
-required for Fantom and for creating our embedded JRE images.
+First make sure you have Java 8 or later installed on your machine.  This is
+required for Fantom.
 
 Next we need to install Fantom, Studs and several utilities we'll need to build
 our firmware.
@@ -70,33 +70,10 @@ or add additional targets by commenting/uncommenting them:
 
     # studs.props
 
-    # Uncomment to add target platform to build
-    target.bb=true
-    #target.rpi3=true
-    #target.rpi0=true
-
-## Install Embedded JRE
-
-Oracle requires you to jump through several hoops in order to get a JRE for
-embedded platforms, so unfortunately this part of the process must be manually
-completed.
-
-Download the appropriate embedded JDK for your target platform:
-
-Target            | eJDK
-------------------|-------------------------------------------------------------
-BeagleBone        | [ejdk-8u###-linux-armv6-vfp-hflt.tar.gz](http://www.oracle.com/technetwork/java/embedded/embedded-se/downloads/javase-embedded-downloads-2209751.html)
-Raspberry Pi 3    | [ejdk-8u###-linux-armv6-vfp-hflt.tar.gz](http://www.oracle.com/technetwork/java/embedded/embedded-se/downloads/javase-embedded-downloads-2209751.html)
-Raspberry Pi Zero | [ejdk-8u###-linux-arm-sflt.tar.gz](http://www.oracle.com/technetwork/java/embedded/embedded-se/downloads/javase-embedded-downloads-2209751.html)
-
-Next copy the tar into your project directory:
-
-    myproj/
-    └── studs/
-        └── jres/
-            └── ejdk-8u###-linux-armv6-vfp-hflt.tar.gz
-
-From here the build tools will manage creating the correct image for your device.
+    # Target platform to build
+    system.name=bb
+    #system.name=rpi3
+    #system.name=rpi0
 
 ## Build your Project
 
@@ -111,7 +88,7 @@ dependencies will be downloaded which can take a few minutes. After that
 firmware builds will be fast.
 
 After building the firmware, images are placed under the `releases` dir, where
-the naming convention is `proj-version-target`:
+the naming convention is `proj-version-system`:
 
     myproj/
     └── studs/
