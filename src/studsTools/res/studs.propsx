@@ -4,13 +4,10 @@
 proj.name={{proj.name}}
 proj.ver=1.0.0
 
-# JRE compact profile for target: 1, 2 or 3
-jre.profile=1
-
-# Uncomment to add target platform to build
-target.bb=true
-#target.rpi3=true
-#target.rpi0=true
+# Target platform to build
+system.name=bb
+#system.name=rpi3
+#system.name=rpi0
 
 # Comma-separated list of pods to exclude from release fw image.
 # This list is in addition to the default blacklist.
