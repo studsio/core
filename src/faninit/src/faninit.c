@@ -26,9 +26,15 @@
 
 static int desired_reboot_cmd = 0; // 0 = no request to reboot
 
+static void read_sys_props()
+{
+  debug("read_sys_props");
+  sys_props = read_props(SYS_PROPS);
+}
+
 static void read_faninit_props()
 {
-  debug("read_props");
+  debug("read_faninit_props");
   props = read_props(FANINIT_PROPS);
 
   struct prop *p = props;
@@ -202,6 +208,10 @@ static void child()
     exec_argv[arg++] = jvm_xmx_arg;
   }
 
+  // TODO: bb requires -XX:-AssumeMP to boot properly under java 11
+  const char *sys_name = get_prop(sys_props, "system.name", NULL);
+  if (strcmp(sys_name, "bb") == 0) exec_argv[arg++] = "-XX:-AssumeMP";
+
   exec_argv[arg++] = "-cp";
   exec_argv[arg++] = sys_jar_path;
   exec_argv[arg++] = "fanx.tools.Fan";
@@ -336,7 +346,8 @@ int main(int argc, char *argv[])
   for (i = 0; i < merged_argc; i++)
     debug("merged argv[%d]=%s", i, merged_argv[i]);
 
-  // read faninit.props
+  // read props
+  read_sys_props();
   read_faninit_props();
 
   // Mount /dev, /proc and /sys

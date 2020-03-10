@@ -21,6 +21,7 @@
 #define str(s) #s
 #define PROGRAM_VERSION_STR xstr(PROGRAM_VERSION)
 
+#define SYS_PROPS "/etc/sys.props"
 #define FANINIT_PROPS "/etc/faninit.props"
 #define FAN_HOME "/app/fan"
 #define JAVA_HOME "/app/jre"
@@ -44,6 +45,7 @@ struct prop {
   struct prop* next;
 };
 
+struct prop* sys_props;
 struct prop* props;
 
 struct erlinit_options {

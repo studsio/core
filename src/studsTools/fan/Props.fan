@@ -26,58 +26,83 @@ const class Props
     this.file = f
     this.map  = f.readProps
 
-    // print warnings for props no longer used
+    // first print warnings for props no longer used
     retired.each |r|
     {
       if (map.containsKey(r))
         Env.cur.err.printLine("# [studs.props] '$r' prop no longer used")
     }
 
-    // find systems
-    systems := System[,]
-    map.each |val,key|
-    {
-      if (key.startsWith("target.") && val == "true")
-      {
-        name := key["target.".size..-1]
-        uri  := map["target.${name}.uri"]?.toUri
-        if (uri == null)
-        {
-          // default system
-          systems.add(System.makeDef(name))
-        }
-        else
-        {
-          // custom system
-          base := uri.name[0..<-".tar.gz".size]
-          ver  := base["studs-system-$name-".size..-1]
-          systems.add(System {
-            it.name = name
-            it.version = Version(ver)
-            it.uri     = uri
-          })
-        }
-      }
-    }
-    this.systems  = systems
+    this.system = findSystem
+    this.jre    = findJre
   }
 
   ** Get the value for given property name, or 'null' if name not found.
   @Operator Str? get(Str name) { map[name] }
 
-  ** List of configured systems for this project.
-  const System[] systems
+  ** The configured system for this project.
+  const System system
 
-  ** Find a configured System with given name. If system not found
-  ** throw Err if 'checked' is true, otherwise return 'null'.
-  System? system(Str name, Bool checked := true)
+  ** The configured JRE for this project.
+  const Jre jre
+
+  ** Find a system image based on props.
+  private System findSystem()
   {
-    sys := systems.find |s| { s.name == name }
-    if (sys == null && checked) throw Err("System not found '$name'")
-    return sys
+    name := map["system.name"]
+    if (name == null) abort("Missing 'system.name' prop")
+
+    arch := map["system.arch"]
+    uri  := map["system.uri"]?.toUri
+
+    // check if we matched a def version; allow uri to be
+    // overrided for testing unrelased images
+    def := System.find(name, false)
+    if (def != null)
+    {
+      if (uri == null) return def
+      return System {
+        it.name    = def.name
+        it.arch    = def.arch
+        it.version = def.version
+        it.uri     = uri
+      }
+    }
+
+    if (arch == null) abort("Missing 'system.arch' prop")
+    if (uri  == null) abort("Missing 'system.uri' prop")
+
+    base := uri.name[0..<-".tar.gz".size]
+    ver  := base["studs-system-$name-".size..-1]
+
+    // create a custom system from props
+    return System {
+      it.name    = name
+      it.arch    = arch
+      it.version = Version(ver)
+      it.uri     = uri
+    }
   }
 
-  private static const Str:Str retired := [:].setList([,])
+  ** Find a JRE image based on props.
+  private Jre findJre()
+  {
+    // TODO
+    return Jre.find(system.arch)
+  }
+
+  ** Print the given error message then exit with error code.
+  private static Void abort(Str msg)
+  {
+    Env.cur.err.printLine("ERR [studs.props]: ${msg}")
+    Env.cur.exit(1)
+  }
+
+  private static const Str:Str retired := [:].setList([
+    "target.bb",
+    "target.rpi0",
+    "target.rpi3",
+  ])
 
   private const File file
   private const Str:Str map

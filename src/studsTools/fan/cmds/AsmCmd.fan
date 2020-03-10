@@ -14,14 +14,10 @@ using util
 const class AsmCmd : Cmd
 {
   override const Str name := "asm"
-  override const Str sig  := "[target]* [--clean]"
-  override const Str helpShort := "Assemble project"
+  override const Str sig  := "[--clean] [--gen-keys]"
+  override const Str helpShort := "Assemble firmware"
   override const Str? helpFull :=
-    "By default the asm command will assemble a firmware image for each
-     target specified in studs.props.  If target(s) are listed on the
-     command line, only these targets will be assembled.
-
-     [target]*   List of specific targets to assemble, or all if none specified
+    "Assemble firmware image for system specified in studs.props.
 
      --clean     Delete intermediate system and JRE files
      --gen-keys  Generate firmware signing keys (fw-key.pub and fw-key.priv)"
@@ -37,7 +33,7 @@ const class AsmCmd : Cmd
 
   override Int run()
   {
-    start   := Duration.now
+    start := Duration.now
 
     // sanity check
     if (Env.cur isnot PathEnv) abort("Not a PathEnv")
@@ -75,22 +71,16 @@ const class AsmCmd : Cmd
     }
     else
     {
-      // check for cmdline system filter
-      System[] systems := args.isEmpty
-        ? props.systems
-        : args.map |n| { props.system(n) }
-
       // generate keys if not found
       if (!pubKey.exists || !privKey.exists) genKeys
 
-      // build each target
-      systems.each |sys|
-      {
-        info("Assemble [$sys]")
-        installSystem(sys)
-        buildJre(sys)
-        assemble(sys)
-      }
+      sys := props.system
+      jre := props.jre
+
+      info("Assemble [$sys]")
+      installSystem(sys)
+      installJre(jre)
+      assemble(sys, jre)
 
       // clean up after ourselves
       //tempDelete
@@ -124,27 +114,16 @@ const class AsmCmd : Cmd
   {
     baseDir := Env.cur.workDir + `studs/systems/`
     baseDir.create
-    sysDir := baseDir + `$sys.name/`
+    sysDir := baseDir + `$sys/`
 
-    // check if up-to-date
-    sysProps := sysDir + `system.props`
-    if (sysProps.exists)
-    {
-      // bail here if up-to-date
-      ver := Version(sysProps.readProps["version"] ?: "", false)
-      if (sys.version == ver) return
-
-      // prompt to upgrade
-      // TODO: do we abort if out-of-date???
-      if (!promptYesNo("Upgrade $sys.name $ver -> $sys.version? [Yn] ")) return
-      Proc.run("rm -rf $sysDir.osPath")
-    }
+    // short-circuit if already installed
+    if (sysDir.exists) return
 
     tar := baseDir + `$sys.uri.name`
     if (sys.uri.scheme == "http" || sys.uri.scheme == "https")
     {
       // download tar
-      Proc.download("  Downloading $sys system", sys.uri, tar)
+      Proc.download("  Downloading ${sys}", sys.uri, tar)
     }
     else
     {
@@ -154,63 +133,55 @@ const class AsmCmd : Cmd
     }
 
     // untar
-    info("  Install $sys system...")
+    info("  Install ${sys}...")
     Proc.run("tar xvf $tar.osPath -C $baseDir.osPath")
 
-    // cleanup (if downloaded)
+    // TODO: until we update system tar file format; manually
+    //       move from xxx -> system-xxx-y.y structure
+    dir := baseDir + `${sys.name}/`
+    if (dir.exists) dir.moveTo(sysDir)
+
+    // cleanup (only if downloaded)
     if (sys.uri.scheme == "http" || sys.uri.scheme == "https") tar.delete
   }
 
-  ** Build compact JRE for target.
-  Void buildJre(System sys)
+  ** Download and install the JRE for target.
+  Void installJre(Jre jre)
   {
-    profDir := profile["jres.dir"]?.toUri?.toFile
     baseDir := Env.cur.workDir + `studs/jres/`
     baseDir.create
-    jreDir := baseDir + `$sys.jre/`
+    sysDir := baseDir + `$jre/`
 
-    // determine JRE compact profile to use
-    jreProfStr := props["jre.profile"] ?: "1"
-    jreProfile := jreProfStr.toInt(10, false)
-    if (jreProfile == null || !(1..3).contains(jreProfile))
-      Proc.abort("invalid jre.profile '$jreProfStr'")
+    // short-circuit if already installed
+    if (sysDir.exists) return
 
-    // TODO: check if profile has changed?
-
-    // bail if already exists
-    if (jreDir.exists) return
-
-// TODO: we need to check for latest version...  but does that go
-// away once we starting building our own JRE with OpenJDK 9?
-
-    // find source tar image - first check local dir, and if not
-    // found try to find the profile dir if one is defined
-    find := |File dir->File?| {
-      dir.listFiles.find |f| { f.name.endsWith("${sys.jre}.tar.gz") }
+    tar := baseDir + `$jre.uri.name`
+    if (jre.uri.scheme == "http" || jre.uri.scheme == "https")
+    {
+      // download tar
+      Proc.download("  Downloading ${jre}", jre.uri, tar)
     }
-    tar := find(baseDir)
-    if (tar == null && profDir != null) tar = find(profDir)
-    if (tar == null) Proc.abort("no jre found for $sys.name")
+    else
+    {
+      // assume uri is a local file
+      tar = jre.uri.toFile
+      if (!tar.exists) abort("file not found: $tar.osPath")
+    }
 
-    // unpack
-    tempClean
-    info("  Build ${jreDir.name} jre [compact${jreProfile}]...")
-    Proc.run("tar xf $tar.osPath -C $tempDir.osPath")
+    // untar
+    info("  Install ${jre}...")
+    Proc.run("tar xvf $tar.osPath -C $baseDir.osPath")
 
-    // invoke jrecreate (requires Java 7+)
-    javaHome := Env.cur.vars["java.home"]
-    jdkDir   := tempDir.listDirs.find |d| { d.name.startsWith("ejdk") }
-    Proc.bash(
-      "export JAVA_HOME=$javaHome
-       ${jdkDir.osPath}/bin/jrecreate.sh --dest $jreDir.osPath --profile compact${jreProfile} -vm client")
+    // cleanup (only if downloaded)
+    if (jre.uri.scheme == "http" || jre.uri.scheme == "https") tar.delete
   }
 
   ** Assemble firmware image for target.
-  Void assemble(System sys)
+  Void assemble(System sys, Jre jre)
   {
     // dir setup
-    jreDir := Env.cur.workDir + `studs/jres/$sys.jre/`
-    sysDir := Env.cur.workDir + `studs/systems/$sys.name/`
+    sysDir := Env.cur.workDir + `studs/systems/${sys}/`
+    jreDir := Env.cur.workDir + `studs/jres/${jre}/`
     relDir := Env.cur.workDir + `studs/releases/`
     relDir.create
     tempClean
@@ -230,7 +201,7 @@ const class AsmCmd : Cmd
     info("  Stage rootfs...")
     (rootfs + `app/`).create
     Proc.run("cp -R $jreDir.osPath $rootfs.osPath/app")
-    Proc.run("mv $rootfs.osPath/app/${sys.jre} $rootfs.osPath/app/jre")
+    Proc.run("mv $rootfs.osPath/app/${jre} $rootfs.osPath/app/jre")
 
     // stage faninit
     init := Pod.find("studsTools").file(`/bins/${sys.toolchain}/faninit`)
@@ -341,9 +312,10 @@ const class AsmCmd : Cmd
     Proc.run("rm $urel.osPath")
 
     // indicate image filepath
+    path := srel.osPath[Env.cur.workDir.osPath.size+1..-1]
     size := srel.size.toLocale("B")
     info("  Release:")
-    info("    $srel.osPath [$size]")
+    info("    ${path} [${size}]")
   }
 
   ** List of retired faninit prop names

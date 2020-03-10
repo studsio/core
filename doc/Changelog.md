@@ -1,14 +1,19 @@
 # Changelog
 
 #### Version 1.11 (working)
-* Update AsmCmd behavior to use common `rootfs_overlay` and `rootfs_overlay_{sys.name}`
-* Fix for `Sys.updateFirmware` to ignore EOF errors
+* New design for JRE using pre-built OSS JRE images managed by Studs
 * New `SysLog` ring buffer for system wide syslog available via `Sys.log`
+* Update AsmCmd behavior to use common `rootfs_overlay` and `rootfs_overlay_{sys.name}`
+* Update AsmCmd to remove support for multiple targets
+    - This was never really supported properly due to configuration in
+      `faninit.props`. Its simpler to keep these local to the target system
+      and introduce a new concept for targeting multiple hardware. TBD.
 * Update Toolchains to compile/store by arch instead of sys.name
     - This removes duplicated binaries in `studsTools` when arch is the
       same (ie. `bb` and `rpi3` both use `arm_unknown_linux_gnueabihf`)
     - This makes it easier to support custom systems since in most cases
       it uses an existing toolchain architecture with preexisting binaries
+* Fix for `Sys.updateFirmware` to ignore EOF errors
 
 #### Version 1.10 (19-Jul-2018)
 * New end-to-end firmware signing support

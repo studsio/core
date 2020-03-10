@@ -13,56 +13,54 @@ using concurrent
 **
 const class System
 {
-  ** It-block ctor.
-  new make(|This| f)
+  ** Find a default system by name.
+  static System? find(Str name, Bool checked := true)
   {
-    f(this)
-    // TODO FIXIT: this stuff needs to get pulled from system meta
-    this.toolchain = name == "rpi0"
-      ? "armv6_rpi_linux_gnueabi"
-      : "arm_unknown_linux_gnueabihf"
-    this.jre = name == "rpi0"
-      ? "linux-arm-sflt"
-      : "linux-armv6-vfp-hflt"
+    sys := defs.find |sys| { sys.name == name }
+    if (sys == null && checked) throw ArgErr("Default system not found: ${name}")
+    return sys
   }
 
-  ** Make default System.
-  new makeDef(Str name)
+  ** It-block ctor.
+  new make(|This| f) { f(this) }
+
+  ** Private ctor for default systems.
+  private new makeDef(Str name, Str arch, Str ver)
   {
     this.name = name
-    this.version = defVer[name]
+    this.arch = arch
+    this.version = Version(ver)
     this.uri = `https://github.com/studsio/system-${name}/releases/download/${version}/studs-system-${name}-${version}.tar.gz`
-    // TODO FIXIT: this stuff needs to get pulled from system meta
-    this.toolchain = name == "rpi0"
-      ? "armv6_rpi_linux_gnueabi"
-      : "arm_unknown_linux_gnueabihf"
-    this.jre = name == "rpi0"
-      ? "linux-arm-sflt"
-      : "linux-armv6-vfp-hflt"
   }
 
-  ** Unique name for this system
+  ** Unique name for this system.
   const Str name
+
+  ** CPU architecture for this system.
+  const Str arch
 
   ** Vesion of system.
   const Version version
 
   ** Toolchain name for system.
-  const Str toolchain
+// TODO: goes away with 'arch'
+  Str toolchain()
+  {
+    arch == "arm32sf"
+      ? "armv6_rpi_linux_gnueabi"
+      : "arm_unknown_linux_gnueabihf"
+  }
 
   ** URI to fetch system image.
   const Uri uri
 
-  ** JRE platform for this system.
-  const Str jre
-
   ** toStr is {name}-{version}
-  override Str toStr() { "${name}-${version}" }
+  override Str toStr() { "system-${name}-${version}" }
 
-  ** Default system versions.
-  private static const Str:Version defVer := [
-    "bb":   Version("1.4"),
-    "rpi3": Version("1.4"),
-    "rpi0": Version("1.4"),
+  ** Default systems.
+  private static const System[] defs := [
+    makeDef("bb",   "arm32hf", "1.4"),
+    makeDef("rpi3", "arm32hf", "1.4"),
+    makeDef("rpi0", "arm32sf", "1.4"),
   ]
 }
