@@ -126,7 +126,9 @@ abstract const class Cmd
       rels.each |f,i|
       {
         size := f.size.toLocale("B")
-        date := f.modified.toLocale("DD-MMM-YY k::mmaa")
+        date := f.modified.date == Date.today
+          ? "Today     " + f.modified.toLocale("k::mmaa")
+          : f.modified.toLocale("DD-MMM-YY k::mmaa")
         echo(" [${i+1}] " + f.name.padr(w) + "   $size  $date")
       }
       sel := promptChoice("Which release do you want to ${action}?", 1..rels.size)
