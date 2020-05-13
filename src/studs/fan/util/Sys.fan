@@ -175,7 +175,7 @@ class Sys
       // spawn `fwup` process and block reading output
       log.debug("Updating firmware...")
       buf   := Buf(4096)
-      dev   := "/dev/mmcblk0"
+      dev   := fwProps["nerves_fw_devpath"]
       task  := "upgrade"
       fwup  := ["/usr/bin/fwup", "-p", "/etc/fw-key.pub", "-aFU", "-d", dev, "-t", task, "-i", "-"]
       proc  := Proc { it.cmd=fwup }.run
