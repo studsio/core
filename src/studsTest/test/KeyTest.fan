@@ -25,19 +25,42 @@ class KeyTest : Test
 
   Void testClientTls()
   {
+    //
+    // NOTE: Test certs expire 11/26/2021
+    // To update key/pem for tests:
+    //  - Download client certs from badssl.com in PEM format
+    //  - Split into key/cert (password is 'badssl.com'):
+    //     openssl rsa -in badssl.com-client.pem -out x.key -outform PEM
+    //     copy-paste cert portion into x.pem certfile
+    //
+
+    WebClient? wc
+
     // verify no cert fails
     verifyErr(IOErr#) { WebClient(`https://client.badssl.com`).getStr }
 
-// TODO: awaiting upstream fantom patch :)
-/*
-    // now check with cert
+    // sanity check 'cert-missing'
+    wc = WebClient(`https://client-cert-missing.badssl.com`)
+    wc.writeReq
+    wc.readRes
+    verifyEq(wc.resCode, 400)
+    verifyTrue(wc.resIn.readAllStr.contains("No required SSL certificate was sent"))
+
+    // verify no cert sent 400
+    wc = WebClient(`https://client.badssl.com`)
+    wc.writeReq
+    wc.readRes
+    verifyEq(wc.resCode, 400)
+
+    // verify success with cert
     bc := typeof.pod.file(`/res/badssl.com-client.pem`).readAllBuf
     bk := typeof.pod.file(`/res/badssl.com-client.key`).readAllBuf
     ks := KeyUtil.keyStore(bc, bk)
-    wc := WebClient(`https://client.badssl.com`)
+    wc = WebClient(`https://client.badssl.com`)
     wc.tlsContext = KeyUtil.tlsContext(ks)
-    wc.getStr
-*/
+    wc.writeReq
+    wc.readRes
+    verifyEq(wc.resCode, 200)
   }
 
 //////////////////////////////////////////////////////////////////////////
