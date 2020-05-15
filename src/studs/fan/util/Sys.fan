@@ -85,7 +85,7 @@ class Sys
 //////////////////////////////////////////////////////////////////////////
 
   ** Load the given kernel module, or throw 'Err' if failed to load.
-  Void loadKernelMod(Str modname)
+  static Void loadKernelMod(Str modname)
   {
     Proc { it.cmd=["modprobe", modname] }.run.waitFor.okOrThrow
   }
