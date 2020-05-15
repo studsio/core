@@ -9,7 +9,7 @@
 **
 ** FileSystem provides file system support and utilities.
 **
-@NoDoc const class FileSystem
+const class FileSystem
 {
   **
   ** Return 'true' if given 'device' is currently mounted. If 'dir'
