@@ -87,8 +87,24 @@ const class Props
   ** Find a JRE image based on props.
   private Jre findJre()
   {
-    // TODO
-    return Jre.find(system.arch)
+    // find default if custome uri not specified
+    uri := map["jre.uri"]?.toUri
+    if (uri == null) return Jre.find(system.arch)
+
+    // {vendor}-jre-{arch}-{version}-{profile}
+    base := uri.name[0..<-".tar.gz".size]
+    list := base.split('-')
+    arch := list[2]
+    ver  := list[3]
+    prof := list[4]
+
+    // create a custom system from props
+    return Jre {
+      it.arch    = arch
+      it.version = ver
+      it.profile = prof
+      it.uri     = uri
+    }
   }
 
   ** Print the given error message then exit with error code.
