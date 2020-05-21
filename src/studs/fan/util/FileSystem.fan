@@ -87,7 +87,7 @@ const class FileSystem
   ** Example:
   **   FileSystem.format("/dev/mmcblk3p1", "ext4")
   **
-  static Void format(Str device, Str fs, Uuid? uuid := null)
+  static Void format(Str device, Str fs, Str? uuid := null)
   {
     // fail fast if fs not supported
     if (!fslist.contains(fs)) throw IOErr("Filesystem '${fs}' not supported")
@@ -95,7 +95,7 @@ const class FileSystem
     try
     {
       // generate a new unique UUID if not specified
-      if (uuid == null) uuid = Uuid.make
+      if (uuid == null) uuid = Uuid.make.toStr
 
       // format device
       cmd := ["/sbin/mkfs.${fs}", "-U", uuid, "-F", device]
