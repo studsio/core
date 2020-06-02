@@ -110,8 +110,8 @@ abstract const class Cmd
     relDir := Env.cur.workDir + `studs/releases/`
     rels   := relDir.listFiles.findAll |f| { f.ext == "fw" }
 
-    // sort by filename
-    rels.sort |a,b| { a.name <=> b.name }
+    // sort files
+    sortFwFiles(rels)
 
     // bail if no releases found
     if (rels.isEmpty) abort("no releases found")
@@ -136,5 +136,20 @@ abstract const class Cmd
     }
 
     return rel
+  }
+
+  ** Sort a list of *.fw files by version number.
+  @NoDoc File[] sortFwFiles(File[] files)
+  {
+    files.sort |fa,fb|
+    {
+      a  := fa.basename.split('-')
+      b  := fb.basename.split('-')
+      av := Version(a[1])
+      bv := Version(b[1])
+      return av == bv
+        ? a.first.localeCompare(b.first)
+        : bv <=> av  // version in rev order
+    }
   }
 }

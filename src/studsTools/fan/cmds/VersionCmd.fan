@@ -21,7 +21,7 @@ const class VersionCmd : Cmd
   {
     info(
      "Studs $typeof.pod.version
-      Copyright (c) 2016-$Date.today.year Andy Frank")
+      Copyright (c) 2016-${Date.today.year} Andy Frank")
     return 0
   }
 }
