@@ -6,6 +6,7 @@
 //    1 Jun 2017  Andy Frank  Creation
 */
 
+#include <arpa/inet.h>
 #include <err.h>
 #include <errno.h>
 // #include <fcntl.h>
@@ -14,6 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <netinet/in.h>
@@ -111,6 +113,11 @@ static void on_status(struct pack_map *req)
   struct pack_map *res = pack_map_new();
   pack_set_str(res, "status", "ok");
   pack_set_str(res, "name",   name);
+
+  // ipaddr
+  s.ifr_addr.sa_family = AF_INET;
+  if (ioctl(h, SIOCGIFADDR, &s) == -1) { send_err("ioctl ipaddr failed"); goto STATUS_CLEANUP; }
+  pack_set_str(res, "ipaddr", inet_ntoa(((struct sockaddr_in *)&s.ifr_addr)->sin_addr));
 
   // flags
   if (ioctl(h, SIOCGIFFLAGS, &s) == -1) { send_err("ioctl flags failed"); goto STATUS_CLEANUP; }

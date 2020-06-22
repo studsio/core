@@ -16,6 +16,7 @@
       same (ie. `bb` and `rpi3` both use `arm_unknown_linux_gnueabihf`)
     - This makes it easier to support custom systems since in most cases
       it uses an existing toolchain architecture with preexisting binaries
+* Update `Networkd.status` to return `ipaddr` value for interface
 * Fix for `Sys.updateFirmware` to ignore EOF errors
 
 #### Version 1.10 (19-Jul-2018)
