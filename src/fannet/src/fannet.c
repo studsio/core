@@ -132,8 +132,11 @@ static void on_status(struct pack_map *req)
 
   // hwaddr
   if (ioctl(h, SIOCGIFHWADDR, &s) == -1) { send_err("ioctl hwaddr failed"); goto STATUS_CLEANUP; }
+  char mac_str[18];
+  uint8_t* m = (uint8_t*)s.ifr_hwaddr.sa_data;
+  snprintf(mac_str, sizeof(mac_str), "%02x:%02x:%02x:%02x:%02x:%02x", m[0], m[1], m[2], m[3], m[4], m[5]);
   pack_set_str(res, "type", s.ifr_hwaddr.sa_family == ARPHRD_ETHER ? "ethernet" : "other");
-  pack_set_buf(res, "mac",  (uint8_t*)s.ifr_hwaddr.sa_data, 6);
+  pack_set_str(res, "mac",  mac_str);
 
   // TODO
   // pack_set_int(res,  "index",        s.ifr_ifindex);
