@@ -17,6 +17,7 @@
     - This makes it easier to support custom systems since in most cases
       it uses an existing toolchain architecture with preexisting binaries
 * Update `Networkd.status` to return `ipaddr` value for interface
+* Update `Networkd.status` to return `netmask` value for interface
 * Update `Networkd.status` to return `mac` as hex string instead of `Buf`
 * Fix for `Sys.updateFirmware` to ignore EOF errors
 

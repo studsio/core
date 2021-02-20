@@ -119,6 +119,10 @@ static void on_status(struct pack_map *req)
   if (ioctl(h, SIOCGIFADDR, &s) == -1) { send_err("ioctl ipaddr failed"); goto STATUS_CLEANUP; }
   pack_set_str(res, "ipaddr", inet_ntoa(((struct sockaddr_in *)&s.ifr_addr)->sin_addr));
 
+  // netmask
+  if (ioctl(h, SIOCGIFNETMASK, &s) != 0) { send_err("ioctl netmask failed"); goto STATUS_CLEANUP; }
+  pack_set_str(res, "netmask", inet_ntoa(((struct sockaddr_in *)&s.ifr_broadaddr)->sin_addr));
+
   // flags
   if (ioctl(h, SIOCGIFFLAGS, &s) == -1) { send_err("ioctl flags failed"); goto STATUS_CLEANUP; }
   pack_set_bool(res, "up",           s.ifr_flags & IFF_UP);
