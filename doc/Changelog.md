@@ -19,6 +19,8 @@
 * Update `Networkd.status` to return `ipaddr` value for interface
 * Update `Networkd.status` to return `netmask` value for interface
 * Update `Networkd.status` to return `mac` as hex string instead of `Buf`
+* Update `Networkd.setup` to rename `mask` -> `netmask`
+    - Support for taking either subnet `255.255.255.0` or `24` prefix
 * Fix for `Sys.updateFirmware` to ignore EOF errors
 
 #### Version 1.10 (19-Jul-2018)

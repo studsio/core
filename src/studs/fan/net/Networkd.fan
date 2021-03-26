@@ -149,9 +149,12 @@ const class Networkd : Daemon
   {
     // TODO: figure how which command(s) to invoke
     // and verify correct options were passed in
-    name   := opts["name"]   ?: throw ArgErr("Missing 'name' opt")
-    ip     := opts["ip"]     ?: throw ArgErr("Missing 'ip' opt")
-    mask   := opts["mask"]   ?: throw ArgErr("Missing 'mask' opt")
+    name    := opts["name"]    ?: throw ArgErr("Missing 'name' opt")
+    ip      := opts["ip"]      ?: throw ArgErr("Missing 'ip' opt")
+    netmask := opts["netmask"] ?: throw ArgErr("Missing 'netmask' opt")
+
+    // convert dot-decimal to prefix if needed
+    prefix := netmask.toStr.contains(".") ? subnetToPrefix(netmask) : netmask
 
     // make sure dhcp is not running
     killDhcp
@@ -159,7 +162,7 @@ const class Networkd : Daemon
     // TODO: for now just call into busybox
     up    := ["/sbin/ip", "link", "set", name, "up"]
     flush := ["/sbin/ip", "addr", "flush", "dev", name]
-    set   := ["/sbin/ip", "addr", "add", "${ip}/${mask}", "dev", name]
+    set   := ["/sbin/ip", "addr", "add", "${ip}/${prefix}", "dev", name]
     Proc { it.cmd=up    }.run.waitFor.okOrThrow
     Proc { it.cmd=flush }.run.waitFor.okOrThrow
     Proc { it.cmd=set   }.run.waitFor.okOrThrow
@@ -244,5 +247,20 @@ const class Networkd : Daemon
   {
     if (pack["status"] == "err")
       throw Err(pack["msg"] ?: "Unknown error")
+  }
+
+  ** Convert dot-decimal subnet to a prefix mask.
+  private Int subnetToPrefix(Str subnet)
+  {
+    n := 0
+    subnet.split('.').each |s| { n = n.shiftl(8).or(s.toInt) }
+
+    b := 0
+    32.times |i|
+    {
+      if (n.shiftr(31-i).and(0x01) > 0) b++
+    }
+
+    return b
   }
 }
