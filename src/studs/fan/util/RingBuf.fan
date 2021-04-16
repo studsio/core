@@ -10,7 +10,7 @@
 ** RingBuf is a FIFO buffer using a fixed max size. As new
 ** items are added, the oldest items are evicted.
 **
-@Js class RingBuf
+class RingBuf
 {
   ** Construct a new buffer with max size.
   new make(Int max)

@@ -15,7 +15,7 @@ using concurrent
 const class SysLog
 {
   ** Create new instance with given log history capacity.
-  new make(Int capacity := 5000)
+  new make(Int capacity := 500)
   {
     this.capacity = capacity
     Log.addHandler |rec| { append(rec) }
@@ -53,33 +53,26 @@ const class SysLog
     return this
   }
 
-  ** Read back current log entires, with an optional 'limit'
-  ** to restrict number of entries.  By default all entires
-  ** in ring buffer are returned.
-  LogRec[] read(Int limit := capacity)
+  ** Read back current log entires.
+  LogRec[] read()
   {
-    actor.send(DaemonMsg { it.op="read"; it.a=limit }).get(10sec)
+    actor.send(DaemonMsg { it.op="read" }).get(10sec)
   }
 
   private Obj? receive(DaemonMsg? msg)
   {
-    LogRec[]? ring := Actor.locals["r"]
-    if (ring == null)
-      Actor.locals["r"] = ring = LogRec[,] { it.capacity = this.capacity }
+    RingBuf? buf := Actor.locals["r"]
+    if (buf == null) Actor.locals["r"] = buf = RingBuf(capacity)
 
     switch (msg.op)
     {
       case "read":
-        // TODO: yikes!
-        Int limit := msg.a
-        min := (ring.size-limit).max(0)
-        max := ring.size.min(limit)
-        return ring[min..<max].reverse.toImmutable
+        acc := LogRec[,]
+        buf.each |r| { acc.add(r) }
+        return acc.toImmutable
 
       case "append":
-        ring.add(msg.a)
-        // TODO: yikes!
-        if (ring.size > capacity) Actor.locals["r"] = ring = ring[1..-1]
+        buf.add(msg.a)
         return null
 
       default: return null
