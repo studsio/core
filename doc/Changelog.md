@@ -22,6 +22,7 @@
 * Update `Networkd.setup` to rename `mask` -> `netmask`
     - Support for taking either subnet `255.255.255.0` or `24` prefix
 * Fix for `Sys.updateFirmware` to ignore EOF errors
+* Deprecate `KeyUtil` in favor of new Fantom `Crypto` API
 
 #### Version 1.10 (19-Jul-2018)
 * New end-to-end firmware signing support

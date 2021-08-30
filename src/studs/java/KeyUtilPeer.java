@@ -1,3 +1,5 @@
+/** Deprecated - Use Crypto API **/
+/*
 //
 // Copyright (c) 2019, Andy Frank
 // Licensed under the Apache License version 2.0
@@ -81,7 +83,7 @@ public class KeyUtilPeer
    *   - PKCS#1 PEM (-----BEGIN RSA PRIVATE KEY-----)
    *   - PKCS#8 PEM (-----BEGIN PRIVATE KEY-----)
    *   - PKCS#8 DER (binary)
-   */
+   *
   private static PrivateKey loadKey(byte[] keyDataBytes)
     throws GeneralSecurityException, IOException
   {
@@ -148,3 +150,4 @@ public class KeyUtilPeer
   private static final String PKCS_8_PEM_HEADER = "-----BEGIN PRIVATE KEY-----";
   private static final String PKCS_8_PEM_FOOTER = "-----END PRIVATE KEY-----";
 }
+*/

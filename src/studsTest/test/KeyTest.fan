@@ -6,8 +6,10 @@
 //   11 Nov 2019  Andy Frank  Creation
 //
 
-using web
+using crypto
+using inet
 using studs
+using web
 
 class KeyTest : Test
 {
@@ -19,7 +21,14 @@ class KeyTest : Test
   Void testKeyStore()
   {
     genKeys
-    ks := KeyUtil.keyStore(cert.readAllBuf, key.readAllBuf)
+
+    // Deprecated - use Crypto API
+    // ks := KeyUtil.keyStore(cert.readAllBuf, key.readAllBuf)
+    // verifyNotNull(ks)
+
+    cert := Crypto.cur.loadPem(cert.in)
+    key  := Crypto.cur.loadPem(key.in)
+    ks   := Crypto.cur.loadKeyStore.setPrivKey("", key, [cert])
     verifyNotNull(ks)
   }
 
@@ -53,11 +62,17 @@ class KeyTest : Test
     verifyEq(wc.resCode, 400)
 
     // verify success with cert
-    bc := typeof.pod.file(`/res/badssl.com-client.pem`).readAllBuf
-    bk := typeof.pod.file(`/res/badssl.com-client.key`).readAllBuf
-    ks := KeyUtil.keyStore(bc, bk)
+    bc := Crypto.cur.loadPem(typeof.pod.file(`/res/badssl.com-client.pem`).in)
+    bk := Crypto.cur.loadPem(typeof.pod.file(`/res/badssl.com-client.key`).in)
+    // Deprecated - use Crypto API
+    //   ks := KeyUtil.keyStore(bc, bk)
+    sc := SocketConfig {
+      it.keystore = Crypto.cur.loadKeyStore.setPrivKey("client", bk, [bc])
+    }
     wc = WebClient(`https://client.badssl.com`)
-    wc.tlsContext = KeyUtil.tlsContext(ks)
+    // Deprecated - use Crypto API
+    //   wc.tlsContext = KeyUtil.tlsContext(ks)
+    wc.socketConfig = sc
     wc.writeReq
     wc.readRes
     verifyEq(wc.resCode, 200)

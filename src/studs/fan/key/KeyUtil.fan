@@ -1,3 +1,5 @@
+/** Deprecated - Use Crypto API **/
+/*
 //
 // Copyright (c) 2019, Andy Frank
 // Licensed under the Apache License version 2.0
@@ -17,3 +19,4 @@ const class KeyUtil
   ** Create a 'javax.net.ssl.SSLContext' instance using given keystore.
   static native Obj tlsContext(Obj keystore)
 }
+*/
