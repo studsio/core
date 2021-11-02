@@ -212,6 +212,9 @@ static void child()
   const char *sys_name = get_prop(sys_props, "system.name", NULL);
   if (strcmp(sys_name, "bb") == 0) exec_argv[arg++] = "-XX:-AssumeMP";
 
+  // TEMP: for debugging TLS
+  // exec_argv[arg++] = "-Djavax.net.debug=all";
+
   exec_argv[arg++] = "-cp";
   exec_argv[arg++] = sys_jar_path;
   exec_argv[arg++] = "fanx.tools.Fan";
