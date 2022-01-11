@@ -337,12 +337,13 @@ const class AsmCmd : Cmd
     "docIntro",
     "docLang",
     "docTools",
+    "examples",
     "icons",          // fwt and flux
     "gfx",
     "fwt",
     "webfwt",
     "flux",
-    "fluxTest",
+    "fluxText",
     "syntax",
     "email",          // misc
     "fandoc",
