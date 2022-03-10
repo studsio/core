@@ -77,7 +77,7 @@ const class AsmCmd : Cmd
       sys := props.system
       jre := props.jre
 
-      info("Assemble [$sys]")
+      info("Assemble [$sys, $jre]")
       installSystem(sys)
       installJre(jre)
       assemble(sys, jre)

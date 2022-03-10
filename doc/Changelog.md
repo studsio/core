@@ -6,6 +6,7 @@
 * New `Sys.loadKernelMod` API
 * New `FileSystem` API
 * New `fan studs rel` release info command
+* Update AsmCmd to display `jre` in use
 * Update AsmCmd behavior to use common `rootfs_overlay` and `rootfs_overlay_{sys.name}`
 * Update AsmCmd to remove support for multiple targets
     - This was never really supported properly due to configuration in
