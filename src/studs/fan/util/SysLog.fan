@@ -59,6 +59,12 @@ const class SysLog
     actor.send(DaemonMsg { it.op="read" }).get(10sec)
   }
 
+  ** Clear all log entries.
+  @NoDoc Void clear()
+  {
+    actor.send(DaemonMsg { it.op="clear" })
+  }
+
   private Obj? receive(DaemonMsg? msg)
   {
     RingBuf? buf := Actor.locals["r"]
@@ -73,6 +79,10 @@ const class SysLog
 
       case "append":
         buf.add(msg.a)
+        return null
+
+      case "clear":
+        buf.clear
         return null
 
       default: return null
