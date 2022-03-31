@@ -22,6 +22,7 @@
 * Update `Networkd.status` to return `mac` as hex string instead of `Buf`
 * Update `Networkd.setup` to rename `mask` -> `netmask`
     - Support for taking either subnet `255.255.255.0` or `24` prefix
+* Fix for `udhcpc.script` to correctly set interface `netmask` subnet
 * Fix for `Sys.updateFirmware` to ignore EOF errors
 * Deprecate `KeyUtil` in favor of new Fantom `Crypto` API
 
