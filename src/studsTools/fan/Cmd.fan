@@ -145,8 +145,8 @@ abstract const class Cmd
     {
       a  := fa.basename.split('-')
       b  := fb.basename.split('-')
-      av := Version(a[1])
-      bv := Version(b[1])
+      av := Version(a[-2])
+      bv := Version(b[-2])
       return av == bv
         ? a.first.localeCompare(b.first)
         : bv <=> av  // version in rev order
