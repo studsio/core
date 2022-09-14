@@ -351,8 +351,10 @@ const class AsmCmd : Cmd
     "fansh",
     "obix",
     "sql",
+    "yaml",
     "testCompiler",   // unit tests
     "testDomkit",
+    "testGraphics",
     "testJava",
     "testNative",
     "testSys",

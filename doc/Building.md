@@ -84,7 +84,8 @@ firmware size.  The default blacklist is:
     studsTest, studsTools, build, compiler, compilerDoc, compilerJava,
     compilerJs, docDomkit, docFanr, docIntro, docLang, docTools, icons,
     gfx, fwt, webfwt, flux, fluxTest, syntax, email, fandoc, fanr, fansh,
-    obix, sql, testCompiler, testDomkit, testJava, testNative, testSys
+    obix, sql, yaml, testCompiler, testDomkit, testGraphics, testJava,
+    testNative, testSys
 
 To add additional pods to the exclusion list, configure the `pod.blacklist` in
 your `studs.props`:
