@@ -59,6 +59,16 @@ const class SysLog
     actor.send(DaemonMsg { it.op="read" }).get(10sec)
   }
 
+  ** Read entries in ring buffer. This method uses a non-thread safe
+  ** copy of backing ring buffer, and as such may not represent the
+  ** exact log state.
+  @NoDoc Void each(|LogRec| func)
+  {
+    Unsafe u  := actor.send(DaemonMsg { it.op="buf" }).get
+    RingBuf b := u.val
+    b.each(func)
+  }
+
   ** Clear all log entries.
   @NoDoc Void clear()
   {
@@ -80,6 +90,9 @@ const class SysLog
       case "append":
         buf.add(msg.a)
         return null
+
+      case "buf":
+        return Unsafe(buf)
 
       case "clear":
         buf.clear
