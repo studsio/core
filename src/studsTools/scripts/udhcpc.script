@@ -26,6 +26,7 @@ case "$1" in
       /sbin/ip route del 0/0
 
       for i in $router ; do
+        echo "adding route $i"
         /sbin/ip route add default via $i dev $interface
       done
     fi

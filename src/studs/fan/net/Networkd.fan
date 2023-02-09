@@ -175,6 +175,11 @@ const class Networkd : Daemon
       Proc { it.cmd=def }.run.waitFor.okOrThrow
     }
 
+    // set hostname if specified
+    hostname := opts["hostname"]
+    if (hostname != null)
+      Proc { it.cmd=["/bin/hostname", hostname] }.run.waitFor.okOrThrow
+
     // Update DNS
     Str? dns := opts["dns"] as Str
     if (dns != null)
@@ -204,6 +209,11 @@ const class Networkd : Daemon
       "--foreground",
       "--script", "/usr/bin/udhcpc.script"
     ]
+
+    // set hostname if specified
+    hostname := opts["hostname"]
+    if (hostname != null)
+      Proc { it.cmd=["/bin/hostname", hostname] }.run.waitFor.okOrThrow
 
     // TODO: for now just call into busybox
     // make sure device is up and addr is flushed
