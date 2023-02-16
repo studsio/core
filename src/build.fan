@@ -30,6 +30,7 @@ class Build : BuildGroup
       `fanspi/build.fan`,
       `fanuart/build.fan`,
       `fannet/build.fan`,
+      `fankmsg/build.fan`,
 
       // We need to rebuild studsTools after natives have been
       // compiled since this is where we package them.  This is

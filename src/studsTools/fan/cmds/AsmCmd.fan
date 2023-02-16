@@ -240,7 +240,7 @@ const class AsmCmd : Cmd
     }
 
     // stage natives
-    ["fangpio", "fani2c", "fannet", "fanspi", "fanuart"].each |name|
+    ["fangpio", "fani2c", "fannet", "fanspi", "fanuart", "fankmsg"].each |name|
     {
       bin := Pod.find("studsTools").file(`/bins/${sys.toolchain}/$name`)
       bin.copyTo(rootfs + `usr/bin/$name`)
