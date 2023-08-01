@@ -69,6 +69,17 @@ const class SysLog
     b.each(func)
   }
 
+  ** Read entries in ring buffer in reverse. This method uses a
+  ** non-thread safe copy of backing ring buffer, and as such may
+  ** not represent the exact log state.
+  @NoDoc Void __eachr(|LogRec| func)
+  {
+    Unsafe u  := actor.send(DaemonMsg { it.op="buf" }).get
+    RingBuf b := u.val
+    b.eachr(func)
+  }
+
+
   ** Clear all log entries.
   @NoDoc Void clear()
   {

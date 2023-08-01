@@ -42,33 +42,33 @@ class RingBuf
     return this
   }
 
-  ** Iterate items from newest to oldest.
-  Void each(|Obj?| f)
-  {
-    end := size
-    i := tail
-    n := 0
-    while (n < end)
-    {
-      f(items[i])
-      n++
-      i--
-      if (i < 0) i = max - 1
-    }
-  }
-
   ** Iterate items from oldest to newest.
-  Void eachr(|Obj?| f)
+  Void each(|Obj? val, Int index| f)
   {
     end := size
     i := tail+1; if (i >= size) i = 0
     n := 0
     while (n < end)
     {
-      f(items[i])
+      f(items[i], n)
       n++
       i++
       if (i >= max) i = 0
+    }
+  }
+
+  ** Iterate items from newest to oldest.
+  Void eachr(|Obj? val, Int index| f)
+  {
+    end := size
+    i := tail
+    n := 0
+    while (n < end)
+    {
+      f(items[i], size-n-1)
+      n++
+      i--
+      if (i < 0) i = max - 1
     }
   }
 
